@@ -92,7 +92,7 @@ void print(Map map[TAM][TAM], Player controller){
 	}	
 	printf("\n\n");
 
-	printf("HP: %d/%d\nLevel: %d\nXP: %d\n\n\n", controller.hp, controller.MaxHP, controller.level, controller.XP);
+	printf("HP: %d/%d\nLevel: %d\nXP: %d/%d\n\n\n", controller.hp, controller.MaxHP, controller.level, controller.XP, controller.NextLevel);
 }
 
 
