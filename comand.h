@@ -1,5 +1,6 @@
-/* Author: Lucas de Camargo Barros de Castro *
- * Last Modification: 07/03/2015 by Lucas Castro */
+/* Author: ETA Team *
+ * Last Modification: 07/03/2015 by Foo */
+
 
 /* Biblioteca que executa comandos do jogo */
 
