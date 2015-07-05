@@ -1,7 +1,19 @@
-# Terminal-Adventure
-Source code of the game
+# Extreme-Terminal-Adventure
 
-O codigo fonte do jogo eh o arquivo load.c, os outros arquivos sao bibliotecas.
+Source code of Extreme Terminal Adventure.
 
-Para executar o jogo, compile o arquivo load.c e execute o executavel.
+ETA Team:
+Lucas "Foo" de Castro
+Eduardo "Chamyto" Souza
+
+
+"load.c" is the code which should be compiled in order to get the executable of the game.
+
+The other files are headers used at "load.c".
+
+
+To play the game, execute the following lines on the terminal while inside de game directory:
+
+$ chmod a+x launcher
+$ ./launcher
 
