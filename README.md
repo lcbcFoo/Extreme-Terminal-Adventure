@@ -4,6 +4,7 @@ Source code of Extreme Terminal Adventure.
 
 ETA Team:
 Lucas "Foo" de Castro
+
 Eduardo "Chamyto" Souza
 
 
