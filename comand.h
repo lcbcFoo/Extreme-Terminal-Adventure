@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/03/2015 by Foo */
+ * Last Modification: 07/04/2015 by Foo */
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -140,6 +140,7 @@ int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies
 			combate(player, &enemies[map[(*player).y][(*player).x - 1].enemyIndice], 
 					&map[(*player).y][(*player).x - 1]);	
 
+		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
 		return enemyAction(player, map, enemies);
 	}
 
