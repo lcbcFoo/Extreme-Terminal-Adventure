@@ -1,5 +1,5 @@
-/* Author: Lucas de Camargo Barros de Castro *
- * Last Modification: 07/03/2015 by Lucas Castro */
+/* Author: ETA Team *
+ * Last Modification: 07/03/2015 by Foo */
 
 /* Define stats do jogador */
 #define BASE_HP 20
