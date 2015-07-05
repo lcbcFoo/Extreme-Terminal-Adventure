@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/03/2015 by Foo */
+ * Last Modification: 07/04/2015 by Foo */
 
 /* Define stats do jogador */
 #define BASE_HP 20
@@ -17,6 +17,7 @@
 #define TAM 10
 #define NUM_INIMIGOS 4
 
+/* Funcao que recebe XP e verifica se o personagem upou */
 void verificaXP(Player *player, int xpGanho){
 
 	(*player).XP += xpGanho;
@@ -25,13 +26,15 @@ void verificaXP(Player *player, int xpGanho){
 	if((*player).XP >= (*player).NextLevel){
 		(*player).XP -= (*player).NextLevel;
 		(*player).level++;
-		(*player).attack += (*player).level * BASE_ATTACK / 5;
+		(*player).attack += (*player).level * BASE_ATTACK / 10;
 		(*player).defense += (*player).level * BASE_DEF / 5;
-		(*player).MaxHP += (*player).level * BASE_HP / 5; 
-		(*player).hp += (*player).level * BASE_HP / 5;
+		(*player).MaxHP += (*player).level * BASE_HP / 10; 
+		(*player).hp += (*player).level * BASE_HP / 10;
 		(*player).NextLevel *= 2;
 	}
 }
+
+/* Funcao que executa o ataque de inimigos */
 int enemyAttack(Player *player, Enemy *enemy){
 
 	int damageTaken;
@@ -49,18 +52,21 @@ int enemyAttack(Player *player, Enemy *enemy){
 	return 1;	
 }
 
+/* Funcao que movimenta os inimigos */
 int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 
 	int i, aux, x, y, flag;
 
 	srand(time(NULL));
 
+	/* Para cada inimigo */
 	for(i = 0; i < NUM_INIMIGOS; i++){
 		if(enemies[i].hp > 0){
 			x = enemies[i].x;
 			y = enemies[i].y;
 			flag = 1;
 
+			/* Verifica se o player esta em uma regiao adjacente e o ataca */
 			if(map[y + 1][x].player){
 				flag = 0;
 
@@ -89,6 +95,7 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 					return 0;
 			}
 
+			/* Caso nao esteja, movimenta aleatorioamente o inimigo */
 			if(flag){
 				aux = rand();
 
@@ -150,12 +157,13 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 	return 1;
 }
 
+/* Funcao que executa o ataque do player */
 void combate(Player *player, Enemy *enemy, Map *position){
 
 	int damageDone;
 
-	/* Calcula o dano causado e o dano infringido, verifica se o inimigo ou o jogador *
-	 * morreram e atualiza as posicoes no mapa de acordo com o resultado */
+	/* Calcula o dano causado e o dano infringido, verifica se o inimigo morreu e *
+	 * atualiza as posicoes no mapa de acordo com o resultado */
 	damageDone = (*player).attack - (*enemy).defense;
 
 	(*enemy).hp -= damageDone;
