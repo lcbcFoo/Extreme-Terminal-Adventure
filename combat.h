@@ -26,10 +26,10 @@ void verificaXP(Player *player, int xpGanho){
 	if((*player).XP >= (*player).NextLevel){
 		(*player).XP -= (*player).NextLevel;
 		(*player).level++;
-		(*player).attack += (*player).level * BASE_ATTACK / 10;
+		(*player).attack += 1.5 * (*player).level * BASE_ATTACK / 10;
 		(*player).defense += (*player).level * BASE_DEF / 5;
 		(*player).MaxHP += (*player).level * BASE_HP / 10; 
-		(*player).hp += (*player).level * BASE_HP / 10;
+		(*player).hp += (*player).level * BASE_HP / 5;
 		(*player).NextLevel *= 2;
 	}
 }
