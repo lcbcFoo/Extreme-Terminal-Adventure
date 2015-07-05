@@ -18,5 +18,6 @@ The other files are headers used at "load.c".
 To play the game, execute the following lines on the terminal while inside de game directory:
 
 $ chmod a+x launcher
+-------------------------------------------------------------------------------------------------
 $ ./launcher
 
