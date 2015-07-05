@@ -1,5 +1,5 @@
-/* Author: Lucas de Camargo Barros de Castro *
- * Last Modification: 07/03/2015 by Lucas Castro */
+/* Author: ETA Team *
+ * Last Modification: 07/03/2015 by Foo */
 
 
 
@@ -150,6 +150,8 @@ int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies){
 			fread(enemies, sizeof(Enemy), NUM_INIMIGOS, arq);
 	
 			fclose(arq);
+			remove("data.bin");
+			system("clear");
 			return 1;
 		}
 
