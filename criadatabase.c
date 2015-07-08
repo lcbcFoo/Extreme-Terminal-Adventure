@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define QTS_TINHA_ANTES 1
+#define QTS_TINHA_ANTES 2
 #define NUM_ITENS_NOVO 2
 
 typedef struct {
@@ -63,7 +63,7 @@ int main (){
 			return 0;
 		}
 
-	printf("sucesso!\n");
+	printf("sucesso! LEMBRE DE ATUALIZAR O DEFINE COM O NOVO NUMERO DE ITENS!!!!\n");
 
 	fclose(database);
 
