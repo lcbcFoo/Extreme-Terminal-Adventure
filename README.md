@@ -8,6 +8,8 @@ Lucas "Foo" de Castro
 
 Eduardo "Chamyto" Souza
 
+Heitor "Led" Comel
+
 -------------------------------------------------------------------------------------------------
 
 "load.c" is the code which should be compiled in order to get the game executable.
