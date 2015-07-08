@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/04/2015 by Foo */
+ * Last Modification: 07/07/2015 by Foo */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,7 +110,6 @@ int main (){
 	if(gameLoad(&player, map, enemies) == 0){
 		playerInit(&player);
 		mapInit(map, player.y, player.x, enemies);
-		system("clear");
 		comandList();
 	}
 
@@ -118,8 +117,8 @@ int main (){
 	do{
 		print(map, player);
 		scanf(" %c", &comand);
-
-	} while(executeComand(comand, &player, map, enemies));
+		system("clear");
+	}while(executeComand(comand, &player, map, enemies));
 
 	free(enemies);
 
