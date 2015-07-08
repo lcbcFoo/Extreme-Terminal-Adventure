@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/08/2015 by Chams */
+ * Last Modification: 07/08/2015 by Foo */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -68,6 +68,7 @@ typedef struct {
 
 } Map;
 
+/* Struct de itens */
 typedef struct {
     /* Tipos:
      * 1 - arma
@@ -76,6 +77,13 @@ typedef struct {
     int indice, valor, tipo;
     char nome[51];
 } Item;
+
+/* Struct da bag */
+typedef struct {
+
+	Item item;
+	int quantidade, used;
+} Bag;
 
 /* Inclui as bibliotecas que: *
  * inicializa o jogo, *
@@ -100,6 +108,10 @@ typedef struct {
 /* Define tamanho do mapa e quantidade de inimigos */
 #define TAM 10
 #define NUM_INIMIGOS 4
+
+/* Define quantidade de itens e tamanho da bag */
+#define TAM_BAG 5
+#define QUANT_ITENS 2
 
 
 /* To do list: * 
@@ -153,17 +165,39 @@ int main (){
 	Player player;
 	Map map[TAM][TAM];
 	Enemy *enemies;
+	Bag *bag;
+	Item *itens;
+	FILE *database;
 
 	system("clear");
 	
-	/* Aloca o vetor que armazena os inimigos */
+	/* Aloca o vetor que armazena os inimigos e a bag */
 	enemies = malloc(NUM_INIMIGOS * sizeof(Enemy));
+	bag = malloc(TAM_BAG * sizeof(Bag));
+	itens = malloc(QUANT_ITENS * sizeof(Item));
+
+	database = fopen("database.bin", "rb");
+
+	if(database != NULL){
+		fread(itens, sizeof(Item), QUANT_ITENS, database);
+		fclose(database);
+	}
+
+	else{
+		printf("Erro ao ler database!!\n");
+		return 0;
+	}
 
 	/* Carrega ou inicializa um novo jogo */
-	if(gameLoad(&player, map, enemies) == 0){
+	if(gameLoad(&player, map, enemies, bag) == 0){
 		playerInit(&player);
 		mapInit(map, player.y, player.x, enemies);
+		bagInit(bag);
 		comandList();
+		bag[0].item = itens[0];
+		bag[0].used = 1;
+		bag[0].quantidade = 1;
+
 	}
 
 	/* Loop que executa o jogo */
@@ -171,9 +205,11 @@ int main (){
 		print(map, player);
 		comand=getch();
 		system("clear");
-	}while(executeComand(comand, &player, map, enemies));
+	}while(executeComand(comand, &player, map, enemies, bag));
 
 	free(enemies);
+	free(bag);
+	free(itens);
 
 	return 0;
 }
