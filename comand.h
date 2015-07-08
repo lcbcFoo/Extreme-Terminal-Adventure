@@ -105,8 +105,10 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 			return 1;
 		}	
 
-		else if(recebe == 'q')
+		else if(recebe == 'q'){
+			system("clear");
 			return 0;
+		}
 
 		else if(recebe == 'l'){
 			system("clear");
