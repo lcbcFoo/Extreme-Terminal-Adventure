@@ -21,6 +21,10 @@
 #define TAM 10
 #define NUM_INIMIGOS 4
 
+/* Define quantidade de itens e tamanho da bag */
+#define TAM_BAG 5
+#define QUANT_ITENS 2
+
 
 /* Mostra os comandos permitidos para movimentar o personagem */
 void comandList(){
@@ -30,11 +34,12 @@ void comandList(){
 	printf("d - anda para direita/ataca inimigo que esteja na posicao da direita no mapa\n");
 	printf("s - anda para baixo/ataca inimigo que esteja na posicao de baixo no mapa\n");
 	printf("a - anda para esquerda/ataca inimigo que esteja na posicao da esquerda do mapa\n");
+	printf("b - abre o inventario\n");
 	printf("- - acessa o menu do jogo\n\n\n");
 }
 
 /* Salva o jogo */
-int saveGame(Map map[TAM][TAM], Player *player, Enemy *enemies){
+int saveGame(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag * bag){
 
 	int i, j;
 	FILE *arq;
@@ -63,6 +68,11 @@ int saveGame(Map map[TAM][TAM], Player *player, Enemy *enemies){
 				return 0;
 			}
 
+		for(i = 0; i < TAM_BAG; i++)
+			if(!fwrite(&bag[i], sizeof(Bag), 1, arq)){
+				fclose(arq);
+				return 0;
+			}	
 
 		fclose(arq);
 
@@ -73,7 +83,7 @@ int saveGame(Map map[TAM][TAM], Player *player, Enemy *enemies){
 }
 
 /* Menu de comandos de controle sobre o jogo */
-int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
+int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 
 	int flag = 1;
 	char recebe;
@@ -89,7 +99,7 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 		scanf(" %c", &recebe);
 
 		if(recebe == 's'){
-			if(saveGame(map, player, enemies)){
+			if(saveGame(map, player, enemies, bag)){
 				system("clear");
 				printf("\n\nJogo salvo!\n\n");
 			}	
@@ -97,7 +107,7 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 			else
 				printf("O jogo nao pode ser salvo, tente novamente\n\n");
 
-			return menu(map, player, enemies);
+			return menu(map, player, enemies, bag);
 		}
 
 		else if(recebe == 'r'){
@@ -113,7 +123,7 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 		else if(recebe == 'l'){
 			system("clear");
 			comandList();
-			return menu(map, player, enemies);
+			return menu(map, player, enemies, bag);
 		}
 
 	}while(flag);
@@ -121,13 +131,77 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 	return 1;
 }
 
+void usaPot(Bag *bag, Player *player){
+
+	(*player).hp += (*bag).item.valor;
+
+	if((*player).hp > (*player).MaxHP)
+		(*player).hp = (*player).MaxHP;
+
+	(*bag).quantidade--;
+
+	if((*bag).quantidade == 0)
+		(*bag).used = 0;
+}
+
+void printBag(Bag *bag, Player *player){
+
+	int i, flag = 1;
+	char recebe;
+
+	system("clear");
+
+	printf("Bag:\n\n");
+
+	for(i = 0; i < TAM_BAG; i++){
+		if(bag[i].used){
+			flag = 0;
+			printf("%d - %s (%d)\n", i + 1, bag[i].item.nome, bag[i].quantidade);
+
+			if(bag[i].item.tipo == 1)
+				printf("    Dano: %d\n\n", bag[i].item.valor);
+
+			else if(bag[i].item.tipo == 2)
+				printf("    Defesa: %d\n\n", bag[i].item.valor);
+
+			else if(bag[i].item.tipo == 3)
+				printf("    Recupera %d vida\n\n", bag[i].item.valor);
+		}
+	}
+
+	if(flag)
+		printf("Inventario vazio!!\n\n");
+
+	printf("Comandos possiveis: \nDigite o indice do item que deseja usar\nr - retorna ao mapa\n\n");
+
+	flag = 1;
+
+	do{
+		scanf(" %c", &recebe);
+
+		if(recebe == 'r')
+			return;
+
+		else if((recebe - '1' >= 0) && (recebe - '1' < TAM_BAG) && (bag[recebe - '1'].used)){
+			flag = 0;
+
+			if(bag[recebe - '1'].item.tipo == 3)
+				usaPot(&bag[recebe - '1'], player);
+		}
+
+	}while(flag);
+}
+
 /* Executa comandos de controle de personagem ou acessa o menu */
-int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies){
+int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag){
 
 	/* Recebe os comandos durante o jogo e os executa */
 	/* Abre o menu */
 	if(comand == '-')
-		return menu(map, player, enemies);
+		return menu(map, player, enemies, bag);
+
+	else if(comand == 'b')
+		printBag(bag, player);
 
 	/* Comandos de movimento / combate */
 	else if(((*player).x > 0) && (comand == 'a')) {
