@@ -155,6 +155,8 @@ int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies){
 			return 1;
 		}
 
+		system("clear");
+
 		fclose(arq);	
 	}
 
