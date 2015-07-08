@@ -26,6 +26,17 @@ typedef struct {
 
 } Map;
 
+typedef struct {
+    /* Identificador do item */
+    int indice;
+    char nome[51];
+    /* 1 - arma
+     * 2 - armadura
+     * 3 - pot */
+    int tipo;
+    int valor;
+} Item;
+
 /* Inclui as bibliotecas que: *
  * inicializa o jogo, *
  * realiza as funcoes de combate *
