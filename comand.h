@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/04/2015 by Foo */
+ * Last Modification: 07/07/2015 by Foo */
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -89,8 +89,10 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 		scanf(" %c", &recebe);
 
 		if(recebe == 's'){
-			if(saveGame(map, player, enemies))
+			if(saveGame(map, player, enemies)){
+				system("clear");
 				printf("\n\nJogo salvo!\n\n");
+			}	
 
 			else
 				printf("O jogo nao pode ser salvo, tente novamente\n\n");
@@ -98,13 +100,16 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies){
 			return menu(map, player, enemies);
 		}
 
-		else if(recebe == 'r')
+		else if(recebe == 'r'){
+			system("clear");
 			return 1;
+		}	
 
 		else if(recebe == 'q')
 			return 0;
 
 		else if(recebe == 'l'){
+			system("clear");
 			comandList();
 			return menu(map, player, enemies);
 		}
