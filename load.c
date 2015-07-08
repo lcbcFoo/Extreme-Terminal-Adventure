@@ -103,6 +103,8 @@ int main (){
 	Map map[TAM][TAM];
 	Enemy *enemies;
 
+	system("clear");
+	
 	/* Aloca o vetor que armazena os inimigos */
 	enemies = malloc(NUM_INIMIGOS * sizeof(Enemy));
 
