@@ -22,6 +22,10 @@
 #define TAM 10
 #define NUM_INIMIGOS 4
 
+/* Define quantidade de itens e tamanho da bag */
+#define TAM_BAG 5
+#define QUANT_ITENS 2
+
 /* Inicializa o jogador */
 void playerInit(Player *player){
 
@@ -49,6 +53,15 @@ void playerInit(Player *player){
 		aux = rand() % TAM;
 
 	(*player).x = aux;
+}
+
+void bagInit(Bag *bag){
+
+	int i;
+
+	for(i = 0; i < TAM_BAG; i++)
+		bag[i].used = 0;
+
 }
 
 void enemyInit(Enemy *enemy){
@@ -131,7 +144,7 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 }
 
 /* Verfica se existe e carrega partida salva */
-int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies){
+int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag){
 
 	char read;
 	FILE *arq;
@@ -148,6 +161,7 @@ int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies){
 			fread(map, sizeof(Map), TAM * TAM, arq);
 			fread(player, sizeof(Player), 1, arq);
 			fread(enemies, sizeof(Enemy), NUM_INIMIGOS, arq);
+			fread(bag, sizeof(Bag), TAM_BAG, arq);
 	
 			fclose(arq);
 			remove("data.bin");
