@@ -9,8 +9,8 @@
 static struct termios old, new;
 
 /* Initialize new terminal i/o settings */
-void initTermios(int echo) 
-{
+void initTermios(int echo) {
+
     tcgetattr(0, &old); /* grab old terminal i/o settings */
     new = old; /* make new settings same as old settings */
     new.c_lflag &= ~ICANON; /* disable buffered i/o */
@@ -19,14 +19,12 @@ void initTermios(int echo)
 }
 
 /* Restore old terminal i/o settings */
-void resetTermios(void) 
-{
+void resetTermios(void) {
     tcsetattr(0, TCSANOW, &old);
 }
 
 /* Read 1 character - echo defines echo mode */
-char getch_(int echo) 
-{
+char getch_(int echo) {
     char ch;
     initTermios(echo);
     ch = getchar();
@@ -35,14 +33,12 @@ char getch_(int echo)
 }
 
 /* Read 1 character without echo */
-char getch(void) 
-{
+char getch(void) {
     return getch_(0);
 }
 
 /* Read 1 character with echo */
-char getche(void) 
-{
+char getche(void) {
     return getch_(1);
 }
 
@@ -85,6 +81,7 @@ typedef struct {
 	int quantidade, used;
 } Bag;
 
+
 /* Inclui as bibliotecas que: *
  * inicializa o jogo, *
  * realiza as funcoes de combate *
@@ -113,12 +110,6 @@ typedef struct {
 #define TAM_BAG 5
 #define QUANT_ITENS 2
 
-
-/* To do list: * 
- *
- * - ELABORAR UMA FORMA DE ADICIONAR CLASSES AOS INIMIGOS, DEPOIS AO PLAYER * 
- *
- * - PENSAR SOBRE NOVOS MOVIMENTOS/ATAQUES (POR EXEMPLO, RANGED) */
 
 
 /* Imprime o campo e os stats do jogador */
@@ -203,7 +194,7 @@ int main (){
 	/* Loop que executa o jogo */
 	do{
 		print(map, player);
-		comand=getch();
+		comand = getch();
 		system("clear");
 	}while(executeComand(comand, &player, map, enemies, bag));
 
