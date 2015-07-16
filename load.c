@@ -1,10 +1,11 @@
 /* Author: ETA Team *
- * Last Modification: 07/08/2015 by Foo */
+ * Last Modification: 07/16/2015 by Foo */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <termios.h>
+#include <string.h>
 
 static struct termios old, new;
 
@@ -60,7 +61,7 @@ typedef struct {
 /* Define o struct do mapa */
 typedef struct {
 
-	int wall, player, used, enemyIndice;
+	int wall, player, used, enemyIndice, itemIndice;
 
 } Map;
 
@@ -134,6 +135,9 @@ void print(Map map[TAM][TAM], Player controller){
 				else if(map[i][j].enemyIndice >= 0)
 					printf("E ");
 
+				else if(map[i][j].itemIndice >= 0)
+					printf("I ");
+
 				else
 					printf("  ");
 			}
@@ -196,7 +200,7 @@ int main (){
 		print(map, player);
 		comand = getch();
 		system("clear");
-	}while(executeComand(comand, &player, map, enemies, bag));
+	}while(executeComand(comand, &player, map, enemies, bag, itens));
 
 	free(enemies);
 	free(bag);
