@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/07/2015 by Foo */
+ * Last Modification: 07/16/2015 by Foo */
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -131,6 +131,7 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 	return 1;
 }
 
+/* Funcao que usa pocoes */
 void usaPot(Bag *bag, Player *player){
 
 	(*player).hp += (*bag).item.valor;
@@ -144,6 +145,7 @@ void usaPot(Bag *bag, Player *player){
 		(*bag).used = 0;
 }
 
+/* Funcao que printa o que tem dentro da mochila e permite que itens sejam usados */
 void printBag(Bag *bag, Player *player){
 
 	int i, flag = 1;
@@ -192,8 +194,45 @@ void printBag(Bag *bag, Player *player){
 	}while(flag);
 }
 
+/* Funcao que pega o item de uma posicao do mapa */
+void pegaItem(Player *player, Item item, Map *position, Bag *bag){
+
+	int i, flag = 1;
+
+	/* Verifica se voce ja tem aquele item */
+	for(i = 0; (i < TAM_BAG) && (flag); i++){
+		if((bag[i].used) && (strcmp(bag[i].item.nome, item.nome) == 0)){
+			flag = 0;
+			bag[i].quantidade++;
+			bag[i].used = 1;
+			(*position).itemIndice = -1;
+			(*position).used = 0;
+		}
+	}
+
+	/* Verifica se existe uma posicao vazia na bag */
+	for(i = 0; (i < TAM_BAG) && (flag); i++){
+		if(bag[i].used == 0){
+			bag[i].item = item;
+			bag[i].quantidade = 1;
+			bag[i].used = 1;
+			flag = 0;
+			(*position).used = 0;
+			(*position).itemIndice = -1;
+		}
+	}
+
+	/* Imprime se vc pegou o item ou se sua bag tava cheia */
+	if(flag){
+		printf("Seu inventario esta cheio!!\n\n");
+	}
+
+	else
+		printf("Voce encontrou um item: %s\n\n", item.nome);
+}
+
 /* Executa comandos de controle de personagem ou acessa o menu */
-int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag){
+int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag, Item *itens){
 
 	/* Recebe os comandos durante o jogo e os executa */
 	/* Abre o menu */
@@ -221,6 +260,11 @@ int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies
 			combate(player, &enemies[map[(*player).y][(*player).x - 1].enemyIndice], 
 					&map[(*player).y][(*player).x - 1]);	
 
+		/* Caso em que ha um item na posicao */
+		else if(map[(*player).y][(*player).x - 1].itemIndice != -1)
+			pegaItem(player, itens[map[(*player).y][(*player).x - 1].itemIndice], 
+					&map[(*player).y][(*player).x - 1], bag);
+
 		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
 		return enemyAction(player, map, enemies);
 	}
@@ -240,6 +284,11 @@ int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies
 		else if(map[(*player).y][(*player).x + 1].enemyIndice != -1)
 			combate(player, &enemies[map[(*player).y][(*player).x + 1].enemyIndice], 
 					&map[(*player).y][(*player).x + 1]);	
+
+		/* Caso em que ha um item na posicao */
+		else if(map[(*player).y][(*player).x + 1].itemIndice != -1)
+			pegaItem(player, itens[map[(*player).y][(*player).x + 1].itemIndice], 
+					&map[(*player).y][(*player).x + 1], bag);
 	
 		return enemyAction(player, map, enemies);
 	}
@@ -259,6 +308,11 @@ int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies
 			combate(player, &enemies[map[(*player).y - 1][(*player).x].enemyIndice], 
 					&map[(*player).y - 1][(*player).x]);
 
+		/* Caso em que ha um item na posicao */
+		else if(map[(*player).y - 1][(*player).x].itemIndice != -1)
+			pegaItem(player, itens[map[(*player).y - 1][(*player).x].itemIndice], 
+					&map[(*player).y - 1][(*player).x], bag);
+
 		return enemyAction(player, map, enemies);
 	}
 	
@@ -276,6 +330,11 @@ int executeComand(char comand, Player *player, Map map[TAM][TAM], Enemy *enemies
 		else if(map[(*player).y + 1][(*player).x].enemyIndice != -1)
 			combate(player, &enemies[map[(*player).y + 1][(*player).x].enemyIndice], 
 					&map[(*player).y + 1][(*player).x]);
+
+		/* Caso em que ha um item na posicao */
+		else if(map[(*player).y + 1][(*player).x].itemIndice != -1)
+			pegaItem(player, itens[map[(*player).y + 1][(*player).x].itemIndice], 
+					&map[(*player).y + 1][(*player).x], bag);
 	
 		return enemyAction(player, map, enemies);
 	}
