@@ -1,3 +1,8 @@
+/* Author: ETA Team *
+ * Last Modification: 07/16/2015 by Foo */
+
+
+
 #include <stdio.h>
 
 /* Struct de itens */
@@ -20,7 +25,8 @@ int main(){
 
 	while(fread(&item, sizeof(Item), 1, arq)){
 		count++;
-		printf("nome: %s\nvalor: %d\ntipo: %d\n", item.nome, item.valor, item.tipo);
+		printf("Nome: %s\nValor: %d\nTipo: %d\nIndice: %d\n\n", item.nome, item.valor, 
+																item.tipo, count - 1);
 	}
 
 	fclose(arq);
