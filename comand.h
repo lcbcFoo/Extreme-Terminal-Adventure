@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/16/2015 by Foo */
+ * Last Modification: 07/17/2015 by Foo */
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -7,8 +7,8 @@
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 5
-#define BASE_DEF 3
+#define BASE_ATTACK 3
+#define BASE_DEF 1
 #define BASE_NEXT_LEVEL 10
 
 /* Define stats de cada inimigo */
@@ -23,7 +23,7 @@
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 2
+#define QUANT_ITENS 5
 
 
 /* Mostra os comandos permitidos para movimentar o personagem */
@@ -150,8 +150,13 @@ void printBag(Bag *bag, Player *player){
 
 	int i, flag = 1;
 	char recebe;
+	Item aux;
 
 	system("clear");
+
+	printf("Voce esta equipado com: \n\n");
+	printf("%s\n    Dano = %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
+	printf("%s\n    Armadura = %d\n\n", (*player).gear.nome, (*player).gear.valor);
 
 	printf("Bag:\n\n");
 
@@ -187,8 +192,28 @@ void printBag(Bag *bag, Player *player){
 		else if((recebe - '1' >= 0) && (recebe - '1' < TAM_BAG) && (bag[recebe - '1'].used)){
 			flag = 0;
 
+			/* Usa pot */
 			if(bag[recebe - '1'].item.tipo == 3)
 				usaPot(&bag[recebe - '1'], player);
+
+			/* Troca de arma */
+			else if(bag[recebe - '1'].item.tipo == 1){
+				(*player).attack -= (*player).weapon.valor;
+				aux = bag[recebe - '1'].item;
+				bag[recebe - '1'].item = (*player).weapon;
+				(*player).weapon = aux;
+				(*player).attack += (*player).weapon.valor;
+			}
+
+			/* Troca de armadura */
+			else{
+				(*player).defense -= (*player).gear.valor;
+				aux = bag[recebe - '1'].item;
+				bag[recebe -'1'].item = (*player).gear;
+				(*player).gear = aux;
+				(*player).defense += (*player).gear.valor;
+			}
+
 		}
 
 	}while(flag);
