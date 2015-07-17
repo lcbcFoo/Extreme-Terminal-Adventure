@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/08/2015 by Foo */
+ * Last Modification: 07/16/2015 by Foo */
 
 
 
@@ -100,6 +100,11 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 		map[TAM - 1][i].enemyIndice = -1;
 		map[i][0].enemyIndice = -1;
 		map[i][TAM - 1].enemyIndice = -1;
+
+		map[0][i].itemIndice = -1;
+		map[TAM - 1][i].itemIndice = -1;
+		map[i][0].itemIndice = -1;
+		map[i][TAM - 1].itemIndice = -1;
 	}
 
 	/* Inicializa o restantes das posicoes como vazias */
@@ -109,6 +114,7 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 			map[i][j].player = 0;
 			map[i][j].used = 0;
 			map[i][j].enemyIndice = -1;
+			map[i][j].itemIndice = -1;
 		}	
 
 	/* Insere o jogador no mapa */
@@ -140,6 +146,26 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 				enemyInit(&enemies[i]);
 			}
 		}	
+	}
+
+	flag = 1;
+
+	while(flag){
+		aux1 = -1;
+		aux2 = -1;
+
+		while(((aux1 < 1) || (aux1 >= TAM - 1)) && (flag))
+			aux1 = rand() % TAM;
+
+		while(((aux2 < 1) || (aux2 >= TAM - 1)) && (flag))
+			aux2 = rand() % TAM;
+
+		if(map[aux1][aux2].used == 0){
+			map[aux1][aux2].used = 1;
+			map[aux1][aux2].itemIndice = 1;
+			flag = 0;
+
+		}
 	}
 }
 
