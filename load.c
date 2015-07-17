@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/16/2015 by Foo */
+ * Last Modification: 07/17/2015 by Foo */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,11 +43,21 @@ char getche(void) {
     return getch_(1);
 }
 
+/* Struct de itens */
+typedef struct {
+    /* Tipos:
+     * 1 - arma
+     * 2 - armadura
+     * 3 - pot */
+    int indice, valor, tipo;
+    char nome[51];
+} Item;
 
  /* Define o struct do player */
 typedef struct {
 
 	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP;
+	Item weapon, gear;
 
 } Player;
 
@@ -64,16 +74,6 @@ typedef struct {
 	int wall, player, used, enemyIndice, itemIndice;
 
 } Map;
-
-/* Struct de itens */
-typedef struct {
-    /* Tipos:
-     * 1 - arma
-     * 2 - armadura
-     * 3 - pot */
-    int indice, valor, tipo;
-    char nome[51];
-} Item;
 
 /* Struct da bag */
 typedef struct {
@@ -93,8 +93,8 @@ typedef struct {
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 5
-#define BASE_DEF 3
+#define BASE_ATTACK 3
+#define BASE_DEF 1
 #define BASE_NEXT_LEVEL 10
 
 /* Define stats de cada inimigo */
@@ -109,7 +109,7 @@ typedef struct {
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 2
+#define QUANT_ITENS 5
 
 
 
@@ -150,7 +150,8 @@ void print(Map map[TAM][TAM], Player controller){
 	}	
 	printf("\n\n");
 
-	printf("HP: %d/%d\nLevel: %d\nXP: %d/%d\n\n\n", controller.hp, controller.MaxHP, controller.level, controller.XP, controller.NextLevel);
+	printf("HP: %d/%d\nLevel: %d\nXP: %d/%d\n", controller.hp, controller.MaxHP, controller.level, controller.XP, controller.NextLevel);
+	printf("Attack: %d\nDefense: %d\n\n\n", controller.attack, controller.defense);
 }
 
 
@@ -185,7 +186,7 @@ int main (){
 
 	/* Carrega ou inicializa um novo jogo */
 	if(gameLoad(&player, map, enemies, bag) == 0){
-		playerInit(&player);
+		playerInit(&player, itens);
 		mapInit(map, player.y, player.x, enemies);
 		bagInit(bag);
 		comandList();
