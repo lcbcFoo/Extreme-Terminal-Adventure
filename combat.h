@@ -1,10 +1,10 @@
 /* Author: ETA Team *
- * Last Modification: 07/16/2015 by Foo */
+ * Last Modification: 07/17/2015 by Foo */
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 5
-#define BASE_DEF 3
+#define BASE_ATTACK 3
+#define BASE_DEF 1
 #define BASE_NEXT_LEVEL 10
 
 /* Define stats de cada inimigo */
