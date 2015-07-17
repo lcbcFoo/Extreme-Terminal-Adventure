@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/16/2015 by Foo */
+ * Last Modification: 07/17/2015 by Foo */
 
 
 
@@ -8,8 +8,8 @@
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 5
-#define BASE_DEF 3
+#define BASE_ATTACK 3
+#define BASE_DEF 1
 #define BASE_NEXT_LEVEL 10
 
 /* Define stats de cada inimigo */
@@ -24,21 +24,23 @@
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 2
+#define QUANT_ITENS 5
 
 /* Inicializa o jogador */
-void playerInit(Player *player){
+void playerInit(Player *player, Item *itens){
 
 	int aux = -1;
 
 	/* Inicializa os stas do jogador com os stats base */
 	(*player).hp = BASE_HP;
-	(*player).defense = BASE_DEF;
-	(*player).attack = BASE_ATTACK;
 	(*player).level = 1;
 	(*player).XP = 0;
 	(*player).NextLevel = BASE_NEXT_LEVEL;
 	(*player).MaxHP = BASE_HP;
+	(*player).weapon = itens[2];
+	(*player).attack = BASE_ATTACK + (*player).weapon.valor;
+	(*player).gear = itens[3];
+	(*player).defense = BASE_DEF + (*player).gear.valor;
 
 	srand(time(NULL));
 
@@ -163,6 +165,26 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 		if(map[aux1][aux2].used == 0){
 			map[aux1][aux2].used = 1;
 			map[aux1][aux2].itemIndice = 0;
+			flag = 0;
+
+		}
+	}
+
+	flag = 1;
+
+	while(flag){
+		aux1 = -1;
+		aux2 = -1;
+
+		while(((aux1 < 1) || (aux1 >= TAM - 1)) && (flag))
+			aux1 = rand() % TAM;
+
+		while(((aux2 < 1) || (aux2 >= TAM - 1)) && (flag))
+			aux2 = rand() % TAM;
+
+		if(map[aux1][aux2].used == 0){
+			map[aux1][aux2].used = 1;
+			map[aux1][aux2].itemIndice = 4;
 			flag = 0;
 
 		}
