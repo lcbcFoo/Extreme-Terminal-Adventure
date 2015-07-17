@@ -162,7 +162,7 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 
 		if(map[aux1][aux2].used == 0){
 			map[aux1][aux2].used = 1;
-			map[aux1][aux2].itemIndice = 1;
+			map[aux1][aux2].itemIndice = 0;
 			flag = 0;
 
 		}
