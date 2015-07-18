@@ -247,7 +247,7 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 		}
 	}
 
-	/* Verifica se existe uma posicao vazia na bag */
+	/* Caso voce ainda nao tenha, verifica se existe uma posicao vazia na bag */
 	for(i = 0; (i < TAM_BAG) && (flag); i++){
 		if(bag[i].used == 0){
 			bag[i].item = item;
