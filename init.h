@@ -150,6 +150,8 @@ void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
 		}	
 	}
 
+	/* DAQUI PRA BAIXO NAO EH IMPORTANTE!!! USEI PARA TESTAR A PEGA DOS ITENS *
+	 * O primeiro while coloca uma pot no mapa e o segundo poe uma espada cega */
 	flag = 1;
 
 	while(flag){
