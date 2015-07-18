@@ -97,7 +97,7 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 
 	/* Repete o loop ateh recebr um comando valido */
 	do{
-		scanf(" %c", &recebe);
+		recebe = getch();
 
 		/* Chama a funcao que salva o jogo */
 		if(recebe == 's'){
@@ -196,7 +196,7 @@ void printBag(Bag *bag, Player *player){
 
 	/* Recebe um comando de utilizacao de item ou para voltar ao mapa */
 	do{
-		scanf(" %c", &recebe);
+		recebe = getch();
 
 		if(recebe == 'r')
 			return;
@@ -205,8 +205,12 @@ void printBag(Bag *bag, Player *player){
 			flag = 0;
 
 			/* Usa pot */
-			if(bag[recebe - '1'].item.tipo == 3)
+			if(bag[recebe - '1'].item.tipo == 3){
 				usaPot(&bag[recebe - '1'], player);
+				system("clear");
+				printf("Voce utilizou uma %s e recuperou %d de vida!\n\n\n", bag[recebe-'1'].item.nome,
+																			bag[recebe-'1'].item.valor);
+			}
 
 			/* Troca de arma */
 			else if(bag[recebe - '1'].item.tipo == 1){
@@ -215,6 +219,8 @@ void printBag(Bag *bag, Player *player){
 				bag[recebe - '1'].item = (*player).weapon;
 				(*player).weapon = aux;
 				(*player).attack += (*player).weapon.valor;
+				system("clear");
+				printf("Voce agora esta usando %s\n\n\n", (*player).weapon.nome);
 			}
 
 			/* Troca de armadura */
@@ -224,6 +230,8 @@ void printBag(Bag *bag, Player *player){
 				bag[recebe -'1'].item = (*player).gear;
 				(*player).gear = aux;
 				(*player).defense += (*player).gear.valor;
+				system("clear");
+				printf("Voce agora esta usando %s\n\n\n", (*player).gear.nome);				
 			}
 
 		}
