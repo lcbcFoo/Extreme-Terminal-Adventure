@@ -39,9 +39,11 @@ int enemyAttack(Player *player, Enemy *enemy){
 
 	int damageTaken;
 
+	/* Verifica o dano recebido */
 	damageTaken = (*enemy).attack - (*player).defense;
 	(*player).hp -= damageTaken;
 
+	/* Indica o danop recebido e verifica se vc morreu*/
 	printf("Inimigo causou a voce %d de dano!\n", damageTaken);
 
 	if((*player).hp <= 0){
