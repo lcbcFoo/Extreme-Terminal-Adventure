@@ -95,9 +95,11 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 	printf("q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
 	printf("l - lista de comandos de jogo\n");
 
+	/* Repete o loop ateh recebr um comando valido */
 	do{
 		scanf(" %c", &recebe);
 
+		/* Chama a funcao que salva o jogo */
 		if(recebe == 's'){
 			if(saveGame(map, player, enemies, bag)){
 				system("clear");
@@ -110,16 +112,19 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 			return menu(map, player, enemies, bag);
 		}
 
+		/* Retorna ao mapa */
 		else if(recebe == 'r'){
 			system("clear");
 			return 1;
 		}	
 
+		/* Fecha o jogo */
 		else if(recebe == 'q'){
 			system("clear");
 			return 0;
 		}
 
+		/* Mostra os comandos disponiveis */
 		else if(recebe == 'l'){
 			system("clear");
 			comandList();
@@ -134,11 +139,14 @@ int menu(Map map[TAM][TAM], Player *player, Enemy *enemies, Bag *bag){
 /* Funcao que usa pocoes */
 void usaPot(Bag *bag, Player *player){
 
+	/* Recupera a vida */
 	(*player).hp += (*bag).item.valor;
 
+	/* Nao permite que a vida maxima seja ultrapassada */
 	if((*player).hp > (*player).MaxHP)
 		(*player).hp = (*player).MaxHP;
 
+	/* Retira uma pot da bag */
 	(*bag).quantidade--;
 
 	if((*bag).quantidade == 0)
@@ -154,11 +162,14 @@ void printBag(Bag *bag, Player *player){
 
 	system("clear");
 
+	/* Imprime os equipamentos utilizados no momento */
 	printf("Voce esta equipado com: \n\n");
 	printf("%s\n    Dano = %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
-	printf("%s\n    Armadura = %d\n\n", (*player).gear.nome, (*player).gear.valor);
+	printf("%s\n    Armadura = %d\n\n\n\n", (*player).gear.nome, (*player).gear.valor);
 
-	printf("Bag:\n\n");
+
+	/* Imprime os itens na mochila */
+	printf("Itens na mochila:\n\n");
 
 	for(i = 0; i < TAM_BAG; i++){
 		if(bag[i].used){
@@ -183,6 +194,7 @@ void printBag(Bag *bag, Player *player){
 
 	flag = 1;
 
+	/* Recebe um comando de utilizacao de item ou para voltar ao mapa */
 	do{
 		scanf(" %c", &recebe);
 
