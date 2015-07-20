@@ -198,8 +198,10 @@ void printBag(Bag *bag, Player *player){
 	do{
 		recebe = getch();
 
-		if(recebe == 'r')
+		if(recebe == 'r'){
+			system("clear");
 			return;
+		}
 
 		else if((recebe - '1' >= 0) && (recebe - '1' < TAM_BAG) && (bag[recebe - '1'].used)){
 			flag = 0;
