@@ -88,7 +88,6 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 			if(nivel.mapa[i][j].enemyIndice >= 0){
 				enemies[nivel.mapa[i][j].enemyIndice].y = i;
 				enemies[nivel.mapa[i][j].enemyIndice].x = j;
-				printf("Inimigo ok\n");
 			}
 }
 
