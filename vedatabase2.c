@@ -8,14 +8,14 @@
 /* Define o struct do mapa */
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice, stairs;
+	int wall, player, used, enemyIndice, itemIndice,stairs;
 
 } Map;
 
 typedef struct{
 
 	int nivel, inimigos, tamI, tamJ, indice;
-	Map mapa[100][100]; 
+	Map mapa[30][30]; 
 } Nivel;
 
 int main (){
