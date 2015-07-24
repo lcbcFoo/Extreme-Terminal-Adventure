@@ -21,6 +21,7 @@ void verificaXP(Player *player, int xpGanho){
 
 	/* Verifica se o jogador upou e atualiza os stats do jogador */
 	if((*player).XP >= (*player).NextLevel){
+		printf("Parabens! Voce atingiu o level %d\n", (*player).level + 1);
 		(*player).XP -= (*player).NextLevel;
 		(*player).level++;
 		(*player).attack += 1.5 * (*player).level * BASE_ATTACK / 10;
