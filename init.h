@@ -89,6 +89,7 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 				enemies[nivel.mapa[i][j].enemyIndice].y = i;
 				enemies[nivel.mapa[i][j].enemyIndice].x = j;
 			}
+			
 }
 
 /* Verfica se existe e carrega partida salva */
