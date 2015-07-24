@@ -15,13 +15,12 @@ typedef struct {
 typedef struct{
 
 	int nivel, inimigos, tamI, tamJ, indice;
-	Map mapa[100][100]; 
+	Map mapa[30][30]; 
 } Nivel;
-
 /* Recebe um mapa novo */
 void RecebeMapa(Nivel *nivel, int mapas, int next){
 
-	int i, j, count, aux, m, n, recebe;
+	int i, j, count, aux, m, n, recebe, count2 = 0;
 	char comand;
 
 	for(count = 0; count < mapas; count++){
@@ -66,8 +65,8 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 				}
 
 				else if(recebe == 2){
-					nivel[count].mapa[i][j].used = 0;
-					nivel[count].mapa[i][j].enemyIndice = nivel[count].nivel;
+					nivel[count].mapa[i][j].used = 1;
+					nivel[count].mapa[i][j].enemyIndice = count2++;
 					nivel[count].mapa[i][j].itemIndice = -1;
 					nivel[count].mapa[i][j].player = 0;
 					nivel[count].mapa[i][j].wall = 0;
@@ -92,8 +91,8 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 				else if(recebe == 4){
 
 					nivel[count].mapa[i][j].used = 1;
-					nivel[count].mapa[i][j].enemyIndice = 0;
-					nivel[count].mapa[i][j].itemIndice = 0;
+					nivel[count].mapa[i][j].enemyIndice = -1;
+					nivel[count].mapa[i][j].itemIndice = -1;
 					nivel[count].mapa[i][j].player = 0;
 					nivel[count].mapa[i][j].wall = 0;
 					nivel[count].mapa[i][j].stairs = -1;
@@ -102,8 +101,8 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 				else {
 
 					nivel[count].mapa[i][j].used = 1;
-					nivel[count].mapa[i][j].enemyIndice = 0;
-					nivel[count].mapa[i][j].itemIndice = 0;
+					nivel[count].mapa[i][j].enemyIndice = -1;
+					nivel[count].mapa[i][j].itemIndice = -1;
 					nivel[count].mapa[i][j].player = 0;
 					nivel[count].mapa[i][j].wall = 0;
 					nivel[count].mapa[i][j].stairs = 1;
