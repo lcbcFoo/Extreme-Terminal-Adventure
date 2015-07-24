@@ -277,7 +277,7 @@ void nextNivel(Nivel *niveis, Player *player){
 
 
 	(*player).nivelAtual++;
-
+	printf("Voce desceu para o nivel %d da dungeon\n", (*player).nivelAtual + 1);
 	atual = (*player).nivelAtual;
 
 	for(i = 0; (i < niveis[atual].tamI) && (!flag); i++)
@@ -295,9 +295,8 @@ void returnNivel(Nivel *niveis, Player *player){
 
 	int i, j, atual, flag = 0;
 
-
 	(*player).nivelAtual--;
-
+	printf("Voce subiu para o nivel %d da dungeon\n", (*player).nivelAtual + 1);
 	atual = (*player).nivelAtual;
 
 	for(i = 0; (i < niveis[atual].tamI) && (!flag); i++)
