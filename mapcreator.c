@@ -176,9 +176,11 @@ int main (){
 		return 0;
 	}
 
+	/* Conta quantos mapas tem na database para acertar o indice de mapas novos */
 	while(fread(&auxMapa, sizeof(Nivel), 1, arq))
 		next++;
 
+	/* Cria novos mapas */
 	if(comand == '1'){
 
 		printf("Quantos mapas vc criara?\n");
@@ -191,6 +193,7 @@ int main (){
 
 	}
 
+	/* Substitui um mapa */
 	else if(comand == '2'){
 
 		if(next == 0)
@@ -218,17 +221,24 @@ int main (){
 	ESTOU COLOCANDO ISSO AQUI PORQUE SEI QUE VAI CAUSAR PROBLEMAS NO FUTURO 
 	=================================================================================================*/
 
+	/* Apaga a bagaca inteira */
 	else if(comand == '3'){
 		fclose(arq);
 
-		arq = fopen("database2.bin", "wb");
+		printf("Certeza que quer apagar tudo? (y/n)\n");
+		scanf(" %c", &comand);
 
-		if(arq == NULL){
-			printf("Merda ao abrir a database\n");
-			return 0;
+		if(comand == 'y'){
+
+			arq = fopen("database2.bin", "wb");
+
+			if(arq == NULL){
+				printf("Merda ao abrir a database\n");
+				return 0;
+			}
+
+			printf("Database limpinha, espero que nao tenha sido burrada sua cara\n");
 		}
-
-		printf("Database limpinha, espero que nao tenha sido burrada sua cara\n");
 	}
 
 	return 0;
