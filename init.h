@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/17/2015 by Foo */
+ * Last Modification: 07/22/2015 by Foo */
 
 
 
@@ -18,16 +18,12 @@
 #define ENEMY_1_BASE_DEF 3
 #define ENEMY_1_XP 11
 
-/* Define tamanho do mapa e quantidade de inimigos */
-#define TAM 10
-#define NUM_INIMIGOS 4
-
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
 #define QUANT_ITENS 5
 
 /* Inicializa o jogador */
-void playerInit(Player *player, Item *itens){
+void playerInit(Player *player, Item *itens, Nivel *nivel){
 
 	int aux = -1;
 
@@ -41,20 +37,27 @@ void playerInit(Player *player, Item *itens){
 	(*player).attack = BASE_ATTACK + (*player).weapon.valor;
 	(*player).gear = itens[3];
 	(*player).defense = BASE_DEF + (*player).gear.valor;
+	(*player).nivelAtual = 0;
 
 	srand(time(NULL));
 
-	/* Cria a posicao que o jogador sera colocado no mapa */
-	while((aux < 1) || (aux >= TAM - 1))
-		aux = rand() % TAM;	
+	do{
+		/* Cria a posicao que o jogador sera colocado no mapa */
+		while((aux < 1) || (aux >= (*nivel).tamI - 1))
+			aux = rand() % (*nivel).tamI;	
 
-	(*player).y = aux;
-	aux = -1;
+		(*player).y = aux;
+		aux = -1;
 
-	while((aux < 1) || (aux >= TAM - 1))
-		aux = rand() % TAM;
+		while((aux < 1) || (aux >= (*nivel).tamJ - 1))
+			aux = rand() % (*nivel).tamJ;
 
-	(*player).x = aux;
+		(*player).x = aux;
+
+	}while((*nivel).mapa[(*player).y][(*player).x].used);
+
+	(*nivel).mapa[(*player).y][(*player).x].used = 1;
+	(*nivel).mapa[(*player).y][(*player).x].player = 1;
 }
 
 void bagInit(Bag *bag){
@@ -76,130 +79,29 @@ void enemyInit(Enemy *enemy){
 	(*enemy).givenXP = ENEMY_1_XP;
 }
 
-/* Inicializa o mapa */
-void mapInit(Map map[TAM][TAM], int linha, int coluna, Enemy *enemies){
+void enemyPositions(Nivel nivel, Enemy *enemies){
 
-	int i, j, aux1 = -1, aux2 = -1, flag;
+	int i, j;
 
-	/* Inicializa as beiradas do mapa com muros */
-	for(i = 0; i < TAM; i++){
-		map[0][i].wall = 1;
-		map[TAM - 1][i].wall = 1;
-		map[i][0].wall = 1;
-		map[i][TAM - 1].wall = 1;
-
-		map[0][i].used = 1;
-		map[TAM - 1][i].used = 1;
-		map[i][0].used = 1;
-		map[i][TAM - 1].used = 1;
-
-		map[0][i].player = 0;
-		map[TAM - 1][i].player = 0;
-		map[i][0].player = 0;
-		map[i][TAM - 1].player = 0;
-
-		map[0][i].enemyIndice = -1;
-		map[TAM - 1][i].enemyIndice = -1;
-		map[i][0].enemyIndice = -1;
-		map[i][TAM - 1].enemyIndice = -1;
-
-		map[0][i].itemIndice = -1;
-		map[TAM - 1][i].itemIndice = -1;
-		map[i][0].itemIndice = -1;
-		map[i][TAM - 1].itemIndice = -1;
-	}
-
-	/* Inicializa o restantes das posicoes como vazias */
-	for(i = 1; i < TAM - 1; i++)
-		for(j = 1; j < TAM - 1; j++){
-			map[i][j].wall = 0;
-			map[i][j].player = 0;
-			map[i][j].used = 0;
-			map[i][j].enemyIndice = -1;
-			map[i][j].itemIndice = -1;
-		}	
-
-	/* Insere o jogador no mapa */
-	map[linha][coluna].player = 1;
-	map[linha][coluna].used = 1;
-
-	/* Insere os inimigos no mapa */
-	for(i = 0; i < NUM_INIMIGOS; i++){
-		flag = 1;
-		
-		while(flag){
-			aux1 = -1;
-			aux2 = -1;
-
-			while(((aux1 < 1) || (aux1 >= TAM - 1)) && (flag))
-				aux1 = rand() % TAM;
-
-			while(((aux2 < 1) || (aux2 >= TAM - 1)) && (flag))
-				aux2 = rand() % TAM;
-
-			if(map[aux1][aux2].used == 0){
-				enemies[i].y = aux1;
-				enemies[i].x = aux2;
-
-				map[aux1][aux2].used = 1;
-				map[aux1][aux2].enemyIndice = i;
-				flag = 0;
-
-				enemyInit(&enemies[i]);
+	for(i = 0; i < nivel.tamI; i++)
+		for(j = 0; j < nivel.tamJ; j++)
+			if(nivel.mapa[i][j].enemyIndice >= 0){
+				enemies[nivel.mapa[i][j].enemyIndice].y = i;
+				enemies[nivel.mapa[i][j].enemyIndice].x = j;
+				printf("Inimigo ok\n");
 			}
-		}	
-	}
-
-	/* DAQUI PRA BAIXO NAO EH IMPORTANTE!!! USEI PARA TESTAR A PEGA DOS ITENS *
-	 * O primeiro while coloca uma pot no mapa e o segundo poe uma espada cega */
-	flag = 1;
-
-	while(flag){
-		aux1 = -1;
-		aux2 = -1;
-
-		while(((aux1 < 1) || (aux1 >= TAM - 1)) && (flag))
-			aux1 = rand() % TAM;
-
-		while(((aux2 < 1) || (aux2 >= TAM - 1)) && (flag))
-			aux2 = rand() % TAM;
-
-		if(map[aux1][aux2].used == 0){
-			map[aux1][aux2].used = 1;
-			map[aux1][aux2].itemIndice = 0;
-			flag = 0;
-
-		}
-	}
-
-	flag = 1;
-
-	while(flag){
-		aux1 = -1;
-		aux2 = -1;
-
-		while(((aux1 < 1) || (aux1 >= TAM - 1)) && (flag))
-			aux1 = rand() % TAM;
-
-		while(((aux2 < 1) || (aux2 >= TAM - 1)) && (flag))
-			aux2 = rand() % TAM;
-
-		if(map[aux1][aux2].used == 0){
-			map[aux1][aux2].used = 1;
-			map[aux1][aux2].itemIndice = 4;
-			flag = 0;
-
-		}
-	}
 }
 
 /* Verfica se existe e carrega partida salva */
-int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag){
 
+/* NAO ESTA FUNCIONANDO, NAO TENTE CARREGAR UM JOGO SALVO */
+int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
+
+	int i;
 	char read;
 	FILE *arq;
 
-	arq = fopen("data.bin", "r");
+	arq = fopen("data.bin", "rb");
 
 	/* Caso o arquivo de salvar o jogo exista, permite que o jogo seja carregado *
 	 * caso contrario retorna 0 e cria um novo mapa */
@@ -208,11 +110,14 @@ int gameLoad(Player *player, Map map[TAM][TAM], Enemy *enemies, Bag *bag){
 		scanf(" %c", &read);
 
 		if(read == 'y'){
-			fread(map, sizeof(Map), TAM * TAM, arq);
+			fread(niveis, n * sizeof(Nivel), 1, arq);
 			fread(player, sizeof(Player), 1, arq);
-			fread(enemies, sizeof(Enemy), NUM_INIMIGOS, arq);
+
+			for(i = 0; i < n; i++)
+				fread(&enemies[i], niveis[i].inimigos * sizeof(Enemy), 1, arq);
+			
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
-	
+
 			fclose(arq);
 			remove("data.bin");
 			system("clear");
