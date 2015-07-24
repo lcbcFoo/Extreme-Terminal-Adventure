@@ -13,9 +13,6 @@
 #define ENEMY_1_BASE_DEF 3
 #define ENEMY_1_XP 11
 
-/* Define tamanho do mapa e quantidade de inimigos */
-#define TAM 10
-#define NUM_INIMIGOS 4
 
 /* Funcao que recebe XP e verifica se o personagem upou */
 void verificaXP(Player *player, int xpGanho){
@@ -55,42 +52,42 @@ int enemyAttack(Player *player, Enemy *enemy){
 }
 
 /* Funcao que movimenta os inimigos */
-int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
+int enemyAction(Player *player, Nivel *nivel, Enemy *enemies){
 
 	int i, aux, x, y, flag;
 
 	srand(time(NULL));
 
 	/* Para cada inimigo */
-	for(i = 0; i < NUM_INIMIGOS; i++){
+	for(i = 0; i < (*nivel).inimigos; i++){
 		if(enemies[i].hp > 0){
 			x = enemies[i].x;
 			y = enemies[i].y;
 			flag = 1;
 
 			/* Verifica se o player esta em uma regiao adjacente e o ataca */
-			if(map[y + 1][x].player){
+			if((*nivel).mapa[y + 1][x].player){
 				flag = 0;
 
 				if(enemyAttack(player, &enemies[i]) == 0)
 					return 0;
 			}
 
-			else if((flag) && (map[y - 1][x].player)){
+			else if((flag) && ((*nivel).mapa[y - 1][x].player)){
 				flag = 0;
 
 				if(enemyAttack(player, &enemies[i]) == 0)
 					return 0;
 			}
 
-			else if((flag) && (map[y][x - 1].player)){
+			else if((flag) && ((*nivel).mapa[y][x - 1].player)){
 				flag = 0;
 
 				if(enemyAttack(player, &enemies[i]) == 0)
 					return 0;
 			}	
 
-			else if((flag) && (map[y][x + 1].player)){
+			else if((flag) && ((*nivel).mapa[y][x + 1].player)){
 				flag = 0;
 
 				if(enemyAttack(player, &enemies[i]) == 0)
@@ -103,12 +100,12 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 
 				if(aux % 4 == 3){
 
-					if(map[y - 1][x].used == 0){
-						map[y][x].used = 0;
-						map[y][x].enemyIndice = -1;
+					if((*nivel).mapa[y - 1][x].used == 0){
+						(*nivel).mapa[y][x].used = 0;
+						(*nivel).mapa[y][x].enemyIndice = -1;
 
-						map[y - 1][x].used = 1;
-						map[y - 1][x].enemyIndice = i;
+						(*nivel).mapa[y - 1][x].used = 1;
+						(*nivel).mapa[y - 1][x].enemyIndice = i;
 
 						enemies[i].y--;
 					}
@@ -116,12 +113,12 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 
 				else if(aux % 4 == 2){
 
-					if(map[y + 1][x].used == 0){
-						map[y][x].used = 0;
-						map[y][x].enemyIndice = -1;
+					if((*nivel).mapa[y + 1][x].used == 0){
+						(*nivel).mapa[y][x].used = 0;
+						(*nivel).mapa[y][x].enemyIndice = -1;
 
-						map[y + 1][x].used = 1;
-						map[y + 1][x].enemyIndice = i;
+						(*nivel).mapa[y + 1][x].used = 1;
+						(*nivel).mapa[y + 1][x].enemyIndice = i;
 
 						enemies[i].y++;
 					}
@@ -129,12 +126,12 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 
 				if(aux % 4 == 1){
 
-					if(map[y][x - 1].used == 0){
-						map[y][x].used = 0;
-						map[y][x].enemyIndice = -1;
+					if((*nivel).mapa[y][x - 1].used == 0){
+						(*nivel).mapa[y][x].used = 0;
+						(*nivel).mapa[y][x].enemyIndice = -1;
 
-						map[y][x - 1].used = 1;
-						map[y][x - 1].enemyIndice = i;
+						(*nivel).mapa[y][x - 1].used = 1;
+						(*nivel).mapa[y][x - 1].enemyIndice = i;
 
 						enemies[i].x--;
 					}
@@ -142,12 +139,12 @@ int enemyAction(Player *player, Map map[TAM][TAM], Enemy *enemies){
 
 				if(aux % 4 == 0){
 
-					if(map[y][x + 1].used == 0){
-						map[y][x].used = 0;
-						map[y][x].enemyIndice = -1;
+					if((*nivel).mapa[y][x + 1].used == 0){
+						(*nivel).mapa[y][x].used = 0;
+						(*nivel).mapa[y][x].enemyIndice = -1;
 
-						map[y][x + 1].used = 1;
-						map[y][x + 1].enemyIndice = i;
+						(*nivel).mapa[y][x + 1].used = 1;
+						(*nivel).mapa[y][x + 1].enemyIndice = i;
 
 						enemies[i].x++;
 					}
