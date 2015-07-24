@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/17/2015 by Foo */
+ * Last Modification: 07/24/2015 by Foo */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +56,7 @@ typedef struct {
  /* Define o struct do player */
 typedef struct {
 
-	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP;
+	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, nivelAtual;
 	Item weapon, gear;
 
 } Player;
@@ -68,12 +68,17 @@ typedef struct {
 
 } Enemy;
 
-/* Define o struct do mapa */
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice;
+	int wall, player, used, enemyIndice, itemIndice,stairs;
 
 } Map;
+
+typedef struct{
+
+	int nivel, inimigos, tamI, tamJ, indice;
+	Map mapa[30][30]; 
+} Nivel;
 
 /* Struct da bag */
 typedef struct {
@@ -103,10 +108,6 @@ typedef struct {
 #define ENEMY_1_BASE_DEF 3
 #define ENEMY_1_XP 11
 
-/* Define tamanho do mapa e quantidade de inimigos */
-#define TAM 10
-#define NUM_INIMIGOS 4
-
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
 #define QUANT_ITENS 5
@@ -114,29 +115,35 @@ typedef struct {
 
 
 /* Imprime o campo e os stats do jogador */
-void print(Map map[TAM][TAM], Player controller){
+void print(Nivel nivel, Player controller){
 
 	int i, j;
 
 	printf("\n\n");
 
 	/* Imprime o mapa e os stats do jogador a cada movimento */
-	for(i = 0; (i < TAM); i++){
-		for(j = 0; (j < TAM); j++){
+	for(i = 0; (i < nivel.tamI); i++){
+		for(j = 0; (j < nivel.tamJ); j++){
 
 			if((abs(i - controller.y) <= 2) && (abs(j - controller.x) <= 2)){
 
-				if(map[i][j].player)
+				if(nivel.mapa[i][j].player)
 					printf("P ");
 
-				else if(map[i][j].wall)
+				else if(nivel.mapa[i][j].wall)
 					printf("X ");
 
-				else if(map[i][j].enemyIndice >= 0)
+				else if(nivel.mapa[i][j].enemyIndice >= 0)
 					printf("E ");
 
-				else if(map[i][j].itemIndice >= 0)
+				else if(nivel.mapa[i][j].itemIndice >= 0)
 					printf("I ");
+
+				else if(nivel.mapa[i][j].stairs < 0)
+					printf("< ");
+
+				else if(nivel.mapa[i][j].stairs > 0)
+					printf("> ");
 
 				else
 					printf("  ");
@@ -157,23 +164,24 @@ void print(Map map[TAM][TAM], Player controller){
 
 int main (){
 
+	int count = 0, i, j;
 	char comand;
+	Nivel *niveis, aux;
 	Player player;
-	Map map[TAM][TAM];
-	Enemy *enemies;
+	Enemy **enemies;
 	Bag *bag;
 	Item *itens;
-	FILE *database;
+	FILE *database, *arq;
 
 	system("clear");
 	
 	/* Aloca o vetor que armazena os inimigos e a bag */
-	enemies = malloc(NUM_INIMIGOS * sizeof(Enemy));
 	bag = malloc(TAM_BAG * sizeof(Bag));
 	itens = malloc(QUANT_ITENS * sizeof(Item));
 
 	database = fopen("database.bin", "rb");
 
+	/* Pega os itens na database de itens */
 	if(database != NULL){
 		fread(itens, sizeof(Item), QUANT_ITENS, database);
 		fclose(database);
@@ -184,25 +192,62 @@ int main (){
 		return 0;
 	}
 
+	/* Pega os niveis na database de niveis */
+	arq = fopen("database2.bin", "rb");
+
+	if(arq == NULL){
+		printf("Erro ao abrir database 2!!\n");
+		return 0; 
+	}
+
+	while(fread(&aux, sizeof (Nivel), 1, arq))
+		count++;
+
+	/* Aloca a matriz que guarda todos os inimigos de cada nivel e o vetor de niveis */
+	niveis = malloc(count * sizeof(Nivel));
+	enemies = malloc(count * sizeof(Enemy*));
+
+	if(count == 0){
+		printf("Nenhum nivel na database!!\n");
+		return 0;
+	}
+
+	rewind(arq);
+	fread(niveis, count * sizeof(Nivel), 1, arq);
+	fclose(arq);
+
+	for(i = 0; i < count; i++)
+		enemies[i] = malloc(niveis[i].inimigos * sizeof(Enemy));
+
+	/* Inicializa todos os inimigos boladoes */
+	for(i = 0; i < count; i++)
+		for(j = 0; j < niveis[i].inimigos; j++)
+			enemyInit(&enemies[i][j]);
+
+
 	/* Carrega ou inicializa um novo jogo */
-	if(gameLoad(&player, map, enemies, bag) == 0){
-		playerInit(&player, itens);
-		mapInit(map, player.y, player.x, enemies);
+	if(gameLoad(&player, niveis, enemies, bag, count) == 0){
+
+		/* Inicializa o player e a mochila */
+		playerInit(&player, itens, &niveis[0]);
 		bagInit(bag);
 		comandList();
-		bag[0].item = itens[0];
-		bag[0].used = 1;
-		bag[0].quantidade = 1;
-
 	}
+
+	for(i = 0; i < count; i++)
+		enemyPositions(niveis[i], enemies[i]);
 
 	/* Loop que executa o jogo */
 	do{
-		print(map, player);
+		print(niveis[player.nivelAtual], player);
 		comand = getch();
 		system("clear");
-	}while(executeComand(comand, &player, map, enemies, bag, itens));
+	}while(executeComand(comand, &player, niveis, enemies, bag, itens, count));
 
+	for(i = 0; i < count; i++)
+		free(enemies[i]);
+
+	free(niveis);
 	free(enemies);
 	free(bag);
 	free(itens);
