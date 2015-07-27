@@ -56,11 +56,8 @@ int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
 			return 0;
 		}
 
-		for(i = 0; i < n; i++)
-			if(fwrite(&enemies[i], sizeof(Enemy), niveis[i].inimigos, arq) != niveis[i].inimigos){
-				fclose(arq);
-				return 0;
-			}
+		for (i = 0; i < n; i++)
+   			fwrite(enemies[i], sizeof(**enemies), niveis[i].inimigos, arq);
 
 		if(fwrite(bag, sizeof(Bag), TAM_BAG, arq) != TAM_BAG){
 			fclose(arq);
