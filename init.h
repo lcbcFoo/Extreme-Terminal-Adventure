@@ -114,7 +114,7 @@ int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
 			fread(player, sizeof(Player), 1, arq);
 
 			for(i = 0; i < n; i++)
-				fread(&enemies[i], niveis[i].inimigos * sizeof(Enemy), 1, arq);
+				fread(enemies[i], niveis[i].inimigos * sizeof(**enemies), 1, arq);
 			
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
 
