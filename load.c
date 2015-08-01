@@ -1,11 +1,23 @@
 /* Author: ETA Team *
- * Last Modification: 07/24/2015 by Foo */
+ * Last Modification: 08/01/2015 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <termios.h>
 #include <string.h>
+#include <math.h>
+
+
+/* Define stats do jogador */
+#define BASE_HP 20
+#define BASE_ATTACK 7
+#define BASE_DEF 3
+#define BASE_NEXT_LEVEL 10
+
+/* Define quantidade de itens e tamanho da bag */
+#define TAM_BAG 5
+#define QUANT_ITENS 6
 
 static struct termios old, new;
 
@@ -56,7 +68,7 @@ typedef struct {
  /* Define o struct do player */
 typedef struct {
 
-	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, nivelAtual;
+	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, nivelAtual, con, dext, str, pontos;
 	Item weapon, gear;
 
 } Player;
@@ -64,7 +76,9 @@ typedef struct {
 /* Define o struct de inimigos */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y;
+	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS];
+	double dropRate;
+	char nome[51];
 
 } Enemy;
 
@@ -96,28 +110,11 @@ typedef struct {
 #include "combat.h"
 #include "comand.h"
 
-/* Define stats do jogador */
-#define BASE_HP 20
-#define BASE_ATTACK 3
-#define BASE_DEF 1
-#define BASE_NEXT_LEVEL 10
-
-/* Define stats de cada inimigo */
-#define ENEMY_1_HP 10
-#define ENEMY_1_BASE_ATTACK 6
-#define ENEMY_1_BASE_DEF 3
-#define ENEMY_1_XP 11
-
-/* Define quantidade de itens e tamanho da bag */
-#define TAM_BAG 5
-#define QUANT_ITENS 5
-
-
 
 /* Imprime o campo e os stats do jogador */
 void print(Nivel nivel, Player controller){
 
-	int i, j;
+	int i, j, porcentHP, porcentXP;
 
 	printf("\n\n");
 
@@ -157,14 +154,17 @@ void print(Nivel nivel, Player controller){
 	}	
 	printf("\n\n");
 
-	printf("HP: %d/%d\nLevel: %d\nXP: %d/%d\n", controller.hp, controller.MaxHP, controller.level, controller.XP, controller.NextLevel);
+	porcentXP = ceil(((double) controller.XP / controller.NextLevel) * 100);
+	porcentHP = ceil(((double) controller.hp / controller.MaxHP) * 100);
+
+	printf("HP: %d/%d (%d%%)\nLevel: %d\nXP: %d/%d (%d%%)\n", controller.hp, controller.MaxHP, porcentHP, controller.level, controller.XP, controller.NextLevel, porcentXP);
 	printf("Attack: %d\nDefense: %d\n\n\n", controller.attack, controller.defense);
 }
 
 
 int main (){
 
-	int count = 0, i, j;
+	int count = 0, i;
 	char comand;
 	Nivel *niveis, aux;
 	Player player;
@@ -203,27 +203,32 @@ int main (){
 	while(fread(&aux, sizeof (Nivel), 1, arq))
 		count++;
 
-	/* Aloca a matriz que guarda todos os inimigos de cada nivel e o vetor de niveis */
-	niveis = malloc(count * sizeof(Nivel));
-	enemies = malloc(count * sizeof(Enemy*));
-
 	if(count == 0){
 		printf("Nenhum nivel na database!!\n");
 		return 0;
 	}
 
+	/* Aloca a matriz que guarda todos os inimigos de cada nivel e o vetor de niveis */
+	niveis = malloc(count * sizeof(Nivel));
+	enemies = malloc(count * sizeof(Enemy*));
+
 	rewind(arq);
 	fread(niveis, count * sizeof(Nivel), 1, arq);
 	fclose(arq);
 
-	for(i = 0; i < count; i++)
+	arq = fopen("database3.bin", "rb");
+
+	if(arq == NULL){
+		printf("Erro ao abrir database de inimigos!\n");
+		return 0;
+	}
+
+	for(i = 0; i < count; i++){
 		enemies[i] = malloc(niveis[i].inimigos * sizeof(Enemy));
+		fread(enemies[i], sizeof(**enemies), niveis[i].inimigos, arq);
+	}
 
-	/* Inicializa todos os inimigos boladoes */
-	for(i = 0; i < count; i++)
-		for(j = 0; j < niveis[i].inimigos; j++)
-			enemyInit(&enemies[i][j]);
-
+	fclose(arq);
 
 	/* Carrega ou inicializa um novo jogo */
 	if(gameLoad(&player, niveis, enemies, bag, count) == 0){
