@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/23/2015 by Foo*/
+ * Last Modification: 08/01/2015 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,10 +17,11 @@ typedef struct{
 	int nivel, inimigos, tamI, tamJ, indice;
 	Map mapa[30][30]; 
 } Nivel;
+
 /* Recebe um mapa novo */
 void RecebeMapa(Nivel *nivel, int mapas, int next){
 
-	int i, j, count, aux, m, n, recebe, count2 = 0;
+	int i, j, count, aux, m, n, recebe;
 	char comand;
 
 	for(count = 0; count < mapas; count++){
@@ -66,7 +67,7 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 
 				else if(recebe == 2){
 					nivel[count].mapa[i][j].used = 1;
-					nivel[count].mapa[i][j].enemyIndice = count2++;
+					nivel[count].mapa[i][j].enemyIndice = aux;
 					nivel[count].mapa[i][j].itemIndice = -1;
 					nivel[count].mapa[i][j].player = 0;
 					nivel[count].mapa[i][j].wall = 0;
@@ -134,7 +135,6 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 				else if(nivel[count].mapa[i][j].itemIndice >= 0)
 					printf("I ");
 
-
 				else
 					printf("  ");
 			}
@@ -147,6 +147,7 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 
 		if(comand != 'y'){
 			count--;
+			next--;
 			printf("Mapa descartado. Digite outro mapa:\n\n\n");
 		}
 
