@@ -1,6 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/22/2015 by Foo */
-
+ * Last Modification: 08/01/2015 by Foo*/
 
 
 /* Biblioteca que inicializa o jogo ou carrega a partida salva */
@@ -8,24 +7,17 @@
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 3
-#define BASE_DEF 1
+#define BASE_ATTACK 7
+#define BASE_DEF 3
 #define BASE_NEXT_LEVEL 10
 
-/* Define stats de cada inimigo */
-#define ENEMY_1_HP 10
-#define ENEMY_1_BASE_ATTACK 6
-#define ENEMY_1_BASE_DEF 3
-#define ENEMY_1_XP 11
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 5
+#define QUANT_ITENS 6
 
 /* Inicializa o jogador */
 void playerInit(Player *player, Item *itens, Nivel *nivel){
-
-	int aux = -1;
 
 	/* Inicializa os stas do jogador com os stats base */
 	(*player).hp = BASE_HP;
@@ -38,23 +30,17 @@ void playerInit(Player *player, Item *itens, Nivel *nivel){
 	(*player).gear = itens[3];
 	(*player).defense = BASE_DEF + (*player).gear.valor;
 	(*player).nivelAtual = 0;
+	(*player).con = 0;
+	(*player).dext = 0;
+	(*player).str = 0;
+	(*player).pontos = 0;
 
 	srand(time(NULL));
 
-	do{
-		/* Cria a posicao que o jogador sera colocado no mapa */
-		while((aux < 1) || (aux >= (*nivel).tamI - 1))
-			aux = rand() % (*nivel).tamI;	
+	(*player).y = 1;
+	(*player).x = 1;
 
-		(*player).y = aux;
-		aux = -1;
 
-		while((aux < 1) || (aux >= (*nivel).tamJ - 1))
-			aux = rand() % (*nivel).tamJ;
-
-		(*player).x = aux;
-
-	}while((*nivel).mapa[(*player).y][(*player).x].used);
 
 	(*nivel).mapa[(*player).y][(*player).x].used = 1;
 	(*nivel).mapa[(*player).y][(*player).x].player = 1;
@@ -67,16 +53,6 @@ void bagInit(Bag *bag){
 	for(i = 0; i < TAM_BAG; i++)
 		bag[i].used = 0;
 
-}
-
-void enemyInit(Enemy *enemy){
-
-	/* Inicializa os inimigos com seus stats base */
-
-	(*enemy).hp = ENEMY_1_HP;
-	(*enemy).defense = ENEMY_1_BASE_DEF;
-	(*enemy).attack = ENEMY_1_BASE_ATTACK;
-	(*enemy).givenXP = ENEMY_1_XP;
 }
 
 void enemyPositions(Nivel nivel, Enemy *enemies){
@@ -93,8 +69,6 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 }
 
 /* Verfica se existe e carrega partida salva */
-
-/* NAO ESTA FUNCIONANDO, NAO TENTE CARREGAR UM JOGO SALVO */
 int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
 
 	int i;
