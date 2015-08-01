@@ -1,37 +1,32 @@
 /* Author: ETA Team *
- * Last Modification: 07/22/2015 by Foo */
-
+ * Last Modification: 08/01/2015 by Foo*/
 
 /* Biblioteca que executa comandos do jogo */
 
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 3
-#define BASE_DEF 1
+#define BASE_ATTACK 7
+#define BASE_DEF 3
 #define BASE_NEXT_LEVEL 10
 
-/* Define stats de cada inimigo */
-#define ENEMY_1_HP 10
-#define ENEMY_1_BASE_ATTACK 6
-#define ENEMY_1_BASE_DEF 3
-#define ENEMY_1_XP 11
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 5
+#define QUANT_ITENS 6
 
 
 /* Mostra os comandos permitidos para movimentar o personagem */
 void comandList(){
 
 	printf("\n\nComandos disponiveis durante o jogo:\n");
-	printf("w - anda para cima/ataca inimigo que esteja na posicao de cima no mapa\n");
-	printf("d - anda para direita/ataca inimigo que esteja na posicao da direita no mapa\n");
-	printf("s - anda para baixo/ataca inimigo que esteja na posicao de baixo no mapa\n");
-	printf("a - anda para esquerda/ataca inimigo que esteja na posicao da esquerda do mapa\n");
-	printf("b - abre o inventario\n");
-	printf("- - acessa o menu do jogo\n\n\n");
+	printf("w - anda para cima/ataca inimigo que esteja na posicao de cima no mapa;\n");
+	printf("d - anda para direita/ataca inimigo que esteja na posicao da direita no mapa;\n");
+	printf("s - anda para baixo/ataca inimigo que esteja na posicao de baixo no mapa;\n");
+	printf("a - anda para esquerda/ataca inimigo que esteja na posicao da esquerda do mapa;\n");
+	printf("b - abre o inventario;\n");
+	printf("c - mostra os atributos do jogador e permite que o jogador distribua os pontos;\n");
+	printf("- - acessa o menu do jogo;\n\n\n");
 }
 
 /* Salva o jogo */
@@ -239,11 +234,13 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 	/* Verifica se voce ja tem aquele item */
 	for(i = 0; (i < TAM_BAG) && (flag); i++){
 		if((bag[i].used) && (strcmp(bag[i].item.nome, item.nome) == 0)){
-			flag = 0;
-			bag[i].quantidade++;
-			bag[i].used = 1;
-			(*position).itemIndice = -1;
-			(*position).used = 0;
+			if(item.tipo == 3){
+				flag = 0;
+				bag[i].quantidade++;
+				bag[i].used = 1;
+				(*position).itemIndice = -1;
+				(*position).used = 0;
+			}
 		}
 	}
 
@@ -306,6 +303,51 @@ void returnNivel(Nivel *niveis, Player *player){
 			}
 }
 
+void showStats(Player *player){
+
+	char recebe;
+
+	system("clear");
+	printf("Existem 3 tipos de atributos: constituicao, destreza e forca. Voce recebe 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
+	printf("Colocar pontos em constituicao te garante mais vida, em destreza te garante maior chance de se esquivar de ataques e de dar acertos criticos, ");
+	printf("e em forca aumenta o seu poder de ataque e defesa.\n\n");
+	printf("Seus atributos:\n\nConstituicao: %d\nDestreza: %d\nForca: %d\n\n", (*player).con, (*player).dext, (*player).str);
+	printf("Voce possui %d pontos a serem distribuidos\n\n\n", (*player).pontos);
+	printf("Comandos possiveis:\n1 - Adiciona 1 ponto em constituicao (caso voce possua pontos a serem distribuidos);\n2 - Adiciona 1 ponto em destreza (caso voce possua pontos a serem distribuidos)");
+	printf("\n3 - Adiciona 1 ponto em forca (GASTA 5 PONTOS!) (caso voce possua pontos a serem distribuidos);\nr - retorna ao jogo\n\n");
+
+	recebe = getch();
+
+	if(recebe == 'r'){
+		system("clear");
+		return;
+	}
+
+	if((*player).pontos){
+		
+		if(recebe == '1'){
+			(*player).pontos--;
+			(*player).con++;
+			(*player).MaxHP += BASE_HP / 6;
+
+		}
+
+		else if(recebe == '2'){
+			(*player).pontos--;
+			(*player).dext++;
+		}
+
+		else if(((*player).pontos >= 5) && (recebe == '3')){
+			(*player).pontos -= 5;
+			(*player).str++;
+			(*player).attack += BASE_ATTACK / 4;
+			(*player).defense += BASE_DEF / 3;
+		}
+	}	
+
+	showStats(player);
+}
+
 /* Executa comandos de controle de personagem ou acessa o menu */
 int executeComand(char comand, Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, Item *itens, int n){
 
@@ -317,6 +359,9 @@ int executeComand(char comand, Player *player, Nivel *niveis, Enemy **enemies, B
 	/* Abre o menu */
 	if(comand == '-')
 		return menu(niveis, player, enemies, bag, n);
+
+	else if(comand == 'c')
+		showStats(player);
 
 	else if(comand == 'b')
 		printBag(bag, player);
@@ -420,7 +465,7 @@ int executeComand(char comand, Player *player, Nivel *niveis, Enemy **enemies, B
 		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].enemyIndice != -1)
 			combate(player, &enemies[(*player).nivelAtual][niveis[atual].mapa[(*player).y - 1][(*player).x].enemyIndice], 
 					&niveis[atual].mapa[(*player).y - 1][(*player).x]);
-
+		
 		/* Caso em que ha um item na posicao */
 		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].itemIndice != -1)
 			pegaItem(player, itens[niveis[atual].mapa[(*player).y - 1][(*player).x].itemIndice], 
