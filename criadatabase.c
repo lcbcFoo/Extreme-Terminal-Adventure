@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 07/17/2015 by Foo */
+ * Last Modification: 08/01/2015 by Foo*/
 
 /* Pot menor, pot maior, espada de madeira, trapo velho, espada cega */
 
@@ -7,8 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define QTS_TINHA_ANTES 5
-#define NUM_ITENS_NOVO 5
+#define QTS_TINHA_ANTES 6
+#define NUM_ITENS_NOVO 6
 
 typedef struct {
     /* Tipos:
