@@ -14,7 +14,11 @@ Heitor "Led" Comel
 
 "load.c" is the code which should be compiled in order to get the game executable.
 
-The other files are headers used at "load.c".
+Files ended with '.h' are headers used at "load.c".
+
+Files ended with '.bin' are databases used by the game.
+
+Other files ended with '.c' are auxiliar programs.
 
 
 To play the game, execute the following lines on the terminal while in the directory you want to
