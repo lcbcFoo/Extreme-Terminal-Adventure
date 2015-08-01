@@ -1,61 +1,166 @@
 /* Author: ETA Team *
- * Last Modification: 07/17/2015 by Foo */
+ * Last Modification: 08/01/2015 by Foo*/
 
 /* Define stats do jogador */
 #define BASE_HP 20
-#define BASE_ATTACK 3
-#define BASE_DEF 1
+#define BASE_ATTACK 7
+#define BASE_DEF 3
 #define BASE_NEXT_LEVEL 10
 
-/* Define stats de cada inimigo */
-#define ENEMY_1_HP 10
-#define ENEMY_1_BASE_ATTACK 6
-#define ENEMY_1_BASE_DEF 3
-#define ENEMY_1_XP 11
+
+#define QUANT_ITENS 6
 
 
 /* Funcao que recebe XP e verifica se o personagem upou */
 void verificaXP(Player *player, int xpGanho){
 
+	int flag = 1;
+
 	(*player).XP += xpGanho;
 
-	/* Verifica se o jogador upou e atualiza os stats do jogador */
-	if((*player).XP >= (*player).NextLevel){
-		printf("Parabens! Voce atingiu o level %d\n", (*player).level + 1);
-		(*player).XP -= (*player).NextLevel;
-		(*player).level++;
-		(*player).attack += 1.5 * (*player).level * BASE_ATTACK / 10;
-		(*player).defense += (*player).level * BASE_DEF / 5;
-		(*player).MaxHP += (*player).level * BASE_HP / 10; 
-		(*player).hp += (*player).level * BASE_HP / 5;
-		(*player).NextLevel *= 2;
+	while(flag){
+		flag = 0;
+
+		/* Verifica se o jogador upou e atualiza os stats do jogador */
+		if((*player).XP >= (*player).NextLevel){
+			printf("Parabens! Voce atingiu o level %d\n", (*player).level + 1);
+			(*player).XP -= (*player).NextLevel;
+			(*player).level++;
+			(*player).attack += 1.2 * (*player).level * BASE_ATTACK / 10;
+			(*player).defense += ceil((*player).level * BASE_DEF / 10);
+			(*player).MaxHP += (*player).level * BASE_HP / 10; 
+			(*player).hp += (*player).level * BASE_HP / 5;
+			(*player).NextLevel *= 1.5;
+			(*player).pontos += 5;
+
+			if((*player).hp > (*player).MaxHP)
+				(*player).hp = (*player).MaxHP;
+
+			flag = 1;
+		}
+	}	
+}
+
+void dropCheck(Enemy *enemy, Map *position){
+
+	int aux;
+
+	srand(time(NULL));
+
+	if((*enemy).dropRate > 0){
+		aux = rand();
+
+		while((aux % 100) && (aux != 100))
+			aux /= 10;
+
+		if(aux <= (*enemy).dropRate * 100){
+			do{
+				aux = rand() % QUANT_ITENS;
+				(*position).used = 1;
+				(*position).itemIndice = aux;
+			}while((*enemy).dropItems[aux] == 0);
+		}		
 	}
 }
 
 /* Funcao que executa o ataque de inimigos */
 int enemyAttack(Player *player, Enemy *enemy){
 
-	int damageTaken;
+	int damageDone, attack, defense, critChance;
 
 	/* Verifica o dano recebido */
-	damageTaken = (*enemy).attack - (*player).defense;
-	(*player).hp -= damageTaken;
+	srand(time(NULL));
 
-	/* Indica o danop recebido e verifica se vc morreu*/
-	printf("Inimigo causou a voce %d de dano!\n", damageTaken);
+	if(rand() % 101 >= 30 * (*player).dext / 100){
 
-	if((*player).hp <= 0){
-		printf("Voce morreu!!\n\nGame Over baby!!!!\n\n\n");
-		return 0;
+		if(rand() % 2)
+			attack = ceil((*enemy).attack + (0.2 * (*enemy).attack * (rand() % 100) / (double) 100)); 
+
+		else 
+			attack = ceil((*enemy).attack - (0.2 * (*enemy).attack * (rand() % 100) /  (double) 100)); 
+
+		critChance = 10;
+
+		if(critChance >= rand() % 101){
+			printf("Dano critico! ");
+			attack += attack * 0.5;
+		}
+
+		defense = ceil((85 * (*player).defense + ((rand() % 16) * (*player).defense)) /  (double) 100);
+
+		damageDone = attack - defense;
+
+		if(damageDone < 0)
+			damageDone = 0;
+
+		(*player).hp -= damageDone;
+
+		/* Indica o danop recebido e verifica se vc morreu*/
+		printf("%s causou a voce %d de dano!\n", (*enemy).nome, damageDone);
+
+		if((*player).hp <= 0){
+			printf("Voce morreu!!\n\nGame Over baby!!!!\n\n\n");
+			return 0;
+		}
 	}
 	
+	else
+		printf("Voce desviou do ataque do inimigo!\n");	
+	
 	return 1;	
+}
+
+void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice){
+
+	int x, y;
+
+	y = (*enemy).y;
+	x = (*enemy).x;
+
+	if((abs(y - playerY <= 2) && (abs(x - playerX <= 2)))){
+
+		if((playerY < y) && ((*nivel).mapa[y - 1][x].used == 0)){
+			(*enemy).y--;
+			(*nivel).mapa[y][x].used = 0;
+			(*nivel).mapa[y][x].enemyIndice = -1;
+
+			(*nivel).mapa[y - 1][x].used = 1;
+			(*nivel).mapa[y - 1][x].enemyIndice = indice;
+		}
+
+		else if((playerY > y) && ((*nivel).mapa[y + 1][x].used == 0)){
+			(*enemy).y++;
+			(*nivel).mapa[y][x].used = 0;
+			(*nivel).mapa[y][x].enemyIndice = -1;
+
+			(*nivel).mapa[y + 1][x].used = 1;
+			(*nivel).mapa[y + 1][x].enemyIndice = indice;
+		}
+
+		else if((playerX < x) && ((*nivel).mapa[y][x - 1].used == 0)){
+			(*enemy).x--;
+			(*nivel).mapa[y][x].used = 0;
+			(*nivel).mapa[y][x].enemyIndice = -1;
+
+			(*nivel).mapa[y][x - 1].used = 1;
+			(*nivel).mapa[y][x - 1].enemyIndice = indice;
+		}
+
+		else if ((*nivel).mapa[y][x + 1].used == 0){
+			(*enemy).x++;
+			(*nivel).mapa[y][x].used = 0;
+			(*nivel).mapa[y][x].enemyIndice = -1;
+
+			(*nivel).mapa[y][x + 1].used = 1;
+			(*nivel).mapa[y][x + 1].enemyIndice = indice;
+		}
+	}
 }
 
 /* Funcao que movimenta os inimigos */
 int enemyAction(Player *player, Nivel *nivel, Enemy *enemies){
 
-	int i, aux, x, y, flag;
+	int i, x, y, flag;
 
 	srand(time(NULL));
 
@@ -96,61 +201,8 @@ int enemyAction(Player *player, Nivel *nivel, Enemy *enemies){
 			}
 
 			/* Caso nao esteja, movimenta aleatorioamente o inimigo */
-			if(flag){
-				aux = rand();
-
-				if(aux % 4 == 3){
-
-					if((*nivel).mapa[y - 1][x].used == 0){
-						(*nivel).mapa[y][x].used = 0;
-						(*nivel).mapa[y][x].enemyIndice = -1;
-
-						(*nivel).mapa[y - 1][x].used = 1;
-						(*nivel).mapa[y - 1][x].enemyIndice = i;
-
-						enemies[i].y--;
-					}
-				}
-
-				else if(aux % 4 == 2){
-
-					if((*nivel).mapa[y + 1][x].used == 0){
-						(*nivel).mapa[y][x].used = 0;
-						(*nivel).mapa[y][x].enemyIndice = -1;
-
-						(*nivel).mapa[y + 1][x].used = 1;
-						(*nivel).mapa[y + 1][x].enemyIndice = i;
-
-						enemies[i].y++;
-					}
-				}
-
-				if(aux % 4 == 1){
-
-					if((*nivel).mapa[y][x - 1].used == 0){
-						(*nivel).mapa[y][x].used = 0;
-						(*nivel).mapa[y][x].enemyIndice = -1;
-
-						(*nivel).mapa[y][x - 1].used = 1;
-						(*nivel).mapa[y][x - 1].enemyIndice = i;
-
-						enemies[i].x--;
-					}
-				}
-
-				if(aux % 4 == 0){
-
-					if((*nivel).mapa[y][x + 1].used == 0){
-						(*nivel).mapa[y][x].used = 0;
-						(*nivel).mapa[y][x].enemyIndice = -1;
-
-						(*nivel).mapa[y][x + 1].used = 1;
-						(*nivel).mapa[y][x + 1].enemyIndice = i;
-
-						enemies[i].x++;
-					}
-				}
-			}	
+			if(flag)
+				playerNear(nivel, &enemies[i], (*player).x, (*player).y, i);	
 		}	
 	}	
 
@@ -160,24 +212,51 @@ int enemyAction(Player *player, Nivel *nivel, Enemy *enemies){
 /* Funcao que executa o ataque do player */
 void combate(Player *player, Enemy *enemy, Map *position){
 
-	int damageDone;
+	int damageDone, attack, defense, critChance;
 
 	/* Calcula o dano causado e o dano infringido, verifica se o inimigo morreu e *
 	 * atualiza as posicoes no mapa de acordo com o resultado */
-	damageDone = (*player).attack - (*enemy).defense;
+	srand(time(NULL));
 
-	(*enemy).hp -= damageDone;
-	printf("Voce causou a inimigo %d de dano!\n", damageDone);
+	if(rand() % 100 > 30 * (*player).dext / 100){
 
-	if((*enemy).hp <= 0){
-		printf("Inimigo morreu!\n");
-		printf("Voce recebeu %d de XP!\n", (*enemy).givenXP);
-		(*position).enemyIndice = -1;
-		(*position).used = 0;
+		if(rand() % 2)
+			attack = ceil((*player).attack + (0.3 * (*player).attack * (rand() % 100) / (double) 100)); 
 
-		verificaXP(player, (*enemy).givenXP);
+		else 
+			attack = ceil((*player).attack - (0.2 * (*player).attack * (rand() % 100) / (double) 100)); 
+
+		critChance = 5 + (*player).dext / 20;
+
+		if(critChance >= rand() % 101){
+			printf("Dano critico! ");
+			attack += attack * 0.5;
+		}
+
+		defense = ceil((80 * (*enemy).defense + ((rand() % 21) * (*enemy).defense)) / (double) 100);
+
+		damageDone = attack - defense;
+
+		if(damageDone < 0)
+			damageDone = 0;
+
+		(*enemy).hp -= damageDone;
+		printf("Voce causou a %s %d de dano!\n", (*enemy).nome, damageDone);
+
+		if((*enemy).hp <= 0){
+			printf("%s morreu!\n", (*enemy).nome);
+			printf("Voce recebeu %d de XP!\n", (*enemy).givenXP);
+			(*position).enemyIndice = -1;
+			(*position).used = 0;
+
+			dropCheck(enemy, position);
+			verificaXP(player, (*enemy).givenXP);
+		}
+
+		if((*enemy).hp > 0)
+			printf("%s possui %d de vida!\n", (*enemy).nome, (*enemy).hp);
 	}
-
-	if((*enemy).hp > 0)
-		printf("Inimigo possui %d de vida!\n", (*enemy).hp);
+	
+	else
+		printf("%s desviou de seu ataque!\n", (*enemy).nome);
 }
