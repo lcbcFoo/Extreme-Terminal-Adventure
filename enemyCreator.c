@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-#define QUANT_ITENS 6
+#define QUANT_ITENS 7
 
 
 /* Define o struct de inimigos */
