@@ -11,7 +11,7 @@
 /* Define o struct de inimigos */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS];
+	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS], seen;
 	double dropRate;
 	char nome[51];
 
@@ -19,7 +19,7 @@ typedef struct {
 
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice,stairs;
+	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
 
 } Map;
 
