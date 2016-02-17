@@ -50,8 +50,7 @@ void dropCheck(Enemy *enemy, Map *position){
 	if((*enemy).dropRate > 0){
 		aux = rand();
 
-		while((aux % 100) && (aux != 100))
-			aux /= 10;
+		aux = aux % 101;
 
 		if(aux <= (*enemy).dropRate * 100){
 			do{
@@ -112,13 +111,59 @@ int enemyAttack(Player *player, Enemy *enemy){
 
 void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice){
 
-	int x, y;
+	int x, y, radius, i, j, stop = 0;
 
 	y = (*enemy).y;
 	x = (*enemy).x;
+		
+	for(i = 0; (i < (*nivel).tamI); i++)
+		for(j = 0; (j < (*nivel).tamJ); j++)
+			(*nivel).mapa[i][j].shown = 0;
 
-	if((abs(y - playerY <= 2) && (abs(x - playerX <= 2)))){
+	(*nivel).mapa[y][x].shown = 1;
 
+	/* Verifica os espacos que o inimigo consegue ver */
+	for(radius = 1; radius < 4; radius++){
+
+		for(i = (*enemy).y - radius; (i <= (*enemy).y + radius); i++){
+			for(j = (*enemy).x - radius; (j <= (*enemy).x + radius); j++){
+
+				if(((i >= 0) && (i < (*nivel).tamI)) && ((j >= 0) && (j < (*nivel).tamJ))){
+
+					if((*nivel).mapa[i][j].shown == radius){
+
+						if(i - 1 >= 0)
+							if((*nivel).mapa[i - 1][j].wall == 0)
+	                       		(*nivel).mapa[i - 1][j].shown = radius + 1; 
+		              
+	                    if(i + 1 < (*nivel).tamI)
+	                    	if((*nivel).mapa[i + 1][j].wall == 0)
+	                        	(*nivel).mapa[i + 1][j].shown = radius + 1;
+
+	                    if(j - 1 >= 0)
+	                    	if((*nivel).mapa[i][j - 1].wall == 0)
+	                        	(*nivel).mapa[i][j - 1].shown = radius + 1;
+
+	                    if(j + 1 < (*nivel).tamJ)
+	                    	if((*nivel).mapa[i][j + 1].wall == 0)
+	                        	(*nivel).mapa[i][j + 1].shown = radius + 1;
+	                }	
+				}
+			}
+		}
+	}					
+
+	for(i = (*enemy).y - 3; (i <= (*enemy).y + 3) && (!stop); i++){
+		for(j = (*enemy).x - 3; (j <= (*enemy).x + 3) && (!stop); j++){
+
+			if(((i >= 0) && (i < (*nivel).tamI)) && ((j >= 0) && (j < (*nivel).tamJ))){
+				if(((*nivel).mapa[i][j].shown) && ((*nivel).mapa[i][j].player))
+					stop = 1;
+			}	
+		}
+	}
+		
+	if(stop == 1){
 		if((playerY < y) && ((*nivel).mapa[y - 1][x].used == 0)){
 			(*enemy).y--;
 			(*nivel).mapa[y][x].used = 0;
@@ -200,7 +245,7 @@ int enemyAction(Player *player, Nivel *nivel, Enemy *enemies){
 					return 0;
 			}
 
-			/* Caso nao esteja, movimenta aleatorioamente o inimigo */
+			/* Caso nao esteja, movimenta o inimigo */
 			if(flag)
 				playerNear(nivel, &enemies[i], (*player).x, (*player).y, i);	
 		}	
