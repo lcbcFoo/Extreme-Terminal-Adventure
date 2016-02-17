@@ -11,7 +11,7 @@
 /* Define o struct de inimigos */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS];
+	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS], seen;
 	double dropRate;
 	char nome[51];
 
@@ -121,6 +121,7 @@ int main (){
 			if(enemies[i].nome[j] == '\n')
 				enemies[i].nome[j] = '\0';
 
+		enemies[i].seen = 0;
 		printf("HP:\n");
 		scanf("%d", &enemies[i].hp);
 		printf("Ataque:\n");
