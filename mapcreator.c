@@ -8,7 +8,7 @@
 /* Define o struct do mapa */
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice,stairs;
+	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
 
 } Map;
 
