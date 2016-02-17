@@ -76,7 +76,7 @@ typedef struct {
 /* Define o struct de inimigos */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS];
+	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS], seen;
 	double dropRate;
 	char nome[51];
 
@@ -84,7 +84,7 @@ typedef struct {
 
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice,stairs;
+	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
 
 } Map;
 
@@ -112,17 +112,73 @@ typedef struct {
 
 
 /* Imprime o campo e os stats do jogador */
-void print(Nivel nivel, Player controller){
+void print(Nivel nivel, Player controller, Enemy **enemies){
 
-	int i, j, porcentHP, porcentXP;
+	int i, j, radius, porcentHP, porcentXP;
 
 	printf("\n\n");
+
+	for(i = 0; (i < nivel.tamI); i++)
+		for(j = 0; (j < nivel.tamJ); j++)
+			nivel.mapa[i][j].shown = 0;
+
+	nivel.mapa[controller.y][controller.x].shown = 1;
+
+	/* Verifica os espacos que o player consegue ver */
+	for(radius = 1; radius < 4; radius++){
+
+		for(i = controller.y - radius; (i < controller.y + radius); i++){
+			for(j = controller.x - radius; (j < controller.x + radius); j++){
+
+				if(((i >= 0) && (i < nivel.tamI)) && ((j >= 0) && (j < nivel.tamJ))){
+
+					if(nivel.mapa[i][j].shown == radius){
+
+						if(i - 1 >= 0){ 
+							if(nivel.mapa[i - 1][j].wall == 0)
+	                       		nivel.mapa[i - 1][j].shown = radius + 1; 
+
+		                    else
+		                    	nivel.mapa[i - 1][j].shown = 1;
+		                }
+
+	                    if(i + 1 < nivel.tamI){
+	                    	if(nivel.mapa[i + 1][j].wall == 0)
+	                        	nivel.mapa[i + 1][j].shown = radius + 1;
+
+		                    else
+		                    	nivel.mapa[i + 1][j].shown = 1;
+	                	}
+
+	                    if(j - 1 >= 0){
+	                    	if(nivel.mapa[i][j - 1].wall == 0)
+	                        	nivel.mapa[i][j - 1].shown = radius + 1;
+
+		                    else
+		                    	nivel.mapa[i][j - 1].shown = 1;
+		                }
+
+	                    if(j + 1 < nivel.tamJ){
+	                    	if(nivel.mapa[i][j + 1].wall == 0)
+	                        	nivel.mapa[i][j + 1].shown = radius + 1;
+
+		                    else
+		                    	nivel.mapa[i][j + 1].shown = 1;
+	                	}
+	                } 
+
+	                if(nivel.mapa[i][j].enemyIndice >= 0)
+	                	enemies[nivel.indice][nivel.mapa[i][j].enemyIndice].seen = 1;
+				}
+			}
+		}		
+	}
 
 	/* Imprime o mapa e os stats do jogador a cada movimento */
 	for(i = 0; (i < nivel.tamI); i++){
 		for(j = 0; (j < nivel.tamJ); j++){
 
-			if((abs(i - controller.y) <= 2) && (abs(j - controller.x) <= 2)){
+			if(nivel.mapa[i][j].shown){
 
 				if(nivel.mapa[i][j].player)
 					printf("P ");
@@ -244,7 +300,7 @@ int main (){
 
 	/* Loop que executa o jogo */
 	do{
-		print(niveis[player.nivelAtual], player);
+		print(niveis[player.nivelAtual], player, enemies);
 		comand = getch();
 		system("clear");
 	}while(executeComand(comand, &player, niveis, enemies, bag, itens, count));
