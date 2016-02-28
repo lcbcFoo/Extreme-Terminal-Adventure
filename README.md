@@ -12,13 +12,13 @@ Heitor "Led" Comel
 
 -------------------------------------------------------------------------------------------------
 
-"load.c" is the code which should be compiled in order to get the game executable.
+"main.c" is the code which should be compiled in order to get the game executable.
 
-Files ended with '.h' are headers used at "load.c".
+"combat.c", "command.c" and "init.c" contain the functions described at "combat.h", "command.h" and "init.h"
 
 Files ended with '.bin' are databases used by the game.
 
-Other files ended with '.c' are auxiliar programs.
+Other files ended with '.c' are auxiliar programs, you can use them to modify the game if you want.
 
 
 To play the game, execute the following lines on the terminal while in the directory you want to
@@ -32,11 +32,8 @@ $ git clone https://github.com/lcbcFoo/Extreme-Terminal-Adventure.git
 
 $ cd Extreme-Terminal-Adventure/
 
-$ chmod a+x launcher
+$ gcc main.c -o launcher combat.c command.c init.c
 
 $ ./launcher
 
-================================================================================================
 
-You only have to do this for the first time, after you just have to execute the launcher on 
-terminal.
