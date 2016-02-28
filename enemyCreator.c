@@ -3,19 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "init.h"
 
 
 #define QUANT_ITENS 7
 
-
-/* Define o struct de inimigos */
-typedef struct {
-
-	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS], seen;
-	double dropRate;
-	char nome[51];
-
-} Enemy;
 
 int main (){
 

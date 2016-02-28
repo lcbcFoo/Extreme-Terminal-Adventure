@@ -4,40 +4,31 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define QUANT_ITENS 6
-
-
-/* Define o struct de inimigos */
-typedef struct {
-
-	int hp, attack, defense, givenXP, x, y, dropItems[QUANT_ITENS], seen;
-	double dropRate;
-	char nome[51];
-
-} Enemy;
-
-typedef struct {
-
-	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
-
-} Map;
-
-typedef struct{
-
-	int nivel, inimigos, tamI, tamJ, indice;
-	Map mapa[30][30]; 
-} Nivel;
+#include "init.h"
 
 
 int main (){
 
-	int n = 0, i, j, k, count = 0, recebe, aux;
+	int n = 0, i, j, k, count = 0, recebe, aux, existentItems = 0;
 	FILE *arq;
+	Item aux3;
 	Nivel aux2, *niveis;
 	Enemy **enemies, *padrao, lixo;
 
-	arq = fopen("database2.bin", "rb");
+
+	arq = fopen("items.bin", "rb");
+
+	if(arq == NULL){
+		printf("Erro ao abrir database de itens\n");
+		return 0;
+	}
+
+	while(fread(&aux3, sizeof(Item), 1, arq))
+		existentItems++;
+
+	rewind(arq);
+
+	arq = fopen("maps.bin", "rb");
 
 	if(arq == NULL){
 		printf("Erro ao abrir database de mapas\n");
@@ -76,7 +67,7 @@ int main (){
 
 	fclose(arq);
 
-	arq = fopen("database3.bin", "wb");
+	arq = fopen("enemiesOnGame.bin", "wb");
 
 	if(arq == NULL){
 		printf("Erro ao limpar database!\n");
@@ -124,7 +115,7 @@ int main (){
 			printf("\nInimigo de indice %d\nNome: %s\nHP: %d\nAttack: %d\nDefesa: %d\n", i, padrao[i].nome, padrao[i].hp, padrao[i].attack, padrao[i].defense);
 			printf("XP: %d\nDrop Rate: %f\nItens dropaveis:\n", padrao[i].givenXP, padrao[i].dropRate);
 
-			for(j = 0; j < QUANT_ITENS; j++)
+			for(j = 0; j < existentItems; j++)
 				if(padrao[i].dropItems[j])
 					printf("%d ", j);
 

@@ -1,28 +1,15 @@
 /* Author: ETA Team *
- * Last Modification: 08/01/2015 by Foo*/
+ * Last Modification: 02/28/2015 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
-/* Define o struct do mapa */
-typedef struct {
-
-	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
-
-} Map;
-
-typedef struct{
-
-	int nivel, inimigos, tamI, tamJ, indice;
-	Map mapa[30][30]; 
-} Nivel;
+#include "init.h"
 
 /* Recebe um mapa novo */
 void RecebeMapa(Nivel *nivel, int mapas, int next){
 
 	int i, j, count, aux, m, n, recebe;
-	char comand;
+	char command;
 
 	for(count = 0; count < mapas; count++){
 
@@ -143,9 +130,9 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 		}
 
 		printf("\n\nDeseja manter esse mapa? (y/n)\n");
-		scanf(" %c", &comand);
+		scanf(" %c", &command);
 
-		if(comand != 'y'){
+		if(command != 'y'){
 			count--;
 			next--;
 			printf("Mapa descartado. Digite outro mapa:\n\n\n");
@@ -159,17 +146,18 @@ void RecebeMapa(Nivel *nivel, int mapas, int next){
 int main (){
 
 	int mapas, subst = 0, next = 0;
-	char comand;
+	char command;
 	Nivel *nivel, auxMapa;
 	FILE *arq;
 
-	printf("Deseja:\n\n1- Criar mapas\n2- Substituir mapas\n3 - Limpar database\n");
+	printf("Deseja:\n\n1- Criar mapas\n2- Limpar database\n");
 	printf("PS: NAO EXISTE MAPA DE NIVEL 0. PLX\n");
-	do{
-		scanf(" %c", &comand);
-	}while(!(comand >= '1' && comand <= '3'));
 
-	arq = fopen("database2.bin", "r+b");
+	do{
+		scanf(" %c", &command);
+	}while(!(command >= '1' && command <= '3'));
+
+	arq = fopen("maps.bin", "r+b");
 
 	if(arq == NULL){
 		printf("Merda ao abrir arquivo\n");
@@ -181,7 +169,7 @@ int main (){
 		next++;
 
 	/* Cria novos mapas */
-	if(comand == '1'){
+	if(command == '1'){
 
 		printf("Quantos mapas vc criara?\n");
 		scanf("%d", &mapas);
@@ -193,42 +181,14 @@ int main (){
 
 	}
 
-	/* Substitui um mapa */
-	else if(comand == '2'){
-
-		if(next == 0)
-			printf("Nao ha nenhum mapa na database\n");
-
-		else{
-			mapas = 1;
-			nivel = malloc(sizeof(Nivel));
-
-			printf("Insira o indice do mapa que deseja substituir (Indices disponiveis: 0 - %d)\n", next - 1);
-			scanf("%d", &subst);
-
-			RecebeMapa(nivel, mapas, subst);
-
-			fseek(arq, subst * sizeof(Nivel), SEEK_SET);
-
-			fwrite(nivel, sizeof(Nivel), 1, arq);
-
-		}
-
-	}
-
-	/*================================================================================================= 
-	O NIVEL DOS MAPAS DEVE COMEÇAR EM 1 PARA ESSA PARTE FUNCIONAR. NAO TENTE DELETAR UM MAPA DE NIVEL 0.
-	ESTOU COLOCANDO ISSO AQUI PORQUE SEI QUE VAI CAUSAR PROBLEMAS NO FUTURO 
-	=================================================================================================*/
-
 	/* Apaga a bagaca inteira */
-	else if(comand == '3'){
+	else if(command == '2'){
 		fclose(arq);
 
 		printf("Certeza que quer apagar tudo? (y/n)\n");
-		scanf(" %c", &comand);
+		scanf(" %c", &command);
 
-		if(comand == 'y'){
+		if(command == 'y'){
 
 			arq = fopen("database2.bin", "wb");
 
@@ -240,6 +200,8 @@ int main (){
 			printf("Database limpinha, espero que nao tenha sido burrada sua cara\n");
 		}
 	}
+
+	else if(command == '3')
 
 	return 0;
 }
