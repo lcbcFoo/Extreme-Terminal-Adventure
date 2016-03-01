@@ -190,7 +190,7 @@ int main (){
 
 		if(command == 'y'){
 
-			arq = fopen("database2.bin", "wb");
+			arq = fopen("maps.bin", "wb");
 
 			if(arq == NULL){
 				printf("Merda ao abrir a database\n");

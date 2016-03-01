@@ -20,8 +20,6 @@
 
 /* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
-#define QUANT_ITENS 6
-
 
 /* Mostra os comandos permitidos para movimentar o personagem */
 void comandList();

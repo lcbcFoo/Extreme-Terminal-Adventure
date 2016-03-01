@@ -47,7 +47,7 @@ int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
 	int i;
 	FILE *arq;
 
-	arq = fopen("data.bin", "wb");
+	arq = fopen("savedGame.bin", "wb");
 
 	/* Salva os elementos contidos no mapa, os stats do jogador e os inimigos *
 	 * existentes no arquivo que salva o jogo */

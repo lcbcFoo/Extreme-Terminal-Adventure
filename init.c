@@ -230,7 +230,7 @@ int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
 
 			fclose(arq);
-			remove("data.bin");
+			remove("savedGame.bin");
 			system("clear");
 			return 1;
 		}
