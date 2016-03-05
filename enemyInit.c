@@ -16,34 +16,6 @@ int main (){
 	Enemy **enemies, *padrao, lixo;
 
 
-	arq = fopen("items.bin", "rb");
-
-	if(arq == NULL){
-		printf("Erro ao abrir database de itens\n");
-		return 0;
-	}
-
-	while(fread(&aux3, sizeof(Item), 1, arq))
-		existentItems++;
-
-	rewind(arq);
-
-	arq = fopen("maps.bin", "rb");
-
-	if(arq == NULL){
-		printf("Erro ao abrir database de mapas\n");
-		return 0;
-	}
-
-	while(fread(&aux2, sizeof(Nivel), 1, arq))
-		n++;
-
-	rewind(arq);
-	niveis = malloc(n * sizeof(Nivel));
-	enemies = malloc(n * sizeof(Enemy*));
-
-	fread(niveis, sizeof(Nivel), n, arq);
-	fclose(arq);
 
 	for(i = 0; i < n; i++)
 		enemies[i] = malloc(niveis[i].inimigos * sizeof(Enemy));
