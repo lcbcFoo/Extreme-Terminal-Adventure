@@ -32,7 +32,7 @@ $ git clone https://github.com/lcbcFoo/Extreme-Terminal-Adventure.git
 
 $ cd Extreme-Terminal-Adventure/
 
-$ gcc main.c -o launcher combat.c command.c init.c
+$ gcc main.c -std=c99 -lm -o launcher combat.c command.c init.c autogen.c
 
 $ ./launcher
 
