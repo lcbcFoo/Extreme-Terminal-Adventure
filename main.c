@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+ * Last Modification: 03/05/2015 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +13,7 @@
 #include "init.h"
 #include "combat.h"
 #include "command.h"
+#include "autogen.h"
 
 
 /* Define stats do jogador */
@@ -29,16 +30,16 @@ int main (){
 
 	int count = 0, i, existentItems = 0;
 	char comand;
-	Nivel *niveis, aux;
+	Nivel nivel, aux;
 	Player player;
-	Enemy **enemies;
+	Enemy *enemies;
 	Bag *bag;
 	Item *itens, read;
 	FILE *database, *arq;
 
 	system("clear");
 	
-	/* Aloca o vetor que armazena os inimigos e a bag */
+	/* Aloca o vetor que armazena a bag */
 	bag = malloc(TAM_BAG * sizeof(Bag));
 
 	database = fopen("items.bin", "rb");
@@ -61,67 +62,29 @@ int main (){
 		return 0;
 	}
 
-	/* Pega os niveis na database de niveis */
-	arq = fopen("maps.bin", "rb");
-
-	if(arq == NULL){
-		printf("Erro ao abrir database 2!!\n");
-		return 0; 
-	}
-
-	while(fread(&aux, sizeof (Nivel), 1, arq))
-		count++;
-
-	if(count == 0){
-		printf("Nenhum nivel na database!!\n");
-		return 0;
-	}
-
-	/* Aloca a matriz que guarda todos os inimigos de cada nivel e o vetor de niveis */
-	niveis = malloc(count * sizeof(Nivel));
-	enemies = malloc(count * sizeof(Enemy*));
-
-	rewind(arq);
-	fread(niveis, count * sizeof(Nivel), 1, arq);
-	fclose(arq);
-
-	arq = fopen("enemiesOnGame.bin", "rb");
-
-	if(arq == NULL){
-		printf("Erro ao abrir database de inimigos!\n");
-		return 0;
-	}
-
-	for(i = 0; i < count; i++){
-		enemies[i] = malloc(niveis[i].inimigos * sizeof(Enemy));
-		fread(enemies[i], sizeof(**enemies), niveis[i].inimigos, arq);
-	}
-
-	fclose(arq);
+	enemies = NULL;
 
 	/* Carrega ou inicializa um novo jogo */
-	if(gameLoad(&player, niveis, enemies, bag, count) == 0){
+	if(gameLoad(&player, &nivel, enemies, bag) == 0){
 
 		/* Inicializa o player e a mochila */
-		playerInit(&player, itens, &niveis[0]);
+		playerInit(&player, itens);
+		nivel = genNivel(0, &player);
 		bagInit(bag);
 		comandList();
 	}
 
-	for(i = 0; i < count; i++)
-		enemyPositions(niveis[i], enemies[i]);
-
+/*
+	enemyPositions(nivel, enemies);
+*/
 	/* Loop que executa o jogo */
 	do{
-		print(niveis[player.nivelAtual], player, enemies);
+		print(nivel, player, enemies);
 		comand = getch();
 		system("clear");
-	}while(executeComand(comand, &player, niveis, enemies, bag, itens, count));
+	}while(executeComand(comand, &player, &nivel, enemies, bag, itens));
 
-	for(i = 0; i < count; i++)
-		free(enemies[i]);
 
-	free(niveis);
 	free(enemies);
 	free(bag);
 	free(itens);

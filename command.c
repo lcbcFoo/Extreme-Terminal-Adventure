@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+ * Last Modification: 03/05/2015 by Foo*/
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -13,6 +13,7 @@
 #include "init.h"
 #include "command.h"
 #include "combat.h"
+#include "autogen.h"
 
 
 
@@ -42,7 +43,7 @@ void comandList(){
 }
 
 /* Salva o jogo */
-int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
+int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag){
 
 	int i;
 	FILE *arq;
@@ -53,7 +54,7 @@ int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
 	 * existentes no arquivo que salva o jogo */
 	if(arq != NULL){
 
-		if(fwrite(niveis, sizeof(Nivel), n, arq) != n){
+		if(!fwrite(&nivel, sizeof(Nivel), 1, arq)){
 			fclose(arq);
 			return 0;
 		}	
@@ -63,8 +64,7 @@ int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
 			return 0;
 		}
 
-		for (i = 0; i < n; i++)
-   			fwrite(enemies[i], sizeof(**enemies), niveis[i].inimigos, arq);
+ 		fwrite(enemies, sizeof(Enemy), nivel.inimigos, arq);
 
 		if(fwrite(bag, sizeof(Bag), TAM_BAG, arq) != TAM_BAG){
 			fclose(arq);
@@ -80,7 +80,7 @@ int saveGame(Nivel *niveis, Player *player, Enemy **enemies, Bag * bag, int n){
 }
 
 /* Menu de comandos de controle sobre o jogo */
-int menu(Nivel *niveis, Player *player, Enemy **enemies, Bag *bag, int n){
+int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 
 	int flag = 1;
 	char recebe;
@@ -98,7 +98,7 @@ int menu(Nivel *niveis, Player *player, Enemy **enemies, Bag *bag, int n){
 
 		/* Chama a funcao que salva o jogo */
 		if(recebe == 's'){
-			if(saveGame(niveis, player, enemies, bag, n)){
+			if(saveGame(nivel, player, enemies, bag)){
 				system("clear");
 				printf("\n\nJogo salvo!\n\n");
 			}	
@@ -106,7 +106,7 @@ int menu(Nivel *niveis, Player *player, Enemy **enemies, Bag *bag, int n){
 			else
 				printf("O jogo nao pode ser salvo, tente novamente\n\n");
 
-			return menu(niveis, player, enemies, bag, n);
+			return menu(nivel, player, enemies, bag);
 		}
 
 		/* Retorna ao mapa */
@@ -125,7 +125,7 @@ int menu(Nivel *niveis, Player *player, Enemy **enemies, Bag *bag, int n){
 		else if(recebe == 'l'){
 			system("clear");
 			comandList();
-			return menu(niveis, player, enemies, bag, n);
+			return menu(nivel, player, enemies, bag);
 		}
 
 	}while(flag);
@@ -277,42 +277,13 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 		printf("Voce encontrou um item: %s\n\n", item.nome);
 }
 
-void nextNivel(Nivel *niveis, Player *player){
-
-	int i, j, atual, flag = 0;
+void nextNivel(Nivel *nivel, Player *player){
 
 
-	(*player).nivelAtual++;
-	printf("Voce desceu para o nivel %d da dungeon\n", (*player).nivelAtual + 1);
-	atual = (*player).nivelAtual;
+	printf("Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
 
-	for(i = 0; (i < niveis[atual].tamI) && (!flag); i++)
-		for(j = 0; (j < niveis[atual].tamJ) && (!flag); j++)
-			if(niveis[atual].mapa[i][j].stairs == -1){
-				flag = 1;
-				niveis[atual].mapa[i][j].player = 1;
-				(*player).x = j;
-				(*player).y = i;
-			}
+	(*nivel) = genNivel(nivel->nivel + 1, player);
 
-}
-
-void returnNivel(Nivel *niveis, Player *player){
-
-	int i, j, atual, flag = 0;
-
-	(*player).nivelAtual--;
-	printf("Voce subiu para o nivel %d da dungeon\n", (*player).nivelAtual + 1);
-	atual = (*player).nivelAtual;
-
-	for(i = 0; (i < niveis[atual].tamI) && (!flag); i++)
-		for(j = 0; (j < niveis[atual].tamJ) && (!flag); j++)
-			if(niveis[atual].mapa[i][j].stairs == 1){
-				flag = 1;
-				niveis[atual].mapa[i][j].player = 1;
-				(*player).x = j;
-				(*player).y = i;
-			}
 }
 
 void showStats(Player *player){
@@ -361,16 +332,13 @@ void showStats(Player *player){
 }
 
 /* Executa comandos de controle de personagem ou acessa o menu */
-int executeComand(char command, Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, Item *itens, int n){
+int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Bag *bag, Item *itens){
 
-	int atual;
-
-	atual = (*player).nivelAtual;
 
 	/* Recebe os comandos durante o jogo e os executa */
 	/* Abre o menu */
 	if(command == '-')
-		return menu(niveis, player, enemies, bag, n);
+		return menu((*nivel), player, enemies, bag);
 
 	else if(command == 'c')
 		showStats(player);
@@ -382,159 +350,133 @@ int executeComand(char command, Player *player, Nivel *niveis, Enemy **enemies, 
 	else if(((*player).x > 0) && (command == 'a')) {
 
 		/* Esse eh o caso de movimento */
-		if(niveis[atual].mapa[(*player).y][(*player).x - 1].used == 0){
+		if((*nivel).mapa[(*player).y][(*player).x - 1].used == 0){
 
-			if(niveis[atual].mapa[(*player).y][(*player).x].stairs == 0)
-				niveis[atual].mapa[(*player).y][(*player).x].used = 0;
+			if((*nivel).mapa[(*player).y][(*player).x].stairs == 0)
+				(*nivel).mapa[(*player).y][(*player).x].used = 0;
 
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
 
 			(*player).x--;
-			niveis[atual].mapa[(*player).y][(*player).x].player = 1;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 1;
+			(*nivel).mapa[(*player).y][(*player).x].player = 1;
+			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
 		
 		/* Esse eh o caso de combate, chama a funcao combate, a funcao de combate receb o endereco de 1 inimigo na matriz de inimigos */
-		else if(niveis[atual].mapa[(*player).y][(*player).x - 1].enemyIndice != -1)
-			combate(player, &enemies[(*player).nivelAtual][niveis[atual].mapa[(*player).y][(*player).x - 1].enemyIndice], 
-					&niveis[atual].mapa[(*player).y][(*player).x - 1]);	
+		else if((*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice], 
+					&(*nivel).mapa[(*player).y][(*player).x - 1]);	
 
 		/* Caso em que ha um item na posicao */
-		else if(niveis[atual].mapa[(*player).y][(*player).x - 1].itemIndice != -1)
-			pegaItem(player, itens[niveis[atual].mapa[(*player).y][(*player).x - 1].itemIndice], 
-					&niveis[atual].mapa[(*player).y][(*player).x - 1], bag);
+		else if((*nivel).mapa[(*player).y][(*player).x - 1].itemIndice != -1)
+			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x - 1].itemIndice], 
+					&(*nivel).mapa[(*player).y][(*player).x - 1], bag);
 
-		else if(niveis[atual].mapa[(*player).y][(*player).x - 1].stairs == 1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			nextNivel(niveis, player);
-		}
-
-		else if(niveis[atual].mapa[(*player).y][(*player).x - 1].stairs == -1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			returnNivel(niveis, player);
+		else if((*nivel).mapa[(*player).y][(*player).x - 1].stairs == 1){
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+			nextNivel(nivel, player);
 		}
 
 		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
-		return enemyAction(player, &niveis[atual], enemies[atual]);
+		return enemyAction(player, &(*nivel), enemies);
 	}
 
 	/* Idem para os d, w, s */
-	else if(((*player).x < niveis[atual].tamJ - 1) && (command == 'd')){
+	else if(((*player).x < (*nivel).tamJ - 1) && (command == 'd')){
 
-		if(niveis[atual].mapa[(*player).y][(*player).x + 1].used == 0){
+		if((*nivel).mapa[(*player).y][(*player).x + 1].used == 0){
 
-			if(niveis[atual].mapa[(*player).y][(*player).x].stairs == 0)
-				niveis[atual].mapa[(*player).y][(*player).x].used = 0;
+			if((*nivel).mapa[(*player).y][(*player).x].stairs == 0)
+				(*nivel).mapa[(*player).y][(*player).x].used = 0;
 
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
 
 			(*player).x++;
-			niveis[atual].mapa[(*player).y][(*player).x].player = 1;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 1;
+			(*nivel).mapa[(*player).y][(*player).x].player = 1;
+			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
 		
-		else if(niveis[atual].mapa[(*player).y][(*player).x + 1].enemyIndice != -1)
-			combate(player, &enemies[(*player).nivelAtual][niveis[atual].mapa[(*player).y][(*player).x + 1].enemyIndice], 
-					&niveis[atual].mapa[(*player).y][(*player).x + 1]);	
+		else if((*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice], 
+					&(*nivel).mapa[(*player).y][(*player).x + 1]);	
 
 		/* Caso em que ha um item na posicao */
-		else if(niveis[atual].mapa[(*player).y][(*player).x + 1].itemIndice != -1)
-			pegaItem(player, itens[niveis[atual].mapa[(*player).y][(*player).x + 1].itemIndice], 
-					&niveis[atual].mapa[(*player).y][(*player).x + 1], bag);
+		else if((*nivel).mapa[(*player).y][(*player).x + 1].itemIndice != -1)
+			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x + 1].itemIndice], 
+					&(*nivel).mapa[(*player).y][(*player).x + 1], bag);
 
-		else if(niveis[atual].mapa[(*player).y][(*player).x + 1].stairs == 1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			nextNivel(niveis, player);
+		else if((*nivel).mapa[(*player).y][(*player).x + 1].stairs == 1){
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+			nextNivel(nivel, player);
 		}
 
-		else if(niveis[atual].mapa[(*player).y][(*player).x + 1].stairs == -1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			returnNivel(niveis, player);
-		}
-
-	
-		return enemyAction(player, &niveis[atual], enemies[atual]);
+		return enemyAction(player, &(*nivel), enemies);
 	}
 
 	else if(((*player).y > 0) && (command == 'w')){
 
-		if(niveis[atual].mapa[(*player).y - 1][(*player).x].used == 0){
+		if((*nivel).mapa[(*player).y - 1][(*player).x].used == 0){
 
-			if(niveis[atual].mapa[(*player).y][(*player).x].stairs == 0)
-				niveis[atual].mapa[(*player).y][(*player).x].used = 0;
+			if((*nivel).mapa[(*player).y][(*player).x].stairs == 0)
+				(*nivel).mapa[(*player).y][(*player).x].used = 0;
 
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
 
 			(*player).y--;
-			niveis[atual].mapa[(*player).y][(*player).x].player = 1;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 1;
+			(*nivel).mapa[(*player).y][(*player).x].player = 1;
+			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
 		
-		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].enemyIndice != -1)
-			combate(player, &enemies[(*player).nivelAtual][niveis[atual].mapa[(*player).y - 1][(*player).x].enemyIndice], 
-					&niveis[atual].mapa[(*player).y - 1][(*player).x]);
+		else if((*nivel).mapa[(*player).y - 1][(*player).x].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y - 1][(*player).x].enemyIndice], 
+					&(*nivel).mapa[(*player).y - 1][(*player).x]);
 		
 		/* Caso em que ha um item na posicao */
-		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].itemIndice != -1)
-			pegaItem(player, itens[niveis[atual].mapa[(*player).y - 1][(*player).x].itemIndice], 
-					&niveis[atual].mapa[(*player).y - 1][(*player).x], bag);
+		else if((*nivel).mapa[(*player).y - 1][(*player).x].itemIndice != -1)
+			pegaItem(player, itens[(*nivel).mapa[(*player).y - 1][(*player).x].itemIndice], 
+					&(*nivel).mapa[(*player).y - 1][(*player).x], bag);
 
-		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].stairs == 1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			nextNivel(niveis, player);
+		else if((*nivel).mapa[(*player).y - 1][(*player).x].stairs == 1){
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+			nextNivel(nivel, player);
 		}
 
-		else if(niveis[atual].mapa[(*player).y - 1][(*player).x].stairs == -1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			returnNivel(niveis, player);
-		}
-
-
-		return enemyAction(player, &niveis[atual], enemies[atual]);
+		return enemyAction(player, &(*nivel), enemies);
 	}
 	
-	else if(((*player).y < niveis[atual].tamI - 1) && (command == 's')){
+	else if(((*player).y < (*nivel).tamI - 1) && (command == 's')){
 
-		if(niveis[atual].mapa[(*player).y + 1][(*player).x].used == 0){
+		if((*nivel).mapa[(*player).y + 1][(*player).x].used == 0){
 
-			if(niveis[atual].mapa[(*player).y][(*player).x].stairs == 0)
-				niveis[atual].mapa[(*player).y][(*player).x].used = 0;
+			if((*nivel).mapa[(*player).y][(*player).x].stairs == 0)
+				(*nivel).mapa[(*player).y][(*player).x].used = 0;
 
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
 
 			(*player).y++;
-			niveis[atual].mapa[(*player).y][(*player).x].player = 1;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 1;
+			(*nivel).mapa[(*player).y][(*player).x].player = 1;
+			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
 		
-		else if(niveis[atual].mapa[(*player).y + 1][(*player).x].enemyIndice != -1)
-			combate(player, &enemies[(*player).nivelAtual][niveis[atual].mapa[(*player).y + 1][(*player).x].enemyIndice], 
-					&niveis[atual].mapa[(*player).y + 1][(*player).x]);
+		else if((*nivel).mapa[(*player).y + 1][(*player).x].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y + 1][(*player).x].enemyIndice], 
+					&(*nivel).mapa[(*player).y + 1][(*player).x]);
 
 		/* Caso em que ha um item na posicao */
-		else if(niveis[atual].mapa[(*player).y + 1][(*player).x].itemIndice != -1)
-			pegaItem(player, itens[niveis[atual].mapa[(*player).y + 1][(*player).x].itemIndice], 
-					&niveis[atual].mapa[(*player).y + 1][(*player).x], bag);
+		else if((*nivel).mapa[(*player).y + 1][(*player).x].itemIndice != -1)
+			pegaItem(player, itens[(*nivel).mapa[(*player).y + 1][(*player).x].itemIndice], 
+					&(*nivel).mapa[(*player).y + 1][(*player).x], bag);
 
-		else if(niveis[atual].mapa[(*player).y + 1][(*player).x].stairs == 1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			nextNivel(niveis, player);
+		else if((*nivel).mapa[(*player).y + 1][(*player).x].stairs == 1){
+			(*nivel).mapa[(*player).y][(*player).x].player = 0;
+			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+			nextNivel(nivel, player);
 		}
 
-		else if(niveis[atual].mapa[(*player).y + 1][(*player).x].stairs == -1){
-			niveis[atual].mapa[(*player).y][(*player).x].player = 0;
-			niveis[atual].mapa[(*player).y][(*player).x].used = 0;
-			returnNivel(niveis, player);
-		}
-
-		return enemyAction(player, &niveis[atual], enemies[atual]);
+		return enemyAction(player, &(*nivel), enemies);
 	}
 
 	return 1;

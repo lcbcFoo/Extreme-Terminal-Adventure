@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+ * Last Modification: 03/05/2015 by Foo*/
 
 #ifndef COMBAT_H_INCLUDED
 #define COMBAT_H_INCLUDED 
@@ -21,7 +21,7 @@ void dropCheck(Enemy *enemy, Map *position);
 /* Funcao que executa o ataque de inimigos */
 int enemyAttack(Player *player, Enemy *enemy);
 
-/* Deetecta se o jogador esta proximo de algum inimigo */
+/* Verifica se o player esta sendo visto pelo inimigo e faz com que ele seja seguido */
 void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice);
 
 /* Funcao que movimenta os inimigos */

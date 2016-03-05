@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+ * Last Modification: 03/05/2015 by Foo*/
 
 /* Biblioteca que inicializa o jogo ou carrega a partida salva */
 
@@ -33,7 +33,7 @@ typedef struct {
  /* Define o struct do player */
 typedef struct {
 
-	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, nivelAtual, con, dext, str, pontos;
+	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos;
 	Item weapon, gear;
 
 } Player;
@@ -49,14 +49,14 @@ typedef struct {
 
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice,stairs, shown;
+	int wall, player, used, enemyIndice, itemIndice, stairs, shown;
 
 } Map;
 
 typedef struct{
 
-	int nivel, inimigos, tamI, tamJ, indice;
-	Map mapa[30][30]; 
+	int nivel, inimigos, tamI, tamJ;
+	Map mapa[35][35]; 
 } Nivel;
 
 /* Struct da bag */
@@ -84,7 +84,7 @@ char getch(void);
 char getche(void);
 
 /* Inicializa o jogador */
-void playerInit(Player *player, Item *itens, Nivel *nivel);
+void playerInit(Player *player, Item *itens);
 
 /* Inicializa a bag como vazia */
 void bagInit(Bag *bag);
@@ -93,9 +93,9 @@ void bagInit(Bag *bag);
 void enemyPositions(Nivel nivel, Enemy *enemies);
 
 /* Imprime o campo e os stats do jogador */
-void print(Nivel nivel, Player controller, Enemy **enemies);
+void print(Nivel nivel, Player controller, Enemy *enemies);
 
 /* Verfica se existe e carrega partida salva */
-int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n);
+int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag);
 
 #endif /* INIT_H_INCLUDED */

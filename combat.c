@@ -1,6 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
-
+ * Last Modification: 03/05/2015 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +41,7 @@ void verificaXP(Player *player, int xpGanho){
 	}	
 }
 
+/* Verifica se algum item sera dropado */
 void dropCheck(Enemy *enemy, Map *position){
 
 	int aux;
@@ -110,6 +110,7 @@ int enemyAttack(Player *player, Enemy *enemy){
 	return 1;	
 }
 
+/* Verifica se o player esta sendo visto pelo inimigo e faz com que ele seja seguido */
 void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice){
 
 	int x, y, radius, i, j, stop = 0;
@@ -124,7 +125,7 @@ void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice
 	(*nivel).mapa[y][x].shown = 1;
 
 	/* Verifica os espacos que o inimigo consegue ver */
-	for(radius = 1; radius < 4; radius++){
+	for(radius = 1; radius < 6; radius++){
 
 		for(i = (*enemy).y - radius; (i <= (*enemy).y + radius); i++){
 			for(j = (*enemy).x - radius; (j <= (*enemy).x + radius); j++){
@@ -154,8 +155,9 @@ void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice
 		}
 	}					
 
-	for(i = (*enemy).y - 3; (i <= (*enemy).y + 3) && (!stop); i++){
-		for(j = (*enemy).x - 3; (j <= (*enemy).x + 3) && (!stop); j++){
+	/* Verifica se o player esta visivel e proximo */
+	for(i = (*enemy).y - 5; (i <= (*enemy).y + 5) && (!stop); i++){
+		for(j = (*enemy).x - 5; (j <= (*enemy).x + 5) && (!stop); j++){
 
 			if(((i >= 0) && (i < (*nivel).tamI)) && ((j >= 0) && (j < (*nivel).tamJ))){
 				if(((*nivel).mapa[i][j].shown) && ((*nivel).mapa[i][j].player))
@@ -164,6 +166,7 @@ void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice
 		}
 	}
 		
+	/* Se estiver, segue-o, caso contrario continua parado */
 	if(stop == 1){
 		if((playerY < y) && ((*nivel).mapa[y - 1][x].used == 0)){
 			(*enemy).y--;

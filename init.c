@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+ * Last Modification: 03/05/2015 by Foo*/
 
 
 #include <stdio.h>
@@ -48,7 +48,7 @@ char getche(void) {
 
 
 /* Inicializa o jogador */
-void playerInit(Player *player, Item *itens, Nivel *nivel){
+void playerInit(Player *player, Item *itens){
 
 	/* Inicializa os stas do jogador com os stats base */
 	(*player).hp = BASE_HP;
@@ -60,21 +60,10 @@ void playerInit(Player *player, Item *itens, Nivel *nivel){
 	(*player).attack = BASE_ATTACK + (*player).weapon.valor;
 	(*player).gear = itens[3];
 	(*player).defense = BASE_DEF + (*player).gear.valor;
-	(*player).nivelAtual = 0;
 	(*player).con = 0;
 	(*player).dext = 0;
 	(*player).str = 0;
 	(*player).pontos = 0;
-
-	srand(time(NULL));
-
-	(*player).y = 1;
-	(*player).x = 1;
-
-
-
-	(*nivel).mapa[(*player).y][(*player).x].used = 1;
-	(*nivel).mapa[(*player).y][(*player).x].player = 1;
 }
 
 void bagInit(Bag *bag){
@@ -99,8 +88,7 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 			
 }
 
-/* Imprime o campo e os stats do jogador */
-void print(Nivel nivel, Player controller, Enemy **enemies){
+void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	int i, j, radius, porcentHP, porcentXP;
 
@@ -113,7 +101,7 @@ void print(Nivel nivel, Player controller, Enemy **enemies){
 	nivel.mapa[controller.y][controller.x].shown = 1;
 
 	/* Verifica os espacos que o player consegue ver */
-	for(radius = 1; radius < 4; radius++){
+	for(radius = 1; radius < 7; radius++){
 
 		for(i = controller.y - radius; (i < controller.y + radius); i++){
 			for(j = controller.x - radius; (j < controller.x + radius); j++){
@@ -156,7 +144,7 @@ void print(Nivel nivel, Player controller, Enemy **enemies){
 	                } 
 
 	                if(nivel.mapa[i][j].enemyIndice >= 0)
-	                	enemies[nivel.indice][nivel.mapa[i][j].enemyIndice].seen = 1;
+	                	enemies[nivel.mapa[i][j].enemyIndice].seen = 1;
 				}
 			}
 		}		
@@ -191,7 +179,7 @@ void print(Nivel nivel, Player controller, Enemy **enemies){
 			}
 			
 			else
-				printf("- ");	
+				printf(". ");	
 		}
 
 		printf("\n");
@@ -206,7 +194,7 @@ void print(Nivel nivel, Player controller, Enemy **enemies){
 }
 
 /* Verfica se existe e carrega partida salva */
-int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
+int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 
 	int i;
 	char read;
@@ -221,11 +209,10 @@ int gameLoad(Player *player, Nivel *niveis, Enemy **enemies, Bag *bag, int n){
 		scanf(" %c", &read);
 
 		if(read == 'y'){
-			fread(niveis, n * sizeof(Nivel), 1, arq);
+			fread(nivel, sizeof(Nivel), 1, arq);
 			fread(player, sizeof(Player), 1, arq);
 
-			for(i = 0; i < n; i++)
-				fread(enemies[i], niveis[i].inimigos * sizeof(**enemies), 1, arq);
+			fread(enemies, nivel->inimigos * sizeof(Enemy), 1, arq);
 			
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
 
