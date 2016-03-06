@@ -189,8 +189,27 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	porcentXP = ceil(((double) controller.XP / controller.NextLevel) * 100);
 	porcentHP = ceil(((double) controller.hp / controller.MaxHP) * 100);
 
-	printf("HP: %d/%d (%d%%)\nLevel: %d\nXP: %d/%d (%d%%)\n", controller.hp, controller.MaxHP, porcentHP, controller.level, controller.XP, controller.NextLevel, porcentXP);
-	printf("Attack: %d\nDefense: %d\n\n\n", controller.attack, controller.defense);
+	printf("Level:           %3d\n", controller.level);
+	printf("HP:          %3d/%3d (", controller.hp, controller.MaxHP);
+
+	for(int i = 1; i < 21; i++)
+		if(porcentHP >= 5 * i)
+			printf("-");
+		else
+			printf(" ");
+
+	printf(") %d%\n", porcentHP);
+	printf("Experiencia: %3d/%3d (", controller.XP, controller.NextLevel);
+
+	for(int i = 1; i < 21; i++)
+		if(porcentXP >= 5 * i)
+			printf("-");
+		else
+			printf(" ");
+
+	printf(") %d\%\n", porcentXP);
+
+	printf("Attack:          %3d\nDefense:         %3d\n\n\n", controller.attack, controller.defense);
 }
 
 /* Verfica se existe e carrega partida salva */
