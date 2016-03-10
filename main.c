@@ -72,7 +72,12 @@ int main (){
 		nivel = genNivel(0, &player);
 		bagInit(bag);
 		comandList();
+		printf("Voce pode rever os comandos disponiveis acessando o MENU.\n\n\n\nDigite alguma letra para comecar: ");
+		scanf(" %c", &comand);
+		system("clear");
 	}
+
+
 
 /*
 	enemyPositions(nivel, enemies);

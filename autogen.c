@@ -19,7 +19,6 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 	return 1;
 }
 
-
 /* Gera um novo nivel */
 Nivel genNivel(int level, Player* player){
 
@@ -27,14 +26,14 @@ Nivel genNivel(int level, Player* player){
 
 	/* Escolhe um tamanho aleatorio para o mapa */
 	do{
-		nivel.tamI = rand() % 36;
+		nivel.tamI = rand() % 31;
 	}while(nivel.tamI < 26);
 
 	do{
-		nivel.tamJ = rand() % 36;
+		nivel.tamJ = rand() % 31;
 	}while(nivel.tamJ < 26);
 
-	
+
 	int tamI = nivel.tamI;
 	int tamJ = nivel.tamJ;
 
@@ -71,7 +70,7 @@ Nivel genNivel(int level, Player* player){
 				nivel.mapa[i][j].stairs = 0;
 			}
 		}
-	}	
+	}
 
 	/* Posiciona a escada para o proximo nivel*/
 	int stairsI, stairsJ;
@@ -103,7 +102,7 @@ Nivel genNivel(int level, Player* player){
 					nivel.mapa[i][j].used = 0;
 					nivel.mapa[i][j].wall = 0;
 				}
-			}	
+			}
 		}
 	}
 
@@ -117,7 +116,7 @@ void getRoomsStats(Nivel* nivel, int *rooms, int* maxSize){
 	int tamJ = nivel->tamJ;
 
 	int maxRooms = (tamI * tamJ) / (tamI + tamJ);
-	
+
 	srand((unsigned)time(NULL));
 	do{
 		(*maxSize) = rand() % maxRooms;
@@ -147,7 +146,6 @@ void fixRoom(Nivel* nivel){
 	/* Verifica se eh possivel abri-la para cima */
 	if((nivel->mapa[i - 1][j].shown == 1) && (i > 1)){
 		nivel->mapa[i - 1][j].shown = 0;
-		return testRoom(nivel);
 	}
 
 	/* Ou para baixo */
@@ -162,10 +160,9 @@ void fixRoom(Nivel* nivel){
 		while((j < tamJ - 2) && (nivel->mapa[i][j + 1].shown != 1))
 			j++;
 
-		nivel->mapa[i][j + 1].shown = 0;
+		if(j < tamJ - 2)
+			nivel->mapa[i][j + 1].shown = 0;
 	}
-
-	return testRoom(nivel);
 }
 
 /* Testa se o mapa esta totalmente interligado */
@@ -194,7 +191,7 @@ void testRoom(Nivel* nivel){
 			if(nivel->mapa[i][j].shown != 1)
 				nivel->mapa[i][j].shown = 2;
 		}
-	}	
+	}
 
 	int noMove = 0;
 	int count = 3;
@@ -240,7 +237,7 @@ void testRoom(Nivel* nivel){
 		}
 
 		count++;
-	}	
+	}
 
 	/* Verifica se o numero de espacos visitados + o total de muros eh igual a area total */
 	int freeSpace = 0;
@@ -255,7 +252,6 @@ void testRoom(Nivel* nivel){
 	/* Se nao for, existe ao menos uma subsala nao interligada, chama a funcao que a interliga */
 	if(freeSpace + walls < area)
 		fixRoom(nivel);
-
 }
 
 /* Gera um mapa */
@@ -323,9 +319,9 @@ void genRoom(Nivel* nivel){
 				door1 = 1;
 				nivel->mapa[up][j - 1].shown = 2;
 			}
-			
+
 			nivel->mapa[up][j].shown = 1;
-			
+
 			if((j > 1) && (nivel->mapa[down][j].shown == 1)){
 				door2 = 1;
 				nivel->mapa[down][j - 1].shown = 2;
@@ -335,7 +331,7 @@ void genRoom(Nivel* nivel){
 		}
 
 		if(door1 == 0){
-			int j; 
+			int j;
 
 			do{
 				j = rand() % right;
@@ -396,7 +392,7 @@ void genRoom(Nivel* nivel){
 		}
 
 		/* Cerca os extremos do mapa com muros */
-		for(int i = 0; i < tamJ; i++){
+		for(int i = 0; i < tamJ; i++){			
 			nivel->mapa[tamI - 1][i].shown = 1;
 			nivel->mapa[0][i].shown = 1;
 		}

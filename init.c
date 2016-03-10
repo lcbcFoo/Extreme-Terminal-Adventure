@@ -154,7 +154,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	for(i = 0; (i < nivel.tamI); i++){
 		for(j = 0; (j < nivel.tamJ); j++){
 
-			if(nivel.mapa[i][j].shown){
+			if(nivel.mapa[i][j].shown>=0){
 
 				if(nivel.mapa[i][j].player)
 					printf("P ");
