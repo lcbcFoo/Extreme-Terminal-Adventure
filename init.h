@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
+ * Last Modification: 03/11/2016 by Foo*/
 
 /* Biblioteca que inicializa o jogo ou carrega a partida salva */
 
@@ -49,7 +49,7 @@ typedef struct {
 
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice, stairs, shown;
+	int wall, player, used, enemyIndice, itemIndice, quantItems, stairs, shown;
 
 } Map;
 

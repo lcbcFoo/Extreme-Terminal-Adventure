@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
+ * Last Modification: 03/11/2016 by Foo*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,6 +59,7 @@ Nivel genNivel(int level, Player* player){
 				nivel.mapa[i][j].player = 0;
 				nivel.mapa[i][j].wall = 1;
 				nivel.mapa[i][j].stairs = 0;
+				nivel.mapa[i][j].quantItems = 0;
 			}
 
 			else{
@@ -68,6 +69,7 @@ Nivel genNivel(int level, Player* player){
 				nivel.mapa[i][j].player = 0;
 				nivel.mapa[i][j].wall = 0;
 				nivel.mapa[i][j].stairs = 0;
+				nivel.mapa[i][j].quantItems = 0;
 			}
 		}
 	}

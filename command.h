@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
+ * Last Modification: 03/11/2016 by Foo*/
 
 /* Biblioteca que executa comandos do jogo */
 
@@ -34,7 +34,7 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag);
 void usaPot(Bag *bag, Player *player);
 
 /* Funcao que printa o que tem dentro da mochila e permite que itens sejam usados */
-void printBag(Bag *bag, Player *player);
+void printBag(Bag *bag, Player *player, Nivel* nivel);
 
 /* Funcao que pega o item de uma posicao do mapa */
 void pegaItem(Player *player, Item item, Map *position, Bag *bag);

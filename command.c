@@ -1,5 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
+ * Last Modification: 03/11/2016 by Foo*/
 
 
 /* Biblioteca que executa comandos do jogo */
@@ -151,7 +151,7 @@ void usaPot(Bag *bag, Player *player){
 }
 
 /* Funcao que printa o que tem dentro da mochila e permite que itens sejam usados */
-void printBag(Bag *bag, Player *player){
+void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 	int i, flag = 1;
 	char recebe;
@@ -187,7 +187,7 @@ void printBag(Bag *bag, Player *player){
 	if(flag)
 		printf("Inventario vazio!!\n\n");
 
-	printf("Comandos possiveis: \nDigite o indice do item que deseja usar\nr - retorna ao mapa\n\n");
+	printf("Comandos possiveis: \nDigite o indice do item que deseja usar\nr - retorna ao mapa\nd - Dropa algum item da mochila\n\n");
 
 	flag = 1;
 
@@ -198,6 +198,63 @@ void printBag(Bag *bag, Player *player){
 		if(recebe == 'r'){
 			system("clear");
 			return;
+		}
+
+		else if(recebe == 'd'){
+			printf("Qual o indice do item que voce deseja dropar?\n");
+
+			char index;
+
+			index = getch();
+			
+			if((index - '1' >= 0) && (index - '1' < TAM_BAG) && (bag[index - '1'].used)){
+				if(nivel->mapa[player->y - 1][player->x].used == 0){
+					nivel->mapa[player->y - 1][player->x].used = 1;
+					nivel->mapa[player->y - 1][player->x].quantItems = bag[index - '1'].quantidade;
+					nivel->mapa[player->y - 1][player->x].itemIndice = bag[index - '1'].item.indice;
+					bag[index - '1'].used = 0;
+					system("clear");
+					printf("O item foi dropado!\n");
+					return;
+				}
+
+				else if(nivel->mapa[player->y + 1][player->x].used == 0){
+					nivel->mapa[player->y + 1][player->x].used = 1;
+					nivel->mapa[player->y + 1][player->x].quantItems = bag[index - '1'].quantidade;
+					nivel->mapa[player->y + 1][player->x].itemIndice = bag[index - '1'].item.indice;
+					bag[index - '1'].used = 0;
+					system("clear");
+					printf("O item foi dropado!\n");
+					return;
+				}
+
+				else if(nivel->mapa[player->y][player->x - 1].used == 0){
+					nivel->mapa[player->y][player->x - 1].used = 1;
+					nivel->mapa[player->y][player->x - 1].quantItems = bag[index - '1'].quantidade;
+					nivel->mapa[player->y][player->x - 1].itemIndice = bag[index - '1'].item.indice;
+					bag[index - '1'].used = 0;
+					system("clear");
+					printf("O item foi dropado!\n");
+					return;
+				}
+
+				else if(nivel->mapa[player->y][player->x + 1].used == 0){
+					nivel->mapa[player->y][player->x + 1].used = 1;
+					nivel->mapa[player->y][player->x + 1].quantItems = bag[index - '1'].quantidade;
+					nivel->mapa[player->y][player->x + 1].itemIndice = bag[index - '1'].item.indice;
+					bag[index - '1'].used = 0;
+					system("clear");
+					printf("O item foi dropado!\n");
+					return;
+				}
+				
+				else
+					printf("Nao foi possivel dropar o item nessa posicao do mapa!\n");	
+			}
+
+			else{
+				printf("Nao ha nenhum item nessa posicao da mochila!\n\nEscolha um novo comando:\n");
+			}
 		}
 
 		else if((recebe - '1' >= 0) && (recebe - '1' < TAM_BAG) && (bag[recebe - '1'].used)){
@@ -260,7 +317,7 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 	for(i = 0; (i < TAM_BAG) && (flag); i++){
 		if(bag[i].used == 0){
 			bag[i].item = item;
-			bag[i].quantidade = 1;
+			bag[i].quantidade = (*position).quantItems;
 			bag[i].used = 1;
 			flag = 0;
 			(*position).used = 0;
@@ -344,7 +401,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 		showStats(player);
 
 	else if(command == 'b')
-		printBag(bag, player);
+		printBag(bag, player, nivel);
 
 	/* Comandos de movimento / combate */
 	else if(((*player).x > 0) && (command == 'a')) {

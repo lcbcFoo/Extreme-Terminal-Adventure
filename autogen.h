@@ -1,6 +1,5 @@
 /* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
-
+ * Last Modification: 03/11/2016 by Foo*/
 
 #ifndef AUTOGEN_H_INCLUDED
 #define AUTOGEN_H_INCLUDED 
