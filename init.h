@@ -8,6 +8,7 @@
 
 #include <time.h>
 #include <termios.h>
+#include <curses.h>
 
 /* Define stats do jogador */
 #define BASE_HP 20
@@ -66,22 +67,6 @@ typedef struct {
 	int quantidade, used;
 } Bag;
 
-static struct termios old, new;
-
-/* Initialize new terminal i/o settings */
-void initTermios(int echo);
-
-/* Restore old terminal i/o settings */
-void resetTermios(void);
-
-/* Read 1 character - echo defines echo mode */
-char getch_(int echo);
-
-/* Read 1 character without echo */
-char getch(void);
-
-/* Read 1 character with echo */
-char getche(void);
 
 /* Inicializa o jogador */
 void playerInit(Player *player, Item *itens);

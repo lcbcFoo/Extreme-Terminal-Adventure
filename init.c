@@ -8,43 +8,10 @@
 #include <termios.h>
 #include <string.h>
 #include <math.h>
+#include <curses.h>
 #include "init.h"
 #include "command.h"
 #include "combat.h"
-
-/* Initialize new terminal i/o settings */
-void initTermios(int echo) {
-
-    tcgetattr(0, &old); /* grab old terminal i/o settings */
-    new = old; /* make new settings same as old settings */
-    new.c_lflag &= ~ICANON; /* disable buffered i/o */
-    new.c_lflag &= echo ? ECHO : ~ECHO; /* set echo mode */
-    tcsetattr(0, TCSANOW, &new); /* use these new terminal i/o settings now */
-}
-
-/* Restore old terminal i/o settings */
-void resetTermios(void) {
-    tcsetattr(0, TCSANOW, &old);
-}
-
-/* Read 1 character - echo defines echo mode */
-char getch_(int echo) {
-    char ch;
-    initTermios(echo);
-    ch = getchar();
-    resetTermios();
-    return ch;
-}
-
-/* Read 1 character without echo */
-char getch(void) {
-    return getch_(0);
-}
-
-/* Read 1 character with echo */
-char getche(void) {
-    return getch_(1);
-}
 
 
 /* Inicializa o jogador */
@@ -92,7 +59,29 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	int i, j, radius, porcentHP, porcentXP;
 
-	printf("\n\n");
+	porcentXP = ceil(((double) controller.XP / controller.NextLevel) * 100);
+	porcentHP = ceil(((double) controller.hp / controller.MaxHP) * 100);
+
+	printw("\nLevel:              %6d\n", controller.level);
+	printw("HP:          %6d/%6d  (", controller.hp, controller.MaxHP);
+	for(int i = 1; i < 21; i++)
+		if(porcentHP >= 5 * i)
+			printw("-");
+		else
+			printw(" ");
+
+	printw(") %d\%\n", porcentHP);
+	printw("Experiencia: %6d/%6d  (", controller.XP, controller.NextLevel);
+
+	for(int i = 1; i < 21; i++)
+		if(porcentXP >= 5 * i)
+			printw("-");
+		else
+			printw(" ");
+
+	printw(") %d\%\n", porcentXP);
+
+	printw("Attack:             %6d\nDefense:            %6d\n\n\n", controller.attack, controller.defense);
 
 	for(i = 0; (i < nivel.tamI); i++)
 		for(j = 0; (j < nivel.tamJ); j++)
@@ -152,64 +141,52 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	/* Imprime o mapa e os stats do jogador a cada movimento */
 	for(i = 0; (i < nivel.tamI); i++){
-		for(j = 0; (j < nivel.tamJ); j++){
+		for(j = 0; (j < nivel.tamJ * 2); j += 2){
 
-			if(nivel.mapa[i][j].shown>=0){
+			if(nivel.mapa[i][j/2].shown){
 
-				if(nivel.mapa[i][j].player)
-					printf("P ");
+				if(nivel.mapa[i][j/2].player){
+					attron(COLOR_PAIR(4));
+					printw("P ");
+					attron(COLOR_PAIR(1));
+				}
 
-				else if(nivel.mapa[i][j].wall)
-					printf("X ");
+				else if(nivel.mapa[i][j/2].wall)
+					printw("X ");
 
-				else if(nivel.mapa[i][j].enemyIndice >= 0)
-					printf("E ");
+				else if(nivel.mapa[i][j/2].enemyIndice >= 0){
+					attron(COLOR_PAIR(2));
+					printw("E ");
+					attron(COLOR_PAIR(1));
+				}
 
-				else if(nivel.mapa[i][j].itemIndice >= 0)
-					printf("I ");
+				else if(nivel.mapa[i][j/2].itemIndice >= 0){
+					attron(COLOR_PAIR(4));
+					printw("I ");
+					attron(COLOR_PAIR(1));
+				}	
 
-				else if(nivel.mapa[i][j].stairs < 0)
-					printf("< ");
+				else if(nivel.mapa[i][j/2].stairs < 0){
+					attron(COLOR_PAIR(3));
+					printw("< ");
+					attron(COLOR_PAIR(1));
+				}
 
-				else if(nivel.mapa[i][j].stairs > 0)
-					printf("> ");
+				else if(nivel.mapa[i][j/2].stairs > 0){
+					attron(COLOR_PAIR(3));
+					printw("> ");
+					attron(COLOR_PAIR(1));
+				}
 
 				else
-					printf("  ");
+					printw("  ");
 			}
 			
 			else
-				printf(". ");	
+				printw(". ");	
 		}
-
-		printf("\n");
-	}	
-	printf("\n\n");
-
-	porcentXP = ceil(((double) controller.XP / controller.NextLevel) * 100);
-	porcentHP = ceil(((double) controller.hp / controller.MaxHP) * 100);
-
-	printf("Level:           %3d\n", controller.level);
-	printf("HP:          %3d/%3d (", controller.hp, controller.MaxHP);
-
-	for(int i = 1; i < 21; i++)
-		if(porcentHP >= 5 * i)
-			printf("-");
-		else
-			printf(" ");
-
-	printf(") %d%\n", porcentHP);
-	printf("Experiencia: %3d/%3d (", controller.XP, controller.NextLevel);
-
-	for(int i = 1; i < 21; i++)
-		if(porcentXP >= 5 * i)
-			printf("-");
-		else
-			printf(" ");
-
-	printf(") %d\%\n", porcentXP);
-
-	printf("Attack:          %3d\nDefense:         %3d\n\n\n", controller.attack, controller.defense);
+		printw("\n");
+	}
 }
 
 /* Verfica se existe e carrega partida salva */

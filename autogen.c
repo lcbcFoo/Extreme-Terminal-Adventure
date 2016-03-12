@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <curses.h>
 #include "init.h"
 #include "autogen.h"
 #include <math.h>
@@ -23,6 +24,9 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 Nivel genNivel(int level, Player* player){
 
 	Nivel nivel;
+
+	clear();
+	move(0,0);
 
 	/* Escolhe um tamanho aleatorio para o mapa */
 	do{
@@ -165,6 +169,8 @@ void fixRoom(Nivel* nivel){
 		if(j < tamJ - 2)
 			nivel->mapa[i][j + 1].shown = 0;
 	}
+
+	testRoom(nivel);
 }
 
 /* Testa se o mapa esta totalmente interligado */

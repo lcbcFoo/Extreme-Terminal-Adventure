@@ -10,6 +10,7 @@
 #include <termios.h>
 #include <string.h>
 #include <math.h>
+#include <curses.h>
 #include "init.h"
 #include "command.h"
 #include "combat.h"
@@ -32,14 +33,14 @@
 /* Mostra os comandos permitidos para movimentar o personagem */
 void comandList(){
 
-	printf("\n\nComandos disponiveis durante o jogo:\n");
-	printf("w - anda para cima/ataca inimigo que esteja na posicao de cima no mapa;\n");
-	printf("d - anda para direita/ataca inimigo que esteja na posicao da direita no mapa;\n");
-	printf("s - anda para baixo/ataca inimigo que esteja na posicao de baixo no mapa;\n");
-	printf("a - anda para esquerda/ataca inimigo que esteja na posicao da esquerda do mapa;\n");
-	printf("b - abre o inventario;\n");
-	printf("c - mostra os atributos do jogador e permite que o jogador distribua os pontos;\n");
-	printf("- - acessa o menu do jogo;\n\n\n");
+	mvprintw(0,0,"Comandos disponiveis durante o jogo:");
+	mvprintw(1,0,"w - anda para cima/ataca inimigo que esteja na posicao de cima no mapa;");
+	mvprintw(2,0,"d - anda para direita/ataca inimigo que esteja na posicao da direita no mapa;");
+	mvprintw(3,0,"s - anda para baixo/ataca inimigo que esteja na posicao de baixo no mapa;");
+	mvprintw(4,0,"a - anda para esquerda/ataca inimigo que esteja na posicao da esquerda do mapa;");
+	mvprintw(5,0,"b - abre o inventario;");
+	mvprintw(6,0,"c - mostra os atributos do jogador e permite que o jogador distribua os pontos;");
+	mvprintw(7,0,"- - acessa o menu do jogo;");
 }
 
 /* Salva o jogo */
@@ -86,11 +87,11 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 	char recebe;
 
 	/* Lista os comandos disponiveis e salva executa o comando desejado pelo jogador */
-	printf("\n\n==== Menu ====\n\nOpcoes de comando:\n");
-	printf("s - salvar o jogo\n");
-	printf("r - retornar ao jogo\n");
-	printf("q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
-	printf("l - lista de comandos de jogo\n");
+	printw("\n\n==== Menu ====\n\nOpcoes de comando:\n");
+	printw("s - salvar o jogo\n");
+	printw("r - retornar ao jogo\n");
+	printw("q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
+	printw("l - lista de comandos de jogo\n");
 
 	/* Repete o loop ateh recebr um comando valido */
 	do{
@@ -99,31 +100,31 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 		/* Chama a funcao que salva o jogo */
 		if(recebe == 's'){
 			if(saveGame(nivel, player, enemies, bag)){
-				system("clear");
-				printf("\n\nJogo salvo!\n\n");
+				clear();
+				printw("\n\nJogo salvo!\n\n");
 			}	
 
 			else
-				printf("O jogo nao pode ser salvo, tente novamente\n\n");
+				printw("O jogo nao pode ser salvo, tente novamente\n\n");
 
 			return menu(nivel, player, enemies, bag);
 		}
 
 		/* Retorna ao mapa */
 		else if(recebe == 'r'){
-			system("clear");
+			clear();
 			return 1;
 		}	
 
 		/* Fecha o jogo */
 		else if(recebe == 'q'){
-			system("clear");
+			clear();
 			return 0;
 		}
 
 		/* Mostra os comandos disponiveis */
 		else if(recebe == 'l'){
-			system("clear");
+			clear();
 			comandList();
 			return menu(nivel, player, enemies, bag);
 		}
@@ -157,37 +158,37 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 	char recebe;
 	Item aux;
 
-	system("clear");
+	clear();
 
 	/* Imprime os equipamentos utilizados no momento */
-	printf("Voce esta equipado com: \n\n");
-	printf("%s\n    Dano = %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
-	printf("%s\n    Armadura = %d\n\n\n\n", (*player).gear.nome, (*player).gear.valor);
+	mvprintw(0,0,"Voce esta equipado com: \n\n\n");
+	printw("%s\n    Dano + %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
+	printw("%s\n    Armadura + %d", (*player).gear.nome, (*player).gear.valor);
 
 
 	/* Imprime os itens na mochila */
-	printf("Itens na mochila:\n\n");
+	mvprintw(11,0,"Itens na mochila:\n\n");
 
 	for(i = 0; i < TAM_BAG; i++){
 		if(bag[i].used){
 			flag = 0;
-			printf("%d - %s (%d)\n", i + 1, bag[i].item.nome, bag[i].quantidade);
+			printw("%d - %s (%d)\n", i + 1, bag[i].item.nome, bag[i].quantidade);
 
 			if(bag[i].item.tipo == 1)
-				printf("    Dano: %d\n\n", bag[i].item.valor);
+				printw("    Dano: %d\n\n", bag[i].item.valor);
 
 			else if(bag[i].item.tipo == 2)
-				printf("    Defesa: %d\n\n", bag[i].item.valor);
+				printw("    Defesa: %d\n\n", bag[i].item.valor);
 
 			else if(bag[i].item.tipo == 3)
-				printf("    Recupera %d vida\n\n", bag[i].item.valor);
+				printw("    Recupera %d vida\n\n", bag[i].item.valor);
 		}
 	}
 
 	if(flag)
-		printf("Inventario vazio!!\n\n");
+		printw("Inventario vazio!!\n\n");
 
-	printf("Comandos possiveis: \nDigite o indice do item que deseja usar\nr - retorna ao mapa\nd - Dropa algum item da mochila\n\n");
+	printw("Comandos possiveis: \n\nDigite o indice do item que deseja usar\nr - retorna ao mapa\nd - Dropa algum item da mochila\n\n");
 
 	flag = 1;
 
@@ -196,12 +197,12 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 		recebe = getch();
 
 		if(recebe == 'r'){
-			system("clear");
+			clear();
 			return;
 		}
 
 		else if(recebe == 'd'){
-			printf("Qual o indice do item que voce deseja dropar?\n");
+			printw("\nQual o indice do item que voce deseja dropar?\n");
 
 			char index;
 
@@ -213,8 +214,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y - 1][player->x].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y - 1][player->x].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					system("clear");
-					printf("O item foi dropado!\n");
+					clear();
+					printw("O item foi dropado!\n");
 					return;
 				}
 
@@ -223,8 +224,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y + 1][player->x].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y + 1][player->x].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					system("clear");
-					printf("O item foi dropado!\n");
+					clear();
+					printw("O item foi dropado!\n");
 					return;
 				}
 
@@ -233,8 +234,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y][player->x - 1].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y][player->x - 1].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					system("clear");
-					printf("O item foi dropado!\n");
+					clear();
+					printw("O item foi dropado!\n");
 					return;
 				}
 
@@ -243,17 +244,17 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y][player->x + 1].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y][player->x + 1].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					system("clear");
-					printf("O item foi dropado!\n");
+					clear();
+					printw("O item foi dropado!\n");
 					return;
 				}
 				
 				else
-					printf("Nao foi possivel dropar o item nessa posicao do mapa!\n");	
+					printw("\nNao foi possivel dropar o item nessa posicao do mapa!\n");	
 			}
 
 			else{
-				printf("Nao ha nenhum item nessa posicao da mochila!\n\nEscolha um novo comando:\n");
+				printw("\nNao ha nenhum item nessa posicao da mochila!\n\nEscolha um novo comando:\n");
 			}
 		}
 
@@ -263,8 +264,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 			/* Usa pot */
 			if(bag[recebe - '1'].item.tipo == 3){
 				usaPot(&bag[recebe - '1'], player);
-				system("clear");
-				printf("Voce utilizou uma %s e recuperou %d de vida!\n\n\n", bag[recebe-'1'].item.nome,
+				clear();
+				printw("Voce utilizou uma %s e recuperou %d de vida!\n", bag[recebe-'1'].item.nome,
 																			bag[recebe-'1'].item.valor);
 			}
 
@@ -275,8 +276,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 				bag[recebe - '1'].item = (*player).weapon;
 				(*player).weapon = aux;
 				(*player).attack += (*player).weapon.valor;
-				system("clear");
-				printf("Voce agora esta usando %s\n\n\n", (*player).weapon.nome);
+				clear();
+				printw("Voce agora esta usando %s\n", (*player).weapon.nome);
 			}
 
 			/* Troca de armadura */
@@ -286,8 +287,8 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 				bag[recebe -'1'].item = (*player).gear;
 				(*player).gear = aux;
 				(*player).defense += (*player).gear.valor;
-				system("clear");
-				printf("Voce agora esta usando %s\n\n\n", (*player).gear.nome);				
+				clear();
+				printw("Voce agora esta usando %s\n", (*player).gear.nome);				
 			}
 
 		}
@@ -327,19 +328,22 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 
 	/* Imprime se vc pegou o item ou se sua bag tava cheia */
 	if(flag){
-		printf("Seu inventario esta cheio!!\n\n");
+		clear();
+		mvprintw(0,0,"Seu inventario esta cheio!!\n");
 	}
 
-	else
-		printf("Voce encontrou um item: %s\n\n", item.nome);
+	else{
+		clear();
+		mvprintw(0,0,"Voce encontrou um item: %s\n", item.nome);
+	}
 }
 
 void nextNivel(Nivel *nivel, Player *player){
 
-
-	printf("Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
-
+	
 	(*nivel) = genNivel(nivel->nivel + 1, player);
+	clear();
+	mvprintw(0, 0, "Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
 
 }
 
@@ -347,19 +351,19 @@ void showStats(Player *player){
 
 	char recebe;
 
-	system("clear");
-	printf("Existem 3 tipos de atributos: constituicao, destreza e forca. Voce recebe 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
-	printf("Colocar pontos em constituicao te garante mais vida, em destreza te garante maior chance de se esquivar de ataques e de dar acertos criticos, ");
-	printf("e em forca aumenta o seu poder de ataque e defesa.\n\n");
-	printf("Seus atributos:\n\nConstituicao: %d\nDestreza: %d\nForca: %d\n\n", (*player).con, (*player).dext, (*player).str);
-	printf("Voce possui %d pontos a serem distribuidos\n\n\n", (*player).pontos);
-	printf("Comandos possiveis:\n1 - Adiciona 1 ponto em constituicao (caso voce possua pontos a serem distribuidos);\n2 - Adiciona 1 ponto em destreza (caso voce possua pontos a serem distribuidos)");
-	printf("\n3 - Adiciona 1 ponto em forca (GASTA 5 PONTOS!) (caso voce possua pontos a serem distribuidos);\nr - retorna ao jogo\n\n");
+	clear();
+	mvprintw(0,0,"Existem 3 tipos de atributos: constituicao, destreza e forca. Voce recebe 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
+	mvprintw(1,0,"Colocar pontos em constituicao te garante mais vida, em destreza te garante maior chance de se esquivar de ataques e de dar acertos criticos, ");
+	mvprintw(2,0,"e em forca aumenta o seu poder de ataque e defesa.");
+	mvprintw(5,0,"Seus atributos:\n\nConstituicao: %d\nDestreza: %d\nForca: %d", (*player).con, (*player).dext, (*player).str);
+	mvprintw(11,0,"Voce possui %d pontos a serem distribuidos", (*player).pontos);
+	mvprintw(14,0,"Comandos possiveis:\n1 - Adiciona 1 ponto em constituicao (caso voce possua pontos a serem distribuidos);\n2 - Adiciona 1 ponto em destreza (caso voce possua pontos a serem distribuidos)");
+	mvprintw(17,0,"3 - Adiciona 1 ponto em forca (GASTA 5 PONTOS!) (caso voce possua pontos a serem distribuidos);\nr - retorna ao jogo\n\n");
 
 	recebe = getch();
 
 	if(recebe == 'r'){
-		system("clear");
+		clear();
 		return;
 	}
 
@@ -391,11 +395,12 @@ void showStats(Player *player){
 /* Executa comandos de controle de personagem ou acessa o menu */
 int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Bag *bag, Item *itens){
 
-
 	/* Recebe os comandos durante o jogo e os executa */
 	/* Abre o menu */
-	if(command == '-')
+	if(command == '-'){
+		clear();
 		return menu((*nivel), player, enemies, bag);
+	}
 
 	else if(command == 'c')
 		showStats(player);
@@ -429,11 +434,8 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x - 1].itemIndice], 
 					&(*nivel).mapa[(*player).y][(*player).x - 1], bag);
 
-		else if((*nivel).mapa[(*player).y][(*player).x - 1].stairs == 1){
-			(*nivel).mapa[(*player).y][(*player).x].player = 0;
-			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+		else if((*nivel).mapa[(*player).y][(*player).x - 1].stairs == 1)
 			nextNivel(nivel, player);
-		}
 
 		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
 		return enemyAction(player, &(*nivel), enemies);
@@ -463,11 +465,8 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x + 1].itemIndice], 
 					&(*nivel).mapa[(*player).y][(*player).x + 1], bag);
 
-		else if((*nivel).mapa[(*player).y][(*player).x + 1].stairs == 1){
-			(*nivel).mapa[(*player).y][(*player).x].player = 0;
-			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+		else if((*nivel).mapa[(*player).y][(*player).x + 1].stairs == 1)
 			nextNivel(nivel, player);
-		}
 
 		return enemyAction(player, &(*nivel), enemies);
 	}
@@ -495,11 +494,8 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			pegaItem(player, itens[(*nivel).mapa[(*player).y - 1][(*player).x].itemIndice], 
 					&(*nivel).mapa[(*player).y - 1][(*player).x], bag);
 
-		else if((*nivel).mapa[(*player).y - 1][(*player).x].stairs == 1){
-			(*nivel).mapa[(*player).y][(*player).x].player = 0;
-			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+		else if((*nivel).mapa[(*player).y - 1][(*player).x].stairs == 1)
 			nextNivel(nivel, player);
-		}
 
 		return enemyAction(player, &(*nivel), enemies);
 	}
@@ -527,11 +523,8 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			pegaItem(player, itens[(*nivel).mapa[(*player).y + 1][(*player).x].itemIndice], 
 					&(*nivel).mapa[(*player).y + 1][(*player).x], bag);
 
-		else if((*nivel).mapa[(*player).y + 1][(*player).x].stairs == 1){
-			(*nivel).mapa[(*player).y][(*player).x].player = 0;
-			(*nivel).mapa[(*player).y][(*player).x].used = 0;
+		else if((*nivel).mapa[(*player).y + 1][(*player).x].stairs == 1)
 			nextNivel(nivel, player);
-		}
 
 		return enemyAction(player, &(*nivel), enemies);
 	}

@@ -6,6 +6,8 @@
 #ifndef COMAND_H_UNCLUDED
 #define COMAND_H_UNCLUDED 
 
+#include <curses.h>
+
 /* Inclui as bibliotecas que: *
  * inicializa o jogo, *
  * realiza as funcoes de combate *

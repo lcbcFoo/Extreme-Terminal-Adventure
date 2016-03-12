@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <curses.h>
 
 /* Inclui as bibliotecas que: *
  * inicializa o jogo, *
@@ -37,8 +38,18 @@ int main (){
 	Item *itens, read;
 	FILE *database, *arq;
 
-	system("clear");
-	
+	initscr();
+	start_color(); //Esta função torna possível o uso das cores
+
+//Abaixo estamos definindo os pares de cores que serão utilizados no programa
+    init_pair(1,COLOR_WHITE,COLOR_BLACK);
+    init_pair(2,COLOR_RED,COLOR_BLACK);
+    init_pair(3,COLOR_GREEN,COLOR_BLACK);
+    init_pair(4,COLOR_BLUE,COLOR_BLACK);
+    bkgd(COLOR_PAIR(1)); 
+
+	refresh();
+
 	/* Aloca o vetor que armazena a bag */
 	bag = malloc(TAM_BAG * sizeof(Bag));
 
@@ -72,9 +83,9 @@ int main (){
 		nivel = genNivel(0, &player);
 		bagInit(bag);
 		comandList();
-		printf("Voce pode rever os comandos disponiveis acessando o MENU.\n\n\n\nDigite alguma letra para comecar: ");
-		scanf(" %c", &comand);
-		system("clear");
+		mvprintw(11,0,"Voce pode rever os comandos disponiveis acessando o MENU.\n\n\nDigite alguma letra para comecar: ");
+		comand = getch();
+		clear();
 	}
 
 	bag[0].item = itens[0];
@@ -89,13 +100,15 @@ int main (){
 	do{
 		print(nivel, player, enemies);
 		comand = getch();
-		system("clear");
+		clear();
 	}while(executeComand(comand, &player, &nivel, enemies, bag, itens));
 
 
 	free(enemies);
 	free(bag);
 	free(itens);
+
+	endwin();
 
 	return 0;
 }
