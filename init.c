@@ -201,6 +201,7 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 	/* Caso o arquivo de salvar o jogo exista, permite que o jogo seja carregado *
 	 * caso contrario retorna 0 e cria um novo mapa */
 	if(arq != NULL){
+		attron(COLOR_PAIR(3));
 		printf("Voce deseja continuar o jogo salvo? (y/n)\n");
 		scanf(" %c", &read);
 
@@ -215,10 +216,11 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 			fclose(arq);
 			remove("savedGame.bin");
 			system("clear");
+			attron(COLOR_PAIR(1));
 			return 1;
 		}
-
-		system("clear");
+		attron(COLOR_PAIR(1));
+		clear();
 
 		fclose(arq);	
 	}
