@@ -7,6 +7,7 @@
 #include <termios.h>
 #include <string.h>
 #include <math.h>
+#include <curses.h>
 #include "init.h"
 #include "command.h"
 #include "combat.h"
@@ -23,7 +24,7 @@ void verificaXP(Player *player, int xpGanho){
 
 		/* Verifica se o jogador upou e atualiza os stats do jogador */
 		if((*player).XP >= (*player).NextLevel){
-			printf("Parabens! Voce atingiu o level %d\n", (*player).level + 1);
+			printw("Parabens! Voce atingiu o level %d\n", (*player).level + 1);
 			(*player).XP -= (*player).NextLevel;
 			(*player).level++;
 			(*player).attack += 1.2 * (*player).level * BASE_ATTACK / 10;
@@ -58,6 +59,7 @@ void dropCheck(Enemy *enemy, Map *position){
 				aux = rand() % QUANT_ITENS;
 				(*position).used = 1;
 				(*position).itemIndice = aux;
+				(*position).quantItems = 1;
 			}while((*enemy).dropItems[aux] == 0);
 		}		
 	}
@@ -81,8 +83,10 @@ int enemyAttack(Player *player, Enemy *enemy){
 
 		critChance = 10;
 
+		srand(time(NULL));
+
 		if(critChance >= rand() % 101){
-			printf("Dano critico! ");
+			printw("Dano critico! ");
 			attack += attack * 0.5;
 		}
 
@@ -96,16 +100,17 @@ int enemyAttack(Player *player, Enemy *enemy){
 		(*player).hp -= damageDone;
 
 		/* Indica o danop recebido e verifica se vc morreu*/
-		printf("%s causou a voce %d de dano!\n", (*enemy).nome, damageDone);
+		printw("%s causou a voce %d de dano!\n", (*enemy).nome, damageDone);
 
 		if((*player).hp <= 0){
-			printf("Voce morreu!!\n\nGame Over baby!!!!\n\n\n");
+			printw("Voce morreu!!\n\n(Pressione alguma tecla para sair)\n");
+			char ok = getch();
 			return 0;
 		}
 	}
 	
 	else
-		printf("Voce desviou do ataque do inimigo!\n");	
+		printw("Voce desviou do ataque do inimigo!\n");	
 	
 	return 1;	
 }
@@ -277,8 +282,9 @@ void combate(Player *player, Enemy *enemy, Map *position){
 
 		critChance = 5 + (*player).dext / 20;
 
+		srand(time(NULL));
 		if(critChance >= rand() % 101){
-			printf("Dano critico! ");
+			printw("Dano critico! ");
 			attack += attack * 0.5;
 		}
 
@@ -290,11 +296,11 @@ void combate(Player *player, Enemy *enemy, Map *position){
 			damageDone = 0;
 
 		(*enemy).hp -= damageDone;
-		printf("Voce causou a %s %d de dano!\n", (*enemy).nome, damageDone);
+		printw("Voce causou a %s %d de dano!\n", (*enemy).nome, damageDone);
 
 		if((*enemy).hp <= 0){
-			printf("%s morreu!\n", (*enemy).nome);
-			printf("Voce recebeu %d de XP!\n", (*enemy).givenXP);
+			printw("%s morreu!\n", (*enemy).nome);
+			printw("Voce recebeu %d de XP!\n", (*enemy).givenXP);
 			(*position).enemyIndice = -1;
 			(*position).used = 0;
 
@@ -303,9 +309,9 @@ void combate(Player *player, Enemy *enemy, Map *position){
 		}
 
 		if((*enemy).hp > 0)
-			printf("%s possui %d de vida!\n", (*enemy).nome, (*enemy).hp);
+			printw("%s possui %d de vida!\n", (*enemy).nome, (*enemy).hp);
 	}
 	
 	else
-		printf("%s desviou de seu ataque!\n", (*enemy).nome);
+		printw("%s desviou de seu ataque!\n", (*enemy).nome);
 }

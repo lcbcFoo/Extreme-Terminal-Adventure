@@ -42,7 +42,7 @@ void printBag(Bag *bag, Player *player, Nivel* nivel);
 void pegaItem(Player *player, Item item, Map *position, Bag *bag);
 
 /* Desce na dungeon */
-void nextNivel(Nivel* nivel, Player *player);
+void nextNivel(Nivel* nivel, Player *player, Enemy** enemy);
 
 /* Mostra os stats do jogador */
 void showStats(Player *player);

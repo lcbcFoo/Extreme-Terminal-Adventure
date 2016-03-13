@@ -4,8 +4,9 @@
 #ifndef AUTOGEN_H_INCLUDED
 #define AUTOGEN_H_INCLUDED 
 
+
 /* Gera um novo nivel */
-Nivel genNivel(int level, Player* player);
+Nivel genNivel(int level, Player* player, Enemy* enemies);
 
 /* Gera alguns elementos aleatorios para determinar o numero e tamanho de subsalas */
 void getRoomsStats(Nivel* nivel, int *maxSize, int* rooms);

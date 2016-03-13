@@ -46,7 +46,6 @@ void comandList(){
 /* Salva o jogo */
 int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag){
 
-	int i;
 	FILE *arq;
 
 	arq = fopen("savedGame.bin", "wb");
@@ -372,10 +371,9 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 	}
 }
 
-void nextNivel(Nivel *nivel, Player *player){
+void nextNivel(Nivel *nivel, Player *player, Enemy** enemy){
 
-	
-	(*nivel) = genNivel(nivel->nivel + 1, player);
+	(*nivel) = genNivel(nivel->nivel + 1, player, (*enemy));
 	clear();
 	mvprintw(0, 0, "Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
 
@@ -471,7 +469,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 					&(*nivel).mapa[(*player).y][(*player).x - 1], bag);
 
 		else if((*nivel).mapa[(*player).y][(*player).x - 1].stairs == 1)
-			nextNivel(nivel, player);
+			nextNivel(nivel, player, &enemies);
 
 		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
 		return enemyAction(player, &(*nivel), enemies);
@@ -502,7 +500,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 					&(*nivel).mapa[(*player).y][(*player).x + 1], bag);
 
 		else if((*nivel).mapa[(*player).y][(*player).x + 1].stairs == 1)
-			nextNivel(nivel, player);
+			nextNivel(nivel, player, &enemies);
 
 		return enemyAction(player, &(*nivel), enemies);
 	}
@@ -531,7 +529,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 					&(*nivel).mapa[(*player).y - 1][(*player).x], bag);
 
 		else if((*nivel).mapa[(*player).y - 1][(*player).x].stairs == 1)
-			nextNivel(nivel, player);
+			nextNivel(nivel, player, &enemies);
 
 		return enemyAction(player, &(*nivel), enemies);
 	}
@@ -560,7 +558,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 					&(*nivel).mapa[(*player).y + 1][(*player).x], bag);
 
 		else if((*nivel).mapa[(*player).y + 1][(*player).x].stairs == 1)
-			nextNivel(nivel, player);
+			nextNivel(nivel, player, &enemies);
 
 		return enemyAction(player, &(*nivel), enemies);
 	}

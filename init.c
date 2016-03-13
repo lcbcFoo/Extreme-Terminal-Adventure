@@ -48,7 +48,7 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 
 	for(i = 0; i < nivel.tamI; i++)
 		for(j = 0; j < nivel.tamJ; j++)
-			if(nivel.mapa[i][j].enemyIndice >= 0){
+			if(nivel.mapa[i][j].enemyIndice > 0){
 				enemies[nivel.mapa[i][j].enemyIndice].y = i;
 				enemies[nivel.mapa[i][j].enemyIndice].x = j;
 			}
@@ -156,7 +156,10 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 				else if(nivel.mapa[i][j/2].enemyIndice >= 0){
 					attron(COLOR_PAIR(2));
-					printw("E ");
+					if(nivel.mapa[i][j/2].enemyIndice > 0)
+						printw("E ");
+					else
+						printw("B ");
 					attron(COLOR_PAIR(1));
 				}
 
@@ -192,7 +195,6 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 /* Verfica se existe e carrega partida salva */
 int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 
-	int i;
 	char read;
 	FILE *arq;
 

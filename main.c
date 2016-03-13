@@ -29,14 +29,14 @@
 
 int main (){
 
-	int count = 0, i, existentItems = 0;
+	int existentItems = 0;
 	char comand;
-	Nivel nivel, aux;
+	Nivel nivel;
 	Player player;
 	Enemy *enemies;
 	Bag *bag;
 	Item *itens, read;
-	FILE *database, *arq;
+	FILE *database;
 
 	initscr();
 	start_color(); //Esta função torna possível o uso das cores
@@ -73,14 +73,14 @@ int main (){
 		return 0;
 	}
 
-	enemies = NULL;
+	enemies = malloc(sizeof(Enemy));
 
 	/* Carrega ou inicializa um novo jogo */
 	if(gameLoad(&player, &nivel, enemies, bag) == 0){
 
 		/* Inicializa o player e a mochila */
 		playerInit(&player, itens);
-		nivel = genNivel(0, &player);
+		nivel = genNivel(0, &player, enemies);
 		bagInit(bag);
 		comandList();
 		mvprintw(11,0,"Voce pode rever os comandos disponiveis acessando o MENU.\n\n\nDigite alguma letra para comecar: ");
@@ -92,10 +92,8 @@ int main (){
 	bag[0].quantidade = 3;
 	bag[0].used = 1;
 
+	
 
-/*
-	enemyPositions(nivel, enemies);
-*/
 	/* Loop que executa o jogo */
 	do{
 		print(nivel, player, enemies);

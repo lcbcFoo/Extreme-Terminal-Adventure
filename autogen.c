@@ -4,9 +4,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curses.h>
+#include <string.h>
 #include "init.h"
 #include "autogen.h"
 #include <math.h>
+
+
+#define BOSS_HP 50
+#define BOSS_ATK 9
+#define BOSS_DEFENSE 5
+#define BOSS_DROP_RATE 0.9
+#define BOSS_XP 10
 
 
 /* Calcula a distancia entre 2 pontos do mapa */
@@ -20,8 +28,33 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 	return 1;
 }
 
+Enemy createEnemy(int boss, int y, int x, int level){
+
+	Enemy enemy;
+	char name[50] = "Guardiao do nivel";
+
+
+	if(boss){
+		enemy.hp = (1 + level) * (3 * BOSS_HP / 2);
+		enemy.attack = (BOSS_ATK * (1 + level)) / 1.5;
+		enemy.defense = (BOSS_DEFENSE * (1 + level)) / 1.5;
+		enemy.givenXP = BOSS_XP * (1 + level) * 1.5;
+		enemy.dropRate = BOSS_DROP_RATE;
+		enemy.seen = 0;
+		enemy.y = y;
+		enemy.x = x;
+		strcpy(enemy.nome, name);
+
+		for(int i = 0; i < 200; i++)
+			enemy.dropItems[i] = 1;
+
+	}
+
+	return enemy;
+}
+
 /* Gera um novo nivel */
-Nivel genNivel(int level, Player* player){
+Nivel genNivel(int level, Player* player, Enemy* enemies){
 
 	Nivel nivel;
 
@@ -89,6 +122,67 @@ Nivel genNivel(int level, Player* player){
 	nivel.mapa[stairsI][stairsJ].used = 1;
 	nivel.mapa[stairsI][stairsJ].stairs = 1;
 
+	for(int i = stairsI - 1; i <= stairsI + 1; i++){
+		for(int j = stairsJ - 1; j <= stairsJ + 1; j++){
+			if(nivel.mapa[i][j].wall == 1){
+				if((i > 0) && (i < tamI - 1) && (j > 0) && (j < tamJ - 1)){
+					nivel.mapa[i][j].used = 0;
+					nivel.mapa[i][j].wall = 0;
+				}
+			}
+		}
+	}
+
+	/* Posiciona boss do nivel */
+	int flag = 0;
+
+	flag = rand() % 4;
+
+	if(flag == 0){
+		if(stairsI - 1 > 0){
+			nivel.mapa[stairsI - 1][stairsJ].enemyIndice = 0;
+			nivel.mapa[stairsI - 1][stairsJ].used = 1;
+			nivel.inimigos++;
+			enemies[0] = createEnemy(1, stairsI - 1, stairsJ, nivel.nivel);
+		}
+
+		else
+			flag = 1;
+	}
+
+	if(flag == 1){
+		if(stairsI + 1 < tamI - 1){
+			nivel.mapa[stairsI + 1][stairsJ].enemyIndice = 0;
+			nivel.mapa[stairsI + 1][stairsJ].used = 1;
+			nivel.inimigos++;
+			enemies[0] = createEnemy(1, stairsI + 1, stairsJ, nivel.nivel);
+		}
+
+		else
+			flag = 2;
+	}
+
+	if(flag == 2){
+		if(stairsJ - 1 > 0){
+			nivel.mapa[stairsI][stairsJ - 1].enemyIndice = 0;
+			nivel.mapa[stairsI][stairsJ - 1].used = 1;
+			nivel.inimigos++;
+			enemies[0] = createEnemy(1, stairsI, stairsJ - 1, nivel.nivel);
+		}
+
+		else
+			flag = 3;
+	}
+
+	if(flag == 3){
+		if(stairsJ + 1 < tamJ - 1){
+			nivel.mapa[stairsI][stairsJ + 1].enemyIndice = 0;
+			nivel.mapa[stairsI][stairsJ + 1].used = 1;
+			nivel.inimigos++;
+			enemies[0] = createEnemy(1, stairsI, stairsJ + 1, nivel.nivel);
+		}
+	}
+
 	/* Posiciona o jogador e garante que ele nao esta encostado em um muro (isso pode atrapalhar movimento em corredores) */
 	do{
 		(*player).y = rand() % tamI;
@@ -112,6 +206,7 @@ Nivel genNivel(int level, Player* player){
 		}
 	}
 
+	enemyPositions(nivel, enemies);
 	return nivel;
 }
 
