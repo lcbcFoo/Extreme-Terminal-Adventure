@@ -34,7 +34,7 @@ typedef struct {
  /* Define o struct do player */
 typedef struct {
 
-	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos;
+	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos, chave, atual;
 	Item weapon, gear;
 
 } Player;
@@ -42,7 +42,7 @@ typedef struct {
 /* Define o struct de inimigos */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y, dropItems[200], seen;
+	int hp, attack, defense, givenXP, x, y, dropItems[200], seen, indice;
 	double dropRate;
 	char nome[51];
 
@@ -57,7 +57,7 @@ typedef struct {
 typedef struct{
 
 	int nivel, inimigos, tamI, tamJ;
-	Map mapa[35][35]; 
+	Map mapa[50][70]; 
 } Nivel;
 
 /* Struct da bag */

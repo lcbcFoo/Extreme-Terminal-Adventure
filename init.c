@@ -21,11 +21,13 @@ void playerInit(Player *player, Item *itens){
 	(*player).hp = BASE_HP;
 	(*player).level = 1;
 	(*player).XP = 0;
+	(*player).chave = 0;
 	(*player).NextLevel = BASE_NEXT_LEVEL;
 	(*player).MaxHP = BASE_HP;
 	(*player).weapon = itens[2];
 	(*player).attack = BASE_ATTACK + (*player).weapon.valor;
 	(*player).gear = itens[3];
+	(*player).atual = 0;
 	(*player).defense = BASE_DEF + (*player).gear.valor;
 	(*player).con = 0;
 	(*player).dext = 0;
@@ -70,7 +72,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		else
 			printw(" ");
 
-	printw(") %d\%\n", porcentHP);
+	printw(") %d%%\n", porcentHP);
 	printw("Experiencia: %6d/%6d  (", controller.XP, controller.NextLevel);
 
 	for(int i = 1; i < 21; i++)
@@ -79,7 +81,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		else
 			printw(" ");
 
-	printw(") %d\%\n", porcentXP);
+	printw(") %d%%\n", porcentXP);
 
 	printw("Attack:             %6d\nDefense:            %6d\n\n\n", controller.attack, controller.defense);
 
@@ -90,7 +92,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	nivel.mapa[controller.y][controller.x].shown = 1;
 
 	/* Verifica os espacos que o player consegue ver */
-	for(radius = 1; radius < 7; radius++){
+	for(radius = 1; radius < 5; radius++){
 
 		for(i = controller.y - radius; (i < controller.y + radius); i++){
 			for(j = controller.x - radius; (j < controller.x + radius); j++){

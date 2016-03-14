@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <curses.h>
 #include <string.h>
 #include "init.h"
 #include "autogen.h"
@@ -31,18 +30,19 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 Enemy createEnemy(int boss, int y, int x, int level){
 
 	Enemy enemy;
-	char name[50] = "Guardiao do nivel";
-
 
 	if(boss){
-		enemy.hp = (1 + level) * (3 * BOSS_HP / 2);
-		enemy.attack = (BOSS_ATK * (1 + level)) / 1.5;
+		char name[50] = "Guardiao do nivel";
+
+		enemy.hp = (1 + level) * (BOSS_HP / 2);
+		enemy.attack = (BOSS_ATK * (1 + level)) / 3;
 		enemy.defense = (BOSS_DEFENSE * (1 + level)) / 1.5;
 		enemy.givenXP = BOSS_XP * (1 + level) * 1.5;
 		enemy.dropRate = BOSS_DROP_RATE;
 		enemy.seen = 0;
 		enemy.y = y;
 		enemy.x = x;
+		enemy.indice = 0;
 		strcpy(enemy.nome, name);
 
 		for(int i = 0; i < 200; i++)
@@ -63,12 +63,12 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 
 	/* Escolhe um tamanho aleatorio para o mapa */
 	do{
-		nivel.tamI = rand() % 31;
-	}while(nivel.tamI < 26);
+		nivel.tamI = rand() % 26;
+	}while(nivel.tamI < 21);
 
 	do{
-		nivel.tamJ = rand() % 31;
-	}while(nivel.tamJ < 26);
+		nivel.tamJ = rand() % 51;
+	}while(nivel.tamJ < 46);
 
 
 	int tamI = nivel.tamI;
@@ -135,8 +135,6 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 
 	/* Posiciona boss do nivel */
 	int flag = 0;
-
-	flag = rand() % 4;
 
 	if(flag == 0){
 		if(stairsI - 1 > 0){

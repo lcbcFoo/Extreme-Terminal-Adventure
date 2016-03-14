@@ -373,10 +373,21 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 
 void nextNivel(Nivel *nivel, Player *player, Enemy** enemy){
 
-	(*nivel) = genNivel(nivel->nivel + 1, player, (*enemy));
-	clear();
-	mvprintw(0, 0, "Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
+	if(player->chave){
+		(*nivel) = genNivel(nivel->nivel + 1, player, (*enemy));
+		clear();
+		attron(COLOR_PAIR(3));
+		mvprintw(0, 0, "Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);
+		attron(COLOR_PAIR(1));
+		player->chave = 0;
+		player->atual++;
+	}
 
+	else{
+		attron(COLOR_PAIR(2));
+		printw("Voce nao possui a chave desse nivel, elimine o Boss para consegui-la!\n");
+		attron(COLOR_PAIR(1));
+	}
 }
 
 void showStats(Player *player){

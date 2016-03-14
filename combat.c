@@ -76,10 +76,10 @@ int enemyAttack(Player *player, Enemy *enemy){
 	if(rand() % 101 >= 30 * (*player).dext / 100){
 
 		if(rand() % 2)
-			attack = ceil((*enemy).attack + (0.2 * (*enemy).attack * (rand() % 100) / (double) 100)); 
+			attack = ceil((*enemy).attack + (0.1 * (*enemy).attack * (rand() % 100) / (double) 100)); 
 
 		else 
-			attack = ceil((*enemy).attack - (0.2 * (*enemy).attack * (rand() % 100) /  (double) 100)); 
+			attack = ceil((*enemy).attack - (0.1 * (*enemy).attack * (rand() % 100) /  (double) 100)); 
 
 		critChance = 10;
 
@@ -94,8 +94,8 @@ int enemyAttack(Player *player, Enemy *enemy){
 
 		damageDone = attack - defense;
 
-		if(damageDone < 0)
-			damageDone = 0;
+		if(damageDone <= 0)
+			damageDone = 1;
 
 		(*player).hp -= damageDone;
 
@@ -103,8 +103,12 @@ int enemyAttack(Player *player, Enemy *enemy){
 		printw("%s causou a voce %d de dano!\n", (*enemy).nome, damageDone);
 
 		if((*player).hp <= 0){
-			printw("Voce morreu!!\n\n(Pressione alguma tecla para sair)\n");
-			char ok = getch();
+			attron(COLOR_PAIR(2));
+			printw("Voce foi morto por %s!!\n\n", enemy->nome);
+			attron(COLOR_PAIR(3));
+			printw("(Pressione alguma tecla para sair)\n");
+			attron(COLOR_PAIR(1));
+			getch();
 			return 0;
 		}
 	}
@@ -130,7 +134,7 @@ void playerNear(Nivel *nivel, Enemy *enemy, int playerX, int playerY, int indice
 	(*nivel).mapa[y][x].shown = 1;
 
 	/* Verifica os espacos que o inimigo consegue ver */
-	for(radius = 1; radius < 6; radius++){
+	for(radius = 1; radius < 4; radius++){
 
 		for(i = (*enemy).y - radius; (i <= (*enemy).y + radius); i++){
 			for(j = (*enemy).x - radius; (j <= (*enemy).x + radius); j++){
@@ -275,14 +279,15 @@ void combate(Player *player, Enemy *enemy, Map *position){
 	if(rand() % 100 > 30 * (*player).dext / 100){
 
 		if(rand() % 2)
-			attack = ceil((*player).attack + (0.3 * (*player).attack * (rand() % 100) / (double) 100)); 
+			attack = ceil((*player).attack + (0.2 * (*player).attack * (rand() % 100) / (double) 100)); 
 
 		else 
-			attack = ceil((*player).attack - (0.2 * (*player).attack * (rand() % 100) / (double) 100)); 
+			attack = ceil((*player).attack - (0.1 * (*player).attack * (rand() % 100) / (double) 100)); 
 
-		critChance = 5 + (*player).dext / 20;
+		critChance = 5 + (*player).dext / 5;
 
 		srand(time(NULL));
+
 		if(critChance >= rand() % 101){
 			printw("Dano critico! ");
 			attack += attack * 0.5;
@@ -292,8 +297,8 @@ void combate(Player *player, Enemy *enemy, Map *position){
 
 		damageDone = attack - defense;
 
-		if(damageDone < 0)
-			damageDone = 0;
+		if(damageDone <= 0)
+			damageDone = 1;
 
 		(*enemy).hp -= damageDone;
 		printw("Voce causou a %s %d de dano!\n", (*enemy).nome, damageDone);
@@ -306,6 +311,14 @@ void combate(Player *player, Enemy *enemy, Map *position){
 
 			dropCheck(enemy, position);
 			verificaXP(player, (*enemy).givenXP);
+
+			if(enemy->indice == 0){
+				attron(COLOR_PAIR(2));
+				printw("O Guardiao do Nivel %d foi eliminado. Voce agora possui a chave para o proximo nivel!\n", player->atual);
+				attron(COLOR_PAIR(1));
+				player->chave = 1;
+			}
+
 		}
 
 		if((*enemy).hp > 0)
