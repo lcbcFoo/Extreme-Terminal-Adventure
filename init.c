@@ -54,17 +54,26 @@ void enemyPositions(Nivel nivel, Enemy *enemies){
 				enemies[nivel.mapa[i][j].enemyIndice].y = i;
 				enemies[nivel.mapa[i][j].enemyIndice].x = j;
 			}
-			
+
 }
 
 void print(Nivel nivel, Player controller, Enemy *enemies){
 
-	int i, j, radius, porcentHP, porcentXP;
+	int radius, porcentHP, porcentXP;
 
+	int beginMapLine = 7;
+	int beginStatsCollun = nivel.tamJ * 2 + 5;
+
+	move(beginMapLine, beginStatsCollun);
+	attron(COLOR_PAIR(4));
+	printw("Status do jogador:");
+	attron(COLOR_PAIR(1));
 	porcentXP = ceil(((double) controller.XP / controller.NextLevel) * 100);
 	porcentHP = ceil(((double) controller.hp / controller.MaxHP) * 100);
 
-	printw("\nLevel:              %6d\n", controller.level);
+	move(beginMapLine + 2, beginStatsCollun);
+	printw("Level:              %6d", controller.level);
+	move(beginMapLine + 3, beginStatsCollun);
 	printw("HP:          %6d/%6d  (", controller.hp, controller.MaxHP);
 	for(int i = 1; i < 21; i++)
 		if(porcentHP >= 5 * i)
@@ -72,7 +81,8 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		else
 			printw(" ");
 
-	printw(") %d%%\n", porcentHP);
+	printw(") %d%\n", porcentHP);
+	move(beginMapLine + 4, beginStatsCollun);
 	printw("Experiencia: %6d/%6d  (", controller.XP, controller.NextLevel);
 
 	for(int i = 1; i < 21; i++)
@@ -81,29 +91,31 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		else
 			printw(" ");
 
-	printw(") %d%%\n", porcentXP);
+	printw(") %d%\n", porcentXP);
+	move(beginMapLine + 5, beginStatsCollun);
+	printw("Attack:             %6d", controller.attack);
+	move(beginMapLine + 6, beginStatsCollun);
+	printw("Defense:            %6d\n", controller.defense);
 
-	printw("Attack:             %6d\nDefense:            %6d\n\n\n", controller.attack, controller.defense);
-
-	for(i = 0; (i < nivel.tamI); i++)
-		for(j = 0; (j < nivel.tamJ); j++)
+	for(int i = 0; (i < nivel.tamI); i++)
+		for(int j = 0; (j < nivel.tamJ); j++)
 			nivel.mapa[i][j].shown = 0;
 
 	nivel.mapa[controller.y][controller.x].shown = 1;
 
 	/* Verifica os espacos que o player consegue ver */
-	for(radius = 1; radius < 5; radius++){
+	for(radius = 1; radius < 7; radius++){
 
-		for(i = controller.y - radius; (i < controller.y + radius); i++){
-			for(j = controller.x - radius; (j < controller.x + radius); j++){
+		for(int i = controller.y - radius; (i < controller.y + radius); i++){
+			for(int j = controller.x - radius; (j < controller.x + radius); j++){
 
 				if(((i >= 0) && (i < nivel.tamI)) && ((j >= 0) && (j < nivel.tamJ))){
 
 					if(nivel.mapa[i][j].shown == radius){
 
-						if(i - 1 >= 0){ 
+						if(i - 1 >= 0){
 							if(nivel.mapa[i - 1][j].wall == 0)
-	                       		nivel.mapa[i - 1][j].shown = radius + 1; 
+	                       		nivel.mapa[i - 1][j].shown = radius + 1;
 
 		                    else
 		                    	nivel.mapa[i - 1][j].shown = 1;
@@ -132,18 +144,24 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		                    else
 		                    	nivel.mapa[i][j + 1].shown = 1;
 	                	}
-	                } 
+	                }
 
 	                if(nivel.mapa[i][j].enemyIndice >= 0)
 	                	enemies[nivel.mapa[i][j].enemyIndice].seen = 1;
 				}
 			}
-		}		
+		}
 	}
 
+	move(beginMapLine, 0);
+	attron(COLOR_PAIR(2));
+	printw("Labirinto nivel: %d", nivel.nivel + 1);
+	attron(COLOR_PAIR(1));
+	move(beginMapLine + 2, 0);
+
 	/* Imprime o mapa e os stats do jogador a cada movimento */
-	for(i = 0; (i < nivel.tamI); i++){
-		for(j = 0; (j < nivel.tamJ * 2); j += 2){
+	for(int i = 0; (i < nivel.tamI); i++){
+		for(int j = 0; (j < nivel.tamJ * 2); j += 2){
 
 			if(nivel.mapa[i][j/2].shown){
 
@@ -169,7 +187,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 					attron(COLOR_PAIR(4));
 					printw("I ");
 					attron(COLOR_PAIR(1));
-				}	
+				}
 
 				else if(nivel.mapa[i][j/2].stairs < 0){
 					attron(COLOR_PAIR(3));
@@ -186,13 +204,14 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 				else
 					printw("  ");
 			}
-			
+
 			else
-				printw(". ");	
+				printw(". ");
 		}
-		printw("\n");
+		move(beginMapLine + i + 3, 0);
 	}
 }
+
 
 /* Verfica se existe e carrega partida salva */
 int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
@@ -214,7 +233,7 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 			fread(player, sizeof(Player), 1, arq);
 
 			fread(enemies, nivel->inimigos * sizeof(Enemy), 1, arq);
-			
+
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
 
 			fclose(arq);
@@ -226,7 +245,7 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 		attron(COLOR_PAIR(1));
 		clear();
 
-		fclose(arq);	
+		fclose(arq);
 	}
 
 	return 0;
