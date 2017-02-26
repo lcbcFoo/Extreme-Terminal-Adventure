@@ -3,11 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <termios.h>
 #include <string.h>
+#include <math.h>
+#include <curses.h>
 #include "init.h"
 #include "autogen.h"
-#include <math.h>
-
 
 #define BOSS_HP 50
 #define BOSS_ATK 9
@@ -16,7 +18,7 @@
 #define BOSS_XP 10
 
 
-/* Calcula a distancia entre 2 pontos do mapa */
+/* Checks if distance between player and boss is OK */
 int distancia(int x1, int y1, int x2, int y2, int area){
 
 	double calc = sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)));
@@ -27,6 +29,7 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 	return 1;
 }
 
+/* Create new enemy */
 Enemy createEnemy(int boss, int y, int x, int level){
 
 	Enemy enemy;
@@ -111,7 +114,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 		}
 	}
 
-	/* Posiciona a escada para o proximo nivel*/
+	/* Places next stair */
 	int stairsI, stairsJ;
 
 	do{
@@ -133,7 +136,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 		}
 	}
 
-	/* Posiciona boss do nivel */
+	/* Places boss */
 	int flag = 0;
 
 	if(flag == 0){
@@ -181,12 +184,13 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 		}
 	}
 
-	/* Posiciona o jogador e garante que ele nao esta encostado em um muro (isso pode atrapalhar movimento em corredores) */
+	/* Places player and checks if he is not blocked */
 	do{
 		(*player).y = rand() % tamI;
 		(*player).x = rand() % tamJ;
 
-	}while((nivel.mapa[player->y][player->x].used == 1) || (!distancia(player->y, player->x, stairsI, stairsJ, tamI * tamJ)));
+	}while((nivel.mapa[player->y][player->x].used == 1) ||
+			(!distancia(player->y, player->x, stairsI, stairsJ, tamI * tamJ)));
 
 
 	nivel.mapa[player->y][player->x].used = 1;
@@ -208,7 +212,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 	return nivel;
 }
 
-/* Gera alguns elementos aleatorios para determinar o numero e tamanho de subsalas */
+/* Makes some crazy things to set map size */
 void getRoomsStats(Nivel* nivel, int *rooms, int* maxSize){
 
 	int tamI = nivel->tamI;
@@ -224,14 +228,14 @@ void getRoomsStats(Nivel* nivel, int *rooms, int* maxSize){
 	(*rooms) = sqrt(((tamI * tamJ) / ((*maxSize) + 1)));
 }
 
-/* Abre uma subsala completamente fechada */
+/* Opens closed areas */
 void fixRoom(Nivel* nivel){
 
 	int stop = 0, i, j;
 	int tamI = nivel->tamI;
 	int tamJ = nivel->tamJ;
 
-	/* Detecta alguma subsala fechada */
+	/* Detects a closed area */
 	for(i = 1; (!stop) && (i < tamI - 1); i++){
 		for(j = 0; (!stop) && (j < tamJ - 1); j++){
 			if(nivel->mapa[i][j].shown == 2){
@@ -242,19 +246,19 @@ void fixRoom(Nivel* nivel){
 		}
 	}
 
-	/* Verifica se eh possivel abri-la para cima */
+	/* Tries to open it from above */
 	if((nivel->mapa[i - 1][j].shown == 1) && (i > 1)){
 		nivel->mapa[i - 1][j].shown = 0;
 	}
 
-	/* Ou para baixo */
+	/* Or from below */
 	while((i < tamI - 2) && (nivel->mapa[i + 1][j].shown != 1))
 		i++;
 
 	if(i < tamI - 2)
 		nivel->mapa[i + 1][j].shown = 0;
 
-	/* Ou a abre para a direita */
+	/* Or to the right*/
 	else{
 		while((j < tamJ - 2) && (nivel->mapa[i][j + 1].shown != 1))
 			j++;
@@ -266,7 +270,7 @@ void fixRoom(Nivel* nivel){
 	testRoom(nivel);
 }
 
-/* Testa se o mapa esta totalmente interligado */
+/* Tests if the map is entirely connected */
 void testRoom(Nivel* nivel){
 
 	int walls = 0;
@@ -274,7 +278,6 @@ void testRoom(Nivel* nivel){
 	int tamI = nivel->tamI;
 	int tamJ = nivel->tamJ;
 
-	/* Conta o numero de muros (tirando as bordas) e calcula a area (tambem tirando as bordas) */
 	area = (tamI - 2) * (tamJ - 2);
 
 	for(int i = 1; i < tamI - 1; i++){
@@ -284,9 +287,8 @@ void testRoom(Nivel* nivel){
 		}
 	}
 
-	/* Realiza uma busca em largura.
-	 * Seleciona um ponto qualquer que nao seja muro *
-	 * A cada iteracao visita os pontos vizinhos ao vizitado na ultima iteracao ateh nenhum ponto ser visitado */
+	/* Start counting open spaces than checks if the open spaces are
+	 * equal to map_area - walls */
 	for(int i = 1; i < tamI - 1; i++){
 		for(int j = 1; j < tamJ - 1; j++){
 			if(nivel->mapa[i][j].shown != 1)
@@ -340,9 +342,7 @@ void testRoom(Nivel* nivel){
 		count++;
 	}
 
-	/* Verifica se o numero de espacos visitados + o total de muros eh igual a area total */
 	int freeSpace = 0;
-
 	for(int i = 1; i < tamI - 1; i++){
 		for(int j = 1; j < tamJ - 1; j++){
 			if(nivel->mapa[i][j].shown == count)
@@ -350,28 +350,27 @@ void testRoom(Nivel* nivel){
 		}
 	}
 
-	/* Se nao for, existe ao menos uma subsala nao interligada, chama a funcao que a interliga */
+	/* If it is not, checks for closed areas */
 	if(freeSpace + walls < area)
 		fixRoom(nivel);
 }
 
-/* Gera um mapa */
+/* Generates a map */
 void genRoom(Nivel* nivel){
 
 	int rooms, maxSize;
 	int tamI = nivel->tamI;
 	int tamJ = nivel->tamJ;
 
-	/* Verifica quantas salas devemn ser geradas e variaveis de controle para seus tamanhos */
 	getRoomsStats(nivel, &rooms, &maxSize);
 
-	/* Gera um subsala a cada iteracao. Uma subsala nao deve ser fechada */
+	/* Generates a sub-room. A sub-room cant be entirely closed */
 	do{
-		/* Determina o centro da subsala */
+		/* Picks the center of the room */
 		int centerI = rand() % tamI;
 		int centerJ = rand() % tamJ;
 
-		/* Determina a linha dos muros superiores */
+		/* Determines upper walls line */
 		int up = centerI - (3 * (rand() % maxSize) / 2);
 
 		if(up == centerI)
@@ -380,7 +379,7 @@ void genRoom(Nivel* nivel){
 		if(up < 0)
 			up = 0;
 
-		/* Determina alinha dos muros inferiores */
+		/* Determines lower walls line */
 		int down = centerI + (3 * (rand() % maxSize) / 2);
 
 		if(down == centerI)
@@ -389,7 +388,7 @@ void genRoom(Nivel* nivel){
 		if(down >= tamI)
 			down= tamI - 1;
 
-		/* Determina a coluna dos muros esquerdos */
+		/* Determines left walls collum */
 		int left = centerJ - (3 * (rand() % maxSize) / 2);
 
 		if(left == centerJ)
@@ -398,7 +397,7 @@ void genRoom(Nivel* nivel){
 		if(left < 0)
 			left = 0;
 
-		/* Determina acoluna dos muros direitos */
+		/* Determines right walls collum */
 		int right = centerJ + (3 * (rand() % maxSize) / 2);
 
 		if(right == centerJ)
@@ -407,13 +406,11 @@ void genRoom(Nivel* nivel){
 		if(right >= tamJ)
 			right = tamJ - 1;
 
-		/* Variaveis de controle que verificam se ao menos alguma porta foi criada em cada lado dos muros *
-		 * Caso negativo, alguma posicao do lado do muro que nao recebeu uma porta eh aberta *
-		 * Isso diminui o numero de subsalas fechadas e reduz significativamente o numero de chamadas da funcao de teste */
+		/* These variables checks if some door was created in each side of the wall,
+		 * preventing that too many areas are initially closed */
 		int door1 = 0;
 		int door2 = 0;
 
-		/* Para os muros verticais */
 		for(int j = left; j <= right; j++){
 
 			if((j > 1) && (nivel->mapa[up][j].shown == 1)){
@@ -451,7 +448,6 @@ void genRoom(Nivel* nivel){
 			nivel->mapa[down][j].shown = 2;
 		}
 
-		/* Idem para os horizontais */
 		door1 = 0;
 		door2 = 0;
 
@@ -492,8 +488,8 @@ void genRoom(Nivel* nivel){
 			nivel->mapa[i][right].shown = 2;
 		}
 
-		/* Cerca os extremos do mapa com muros */
-		for(int i = 0; i < tamJ; i++){			
+		/* Puts walls on the extremities */
+		for(int i = 0; i < tamJ; i++){
 			nivel->mapa[tamI - 1][i].shown = 1;
 			nivel->mapa[0][i].shown = 1;
 		}

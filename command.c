@@ -1,8 +1,7 @@
-/* Author: ETA Team *
- * Last Modification: 03/11/2016 by Foo*/
+/* Author: ETA Team */
 
 
-/* Biblioteca que executa comandos do jogo */
+/* This is the heades for the functions that executes commands */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,20 +16,7 @@
 #include "autogen.h"
 
 
-
-/* Define stats do jogador */
-#define BASE_HP 20
-#define BASE_ATTACK 7
-#define BASE_DEF 3
-#define BASE_NEXT_LEVEL 10
-
-
-/* Define quantidade de itens e tamanho da bag */
-#define TAM_BAG 5
-#define QUANT_ITENS 6
-
-
-/* Mostra os comandos permitidos para movimentar o personagem */
+/* Show basic commands */
 void comandList(){
 
 	mvprintw(0,0,"Comandos disponiveis durante o jogo:");
@@ -43,21 +29,20 @@ void comandList(){
 	mvprintw(7,0,"- - acessa o menu do jogo;");
 }
 
-/* Salva o jogo */
+/* Saves the game */
 int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag){
 
 	FILE *arq;
 
 	arq = fopen("savedGame.bin", "wb");
 
-	/* Salva os elementos contidos no mapa, os stats do jogador e os inimigos *
-	 * existentes no arquivo que salva o jogo */
+	/* Saves current game situation */
 	if(arq != NULL){
 
 		if(!fwrite(&nivel, sizeof(Nivel), 1, arq)){
 			fclose(arq);
 			return 0;
-		}	
+		}
 
 		if(!fwrite(player, sizeof(Player), 1, arq)){
 			fclose(arq);
@@ -69,7 +54,7 @@ int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag){
 		if(fwrite(bag, sizeof(Bag), TAM_BAG, arq) != TAM_BAG){
 			fclose(arq);
 			return 0;
-		}	
+		}
 
 		fclose(arq);
 
@@ -79,31 +64,30 @@ int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag){
 	return 0;
 }
 
-/* Menu de comandos de controle sobre o jogo */
+/* Game menu */
 int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 
 	int flag = 1;
-	char recebe;
+	char get;
 
 	attron(COLOR_PAIR(3));
 
-	/* Lista os comandos disponiveis e salva executa o comando desejado pelo jogador */
+	/* Lists possible commands */
 	printw("\n\n==== Menu ====\n\nOpcoes de comando:\n");
 	printw("s - salvar o jogo\n");
 	printw("r - retornar ao jogo\n");
 	printw("q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
 	printw("l - lista de comandos de jogo\n");
 
-	/* Repete o loop ateh recebr um comando valido */
 	do{
-		recebe = getch();
+		get = getch();
 
-		/* Chama a funcao que salva o jogo */
-		if(recebe == 's'){
+		/* Calls the function to save the game */
+		if(get == 's'){
 			if(saveGame(nivel, player, enemies, bag)){
 				clear();
 				printw("\n\nJogo salvo!\n\n");
-			}	
+			}
 
 			else
 				printw("O jogo nao pode ser salvo, tente novamente\n\n");
@@ -112,22 +96,22 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 			return menu(nivel, player, enemies, bag);
 		}
 
-		/* Retorna ao mapa */
-		else if(recebe == 'r'){
+		/* Returns to map */
+		else if(get == 'r'){
 			clear();
 			attron(COLOR_PAIR(1));
 			return 1;
-		}	
+		}
 
-		/* Fecha o jogo */
-		else if(recebe == 'q'){
+		/* Closes game */
+		else if(get == 'q'){
 			clear();
 			attron(COLOR_PAIR(1));
 			return 0;
 		}
 
-		/* Mostra os comandos disponiveis */
-		else if(recebe == 'l'){
+		/* Show possible commands */
+		else if(get == 'l'){
 			clear();
 			comandList();
 			attron(COLOR_PAIR(1));
@@ -140,33 +124,30 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 	return 1;
 }
 
-/* Funcao que usa pocoes */
+/* Uses potion */
 void usaPot(Bag *bag, Player *player){
-
-	/* Recupera a vida */
 	(*player).hp += (*bag).item.valor;
 
-	/* Nao permite que a vida maxima seja ultrapassada */
 	if((*player).hp > (*player).MaxHP)
 		(*player).hp = (*player).MaxHP;
 
-	/* Retira uma pot da bag */
 	(*bag).quantidade--;
 
 	if((*bag).quantidade == 0)
 		(*bag).used = 0;
 }
 
-/* Funcao que printa o que tem dentro da mochila e permite que itens sejam usados */
+/* Prints bag */
 void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 	int i, flag = 1;
-	char recebe;
+	char get;
 	Item aux;
 
 	clear();
 	attron(COLOR_PAIR(3));
-	/* Imprime os equipamentos utilizados no momento */
+
+	/* Prints equiped items */
 	mvprintw(0,0,"Voce esta equipado com: \n\n\n");
 	attron(COLOR_PAIR(4));
 	printw("%s\n    Dano + %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
@@ -174,7 +155,7 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 	attron(COLOR_PAIR(3));
 
 
-	/* Imprime os itens na mochila */
+	/* Print bag items */
 	mvprintw(11,0,"Itens na mochila:\n\n");
 
 	for(i = 0; i < TAM_BAG; i++){
@@ -200,23 +181,23 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 	flag = 1;
 
-	/* Recebe um comando de utilizacao de item ou para voltar ao mapa */
+	/* Gets a command */
 	do{
-		recebe = getch();
+		get = getch();
 
-		if(recebe == 'r'){
+		if(get == 'r'){
 			clear();
 			attron(COLOR_PAIR(1));
 			return;
 		}
 
-		else if(recebe == 'd'){
+		else if(get == 'd'){
 			printw("\nQual o indice do item que voce deseja dropar?\n");
 
 			char index;
 
 			index = getch();
-			
+
 			if((index - '1' >= 0) && (index - '1' < TAM_BAG) && (bag[index - '1'].used)){
 				if(nivel->mapa[player->y - 1][player->x].used == 0){
 					nivel->mapa[player->y - 1][player->x].used = 1;
@@ -265,10 +246,10 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					attron(COLOR_PAIR(1));
 					return;
 				}
-				
+
 				else{
 					attron(COLOR_PAIR(2));
-					printw("\nNao foi possivel dropar o item nessa posicao do mapa!\n");	
+					printw("\nNao foi possivel dropar o item nessa posicao do mapa!\n");
 					attron(COLOR_PAIR(1));
 				}
 			}
@@ -281,24 +262,24 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 			}
 		}
 
-		else if((recebe - '1' >= 0) && (recebe - '1' < TAM_BAG) && (bag[recebe - '1'].used)){
+		else if((get - '1' >= 0) && (get - '1' < TAM_BAG) && (bag[get - '1'].used)){
 			flag = 0;
 
-			/* Usa pot */
-			if(bag[recebe - '1'].item.tipo == 3){
-				usaPot(&bag[recebe - '1'], player);
+			/* Uses pot */
+			if(bag[get - '1'].item.tipo == 3){
+				usaPot(&bag[get - '1'], player);
 				clear();
 				attron(COLOR_PAIR(4));
-				printw("Voce utilizou uma %s e recuperou %d de vida!\n", bag[recebe-'1'].item.nome,
-																			bag[recebe-'1'].item.valor);
+				printw("Voce utilizou uma %s e recuperou %d de vida!\n", bag[get-'1'].item.nome,
+																			bag[get-'1'].item.valor);
 				attron(COLOR_PAIR(1));
 			}
 
-			/* Troca de arma */
-			else if(bag[recebe - '1'].item.tipo == 1){
+			/* Changes weapon */
+			else if(bag[get - '1'].item.tipo == 1){
 				(*player).attack -= (*player).weapon.valor;
-				aux = bag[recebe - '1'].item;
-				bag[recebe - '1'].item = (*player).weapon;
+				aux = bag[get - '1'].item;
+				bag[get - '1'].item = (*player).weapon;
 				(*player).weapon = aux;
 				(*player).attack += (*player).weapon.valor;
 				clear();
@@ -307,17 +288,17 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 				attron(COLOR_PAIR(1));
 			}
 
-			/* Troca de armadura */
+			/* Changes armor */
 			else{
 				(*player).defense -= (*player).gear.valor;
-				aux = bag[recebe - '1'].item;
-				bag[recebe -'1'].item = (*player).gear;
+				aux = bag[get - '1'].item;
+				bag[get -'1'].item = (*player).gear;
 				(*player).gear = aux;
 				(*player).defense += (*player).gear.valor;
 				clear();
 				attron(COLOR_PAIR(4));
 				printw("Voce agora esta usando %s\n", (*player).gear.nome);
-				attron(COLOR_PAIR(1));				
+				attron(COLOR_PAIR(1));
 			}
 
 		}
@@ -325,12 +306,12 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 	}while(flag);
 }
 
-/* Funcao que pega o item de uma posicao do mapa */
-void pegaItem(Player *player, Item item, Map *position, Bag *bag){
+/* Takes item from map */
+void takeItem(Player *player, Item item, Map *position, Bag *bag){
 
 	int i, flag = 1;
 
-	/* Verifica se voce ja tem aquele item */
+	/* Checks if player has the item */
 	for(i = 0; (i < TAM_BAG) && (flag); i++){
 		if((bag[i].used) && (strcmp(bag[i].item.nome, item.nome) == 0)){
 			if(item.tipo == 3){
@@ -343,7 +324,7 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 		}
 	}
 
-	/* Caso voce ainda nao tenha, verifica se existe uma posicao vazia na bag */
+	/* If not, checks if there is enough room in bag */
 	for(i = 0; (i < TAM_BAG) && (flag); i++){
 		if(bag[i].used == 0){
 			bag[i].item = item;
@@ -355,7 +336,7 @@ void pegaItem(Player *player, Item item, Map *position, Bag *bag){
 		}
 	}
 
-	/* Imprime se vc pegou o item ou se sua bag tava cheia */
+	/* Prints result */
 	if(flag){
 		clear();
 		attron(COLOR_PAIR(4));
@@ -392,11 +373,11 @@ void nextNivel(Nivel *nivel, Player *player, Enemy** enemy){
 
 void showStats(Player *player){
 
-	char recebe;
+	char get;
 
 	attron(COLOR_PAIR(3));
 	clear();
-	mvprintw(0,0,"Existem 3 tipos de atributos: constituicao, destreza e forca. Voce recebe 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
+	mvprintw(0,0,"Existem 3 tipos de atributos: constituicao, destreza e forca. Voce get 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
 	mvprintw(1,0,"Colocar pontos em constituicao te garante mais vida, em destreza te garante maior chance de se esquivar de ataques e de dar acertos criticos, ");
 	mvprintw(2,0,"e em forca aumenta o seu poder de ataque e defesa.");
 	mvprintw(5,0,"Seus atributos:\n\nConstituicao: %d\nDestreza: %d\nForca: %d", (*player).con, (*player).dext, (*player).str);
@@ -404,44 +385,43 @@ void showStats(Player *player){
 	mvprintw(14,0,"Comandos possiveis:\n1 - Adiciona 1 ponto em constituicao (caso voce possua pontos a serem distribuidos);\n2 - Adiciona 1 ponto em destreza (caso voce possua pontos a serem distribuidos)");
 	mvprintw(17,0,"3 - Adiciona 1 ponto em forca (GASTA 5 PONTOS!) (caso voce possua pontos a serem distribuidos);\nr - retorna ao jogo\n\n");
 
-	recebe = getch();
+	get = getch();
 
-	if(recebe == 'r'){
+	if(get == 'r'){
 		clear();
 		attron(COLOR_PAIR(1));
 		return;
 	}
 
 	if((*player).pontos){
-		
-		if(recebe == '1'){
+
+		if(get == '1'){
 			(*player).pontos--;
 			(*player).con++;
 			(*player).MaxHP += BASE_HP / 6;
 
 		}
 
-		else if(recebe == '2'){
+		else if(get == '2'){
 			(*player).pontos--;
 			(*player).dext++;
 		}
 
-		else if(((*player).pontos >= 5) && (recebe == '3')){
+		else if(((*player).pontos >= 5) && (get == '3')){
 			(*player).pontos -= 5;
 			(*player).str++;
 			(*player).attack += BASE_ATTACK / 4;
 			(*player).defense += BASE_DEF / 3;
 		}
-	}	
+	}
 
 	showStats(player);
 }
 
-/* Executa comandos de controle de personagem ou acessa o menu */
+/* Executes commands when in map */
 int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Bag *bag, Item *itens){
 
-	/* Recebe os comandos durante o jogo e os executa */
-	/* Abre o menu */
+	/* Opens menu */
 	if(command == '-'){
 		clear();
 		return menu((*nivel), player, enemies, bag);
@@ -453,10 +433,10 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 	else if(command == 'b')
 		printBag(bag, player, nivel);
 
-	/* Comandos de movimento / combate */
+	/* Combat/move commands*/
 	else if(((*player).x > 0) && (command == 'a')) {
 
-		/* Esse eh o caso de movimento */
+		/* Moving */
 		if((*nivel).mapa[(*player).y][(*player).x - 1].used == 0){
 
 			if((*nivel).mapa[(*player).y][(*player).x].stairs == 0)
@@ -468,25 +448,25 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			(*nivel).mapa[(*player).y][(*player).x].player = 1;
 			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
-		
-		/* Esse eh o caso de combate, chama a funcao combate, a funcao de combate receb o endereco de 1 inimigo na matriz de inimigos */
-		else if((*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice != -1)
-			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice], 
-					&(*nivel).mapa[(*player).y][(*player).x - 1]);	
 
-		/* Caso em que ha um item na posicao */
+		/* If there is an enemy in the position => combat */
+		else if((*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x - 1].enemyIndice],
+					&(*nivel).mapa[(*player).y][(*player).x - 1]);
+
+		/* If there is an item in the position => take item */
 		else if((*nivel).mapa[(*player).y][(*player).x - 1].itemIndice != -1)
-			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x - 1].itemIndice], 
+			takeItem(player, itens[(*nivel).mapa[(*player).y][(*player).x - 1].itemIndice],
 					&(*nivel).mapa[(*player).y][(*player).x - 1], bag);
 
 		else if((*nivel).mapa[(*player).y][(*player).x - 1].stairs == 1)
 			nextNivel(nivel, player, &enemies);
 
-		/* Movimenta os inimigos e retorna se o jogador ainda esta vivo */
+		/* Move enemies */
 		return enemyAction(player, &(*nivel), enemies);
 	}
 
-	/* Idem para os d, w, s */
+	/* Same thing to d, w, s */
 	else if(((*player).x < (*nivel).tamJ - 1) && (command == 'd')){
 
 		if((*nivel).mapa[(*player).y][(*player).x + 1].used == 0){
@@ -500,14 +480,13 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			(*nivel).mapa[(*player).y][(*player).x].player = 1;
 			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
-		
-		else if((*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice != -1)
-			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice], 
-					&(*nivel).mapa[(*player).y][(*player).x + 1]);	
 
-		/* Caso em que ha um item na posicao */
+		else if((*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice != -1)
+			combate(player, &enemies[(*nivel).mapa[(*player).y][(*player).x + 1].enemyIndice],
+					&(*nivel).mapa[(*player).y][(*player).x + 1]);
+
 		else if((*nivel).mapa[(*player).y][(*player).x + 1].itemIndice != -1)
-			pegaItem(player, itens[(*nivel).mapa[(*player).y][(*player).x + 1].itemIndice], 
+			takeItem(player, itens[(*nivel).mapa[(*player).y][(*player).x + 1].itemIndice],
 					&(*nivel).mapa[(*player).y][(*player).x + 1], bag);
 
 		else if((*nivel).mapa[(*player).y][(*player).x + 1].stairs == 1)
@@ -529,14 +508,13 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			(*nivel).mapa[(*player).y][(*player).x].player = 1;
 			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
-		
+
 		else if((*nivel).mapa[(*player).y - 1][(*player).x].enemyIndice != -1)
-			combate(player, &enemies[(*nivel).mapa[(*player).y - 1][(*player).x].enemyIndice], 
+			combate(player, &enemies[(*nivel).mapa[(*player).y - 1][(*player).x].enemyIndice],
 					&(*nivel).mapa[(*player).y - 1][(*player).x]);
-		
-		/* Caso em que ha um item na posicao */
+
 		else if((*nivel).mapa[(*player).y - 1][(*player).x].itemIndice != -1)
-			pegaItem(player, itens[(*nivel).mapa[(*player).y - 1][(*player).x].itemIndice], 
+			takeItem(player, itens[(*nivel).mapa[(*player).y - 1][(*player).x].itemIndice],
 					&(*nivel).mapa[(*player).y - 1][(*player).x], bag);
 
 		else if((*nivel).mapa[(*player).y - 1][(*player).x].stairs == 1)
@@ -544,7 +522,7 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 
 		return enemyAction(player, &(*nivel), enemies);
 	}
-	
+
 	else if(((*player).y < (*nivel).tamI - 1) && (command == 's')){
 
 		if((*nivel).mapa[(*player).y + 1][(*player).x].used == 0){
@@ -558,14 +536,13 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 			(*nivel).mapa[(*player).y][(*player).x].player = 1;
 			(*nivel).mapa[(*player).y][(*player).x].used = 1;
 		}
-		
+
 		else if((*nivel).mapa[(*player).y + 1][(*player).x].enemyIndice != -1)
-			combate(player, &enemies[(*nivel).mapa[(*player).y + 1][(*player).x].enemyIndice], 
+			combate(player, &enemies[(*nivel).mapa[(*player).y + 1][(*player).x].enemyIndice],
 					&(*nivel).mapa[(*player).y + 1][(*player).x]);
 
-		/* Caso em que ha um item na posicao */
 		else if((*nivel).mapa[(*player).y + 1][(*player).x].itemIndice != -1)
-			pegaItem(player, itens[(*nivel).mapa[(*player).y + 1][(*player).x].itemIndice], 
+			takeItem(player, itens[(*nivel).mapa[(*player).y + 1][(*player).x].itemIndice],
 					&(*nivel).mapa[(*player).y + 1][(*player).x], bag);
 
 		else if((*nivel).mapa[(*player).y + 1][(*player).x].stairs == 1)

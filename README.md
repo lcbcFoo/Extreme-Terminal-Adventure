@@ -15,9 +15,7 @@ Heitor "Led" Comel
 You must have ncurses library installed to play the game.
 You can find more information about this library here: http://www.gnu.org/software/ncurses/
 
-"main.c" is the code which should be compiled in order to get the game executable.
-
-"combat.c", "command.c" and "init.c" contain the functions described at "combat.h", "command.h" and "init.h"
+Game '.c' files are: main.c autogen. init.c command.c combat.c
 
 Files ended with '.bin' are databases used by the game.
 
@@ -35,8 +33,6 @@ $ git clone https://github.com/lcbcFoo/Extreme-Terminal-Adventure.git
 
 $ cd Extreme-Terminal-Adventure/
 
-$ gcc main.c -std=c99 -lm -o launcher combat.c command.c init.c autogen.c -lncurses
+$ make all
 
 $ ./launcher
-
-

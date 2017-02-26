@@ -1,23 +1,19 @@
-/* Author: ETA Team *
- * Last Modification: 03/11/2016 by Foo*/
-
 #ifndef AUTOGEN_H_INCLUDED
-#define AUTOGEN_H_INCLUDED 
+#define AUTOGEN_H_INCLUDED
 
-
-/* Gera um novo nivel */
+/* Generates new level */
 Nivel genNivel(int level, Player* player, Enemy* enemies);
 
-/* Gera alguns elementos aleatorios para determinar o numero e tamanho de subsalas */
+/* Generates room size attributes*/
 void getRoomsStats(Nivel* nivel, int *maxSize, int* rooms);
 
-/* Abre uma subsala completamente fechada */
+/* Open closed areas */
 void fixRoom(Nivel* nivel);
 
-/* Testa se o mapa esta totalmente interligado */
+/* Tests if the map is entirely interconnected */
 void testRoom(Nivel* nivel);
 
-/* Gera um mapa */
+/* Generates new map */
 void genRoom(Nivel* nivel);
 
 #endif /* AUTOGEN_H_INCLUDED */

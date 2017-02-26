@@ -1,37 +1,37 @@
-/* Author: ETA Team *
- * Last Modification: 03/11/2016 by Foo*/
+/* Author: ETA Team */
 
-/* Biblioteca que inicializa o jogo ou carrega a partida salva */
+/* This is the header of the functions responsible for initializing and running
+ * the game */
 
 #ifndef INIT_H_INCLUDED
-#define INIT_H_INCLUDED 
+#define INIT_H_INCLUDED
 
-#include <time.h>
-#include <termios.h>
-#include <curses.h>
 
-/* Define stats do jogador */
+/* Defines player stats, bag size and number of itens in database */
 #define BASE_HP 20
 #define BASE_ATTACK 7
 #define BASE_DEF 3
 #define BASE_NEXT_LEVEL 10
-
-
-/* Define quantidade de itens e tamanho da bag */
 #define TAM_BAG 5
+#define BASE_HP 20
+#define BASE_ATTACK 7
+#define BASE_DEF 3
+#define BASE_NEXT_LEVEL 10
+#define TAM_BAG 5
+#define QUANT_ITENS 6
 
 
-/* Struct de itens */
+/* Items struct */
 typedef struct {
     /* Tipos:
-     * 1 - arma
-     * 2 - armadura
+     * 1 - weapon
+     * 2 - armor
      * 3 - pot */
     int indice, valor, tipo;
     char nome[51];
 } Item;
 
- /* Define o struct do player */
+ /* Player struct */
 typedef struct {
 
 	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos, chave, atual;
@@ -39,7 +39,7 @@ typedef struct {
 
 } Player;
 
-/* Define o struct de inimigos */
+/* Enemy struct */
 typedef struct {
 
 	int hp, attack, defense, givenXP, x, y, dropItems[200], seen, indice;
@@ -57,30 +57,32 @@ typedef struct {
 typedef struct{
 
 	int nivel, inimigos, tamI, tamJ;
-	Map mapa[50][70]; 
+	Map mapa[50][70];
 } Nivel;
 
-/* Struct da bag */
+/* Bag struct */
 typedef struct {
 
 	Item item;
 	int quantidade, used;
 } Bag;
 
+/* Initializes everything and executes the game */
+void startGame();
 
-/* Inicializa o jogador */
+/* Initializes player */
 void playerInit(Player *player, Item *itens);
 
-/* Inicializa a bag como vazia */
+/* Initializes empty bag */
 void bagInit(Bag *bag);
 
-/* Detecta para cada inimigo a posicao deles no mapa */
+/* Checks enemies current positions */
 void enemyPositions(Nivel nivel, Enemy *enemies);
 
-/* Imprime o campo e os stats do jogador */
+/* Print current game situation */
 void print(Nivel nivel, Player controller, Enemy *enemies);
 
-/* Verfica se existe e carrega partida salva */
+/* Checks if there is a saved game */
 int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag);
 
 #endif /* INIT_H_INCLUDED */

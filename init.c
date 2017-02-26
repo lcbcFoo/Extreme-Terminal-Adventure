@@ -1,5 +1,4 @@
-/* Author: ETA Team *
- * Last Modification: 03/05/2015 by Foo*/
+/* Author: ETA Team */
 
 
 #include <stdio.h>
@@ -12,9 +11,95 @@
 #include "init.h"
 #include "command.h"
 #include "combat.h"
+#include "autogen.h"
+
+/* Defines player stats */
+#define BASE_HP 20
+#define BASE_ATTACK 7
+#define BASE_DEF 3
+#define BASE_NEXT_LEVEL 10
+
+/* Defines bag size */
+#define TAM_BAG 5
 
 
-/* Inicializa o jogador */
+/* Initializes everything and executes the game */
+void startGame(){
+	int existentItems = 0;
+	char comand;
+	Nivel nivel;
+	Player player;
+	Enemy *enemies;
+	Bag *bag;
+	Item *itens, read;
+	FILE *database;
+
+	/* Initialize colors support from curses.h */
+	initscr();
+	start_color();
+
+	/* Define color pairs */
+	init_pair(1,COLOR_WHITE,COLOR_BLACK);
+	init_pair(2,COLOR_RED,COLOR_BLACK);
+	init_pair(3,COLOR_GREEN,COLOR_BLACK);
+	init_pair(4,COLOR_BLUE,COLOR_BLACK);
+	bkgd(COLOR_PAIR(1));
+
+	refresh();
+
+	/* Allocs memory and initializes arrays reading the databases */
+	bag = malloc(TAM_BAG * sizeof(Bag));
+
+	database = fopen("items.bin", "rb");
+
+	if(database == NULL){
+		printf("Erro ao ler database!!\n");
+		return;
+	}
+
+	while(fread(&read, sizeof(Item), 1, database))
+		existentItems++;
+
+	itens = malloc(existentItems * sizeof(Item));
+
+	rewind(database);
+	fread(itens, sizeof(Item), existentItems, database);
+	fclose(database);
+
+	enemies = malloc(sizeof(Enemy));
+
+	/* Loads existent game or starts a new one */
+	if(gameLoad(&player, &nivel, enemies, bag) == 0){
+
+		/* Initialize player and bag */
+		playerInit(&player, itens);
+		nivel = genNivel(0, &player, enemies);
+		bagInit(bag);
+		comandList();
+		mvprintw(11,0,"Voce pode rever os comandos disponiveis acessando o MENU.\n\n\nDigite alguma letra para comecar: ");
+		comand = getch();
+		clear();
+	}
+
+	/* Give some pots away */
+	bag[0].item = itens[0];
+	bag[0].quantidade = 3;
+	bag[0].used = 1;
+
+	/* Starts game */
+	do{
+		print(nivel, player, enemies);
+		comand = getch();
+		clear();
+	}while(executeComand(comand, &player, &nivel, enemies, bag, itens));
+
+	free(enemies);
+	free(bag);
+	free(itens);
+	endwin();
+}
+
+/* Initialize player */
 void playerInit(Player *player, Item *itens){
 
 	/* Inicializa os stas do jogador com os stats base */
@@ -61,7 +146,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	int radius, porcentHP, porcentXP;
 
-	int beginMapLine = 7;
+	int beginMapLine = 10;
 	int beginStatsCollun = nivel.tamJ * 2 + 5;
 
 	move(beginMapLine, beginStatsCollun);
@@ -77,9 +162,9 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	printw("HP:          %6d/%6d  (", controller.hp, controller.MaxHP);
 	for(int i = 1; i < 21; i++)
 		if(porcentHP >= 5 * i)
-			printw("-");
+			printw("=");
 		else
-			printw(" ");
+			printw(".");
 
 	printw(") %d%\n", porcentHP);
 	move(beginMapLine + 4, beginStatsCollun);
@@ -87,9 +172,9 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	for(int i = 1; i < 21; i++)
 		if(porcentXP >= 5 * i)
-			printw("-");
+			printw("=");
 		else
-			printw(" ");
+			printw(".");
 
 	printw(") %d%\n", porcentXP);
 	move(beginMapLine + 5, beginStatsCollun);
@@ -103,20 +188,16 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 	nivel.mapa[controller.y][controller.x].shown = 1;
 
-	/* Verifica os espacos que o player consegue ver */
+	/* Verifies the player vision area */
 	for(radius = 1; radius < 7; radius++){
 
 		for(int i = controller.y - radius; (i < controller.y + radius); i++){
 			for(int j = controller.x - radius; (j < controller.x + radius); j++){
-
 				if(((i >= 0) && (i < nivel.tamI)) && ((j >= 0) && (j < nivel.tamJ))){
-
 					if(nivel.mapa[i][j].shown == radius){
-
 						if(i - 1 >= 0){
 							if(nivel.mapa[i - 1][j].wall == 0)
 	                       		nivel.mapa[i - 1][j].shown = radius + 1;
-
 		                    else
 		                    	nivel.mapa[i - 1][j].shown = 1;
 		                }
@@ -124,7 +205,6 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	                    if(i + 1 < nivel.tamI){
 	                    	if(nivel.mapa[i + 1][j].wall == 0)
 	                        	nivel.mapa[i + 1][j].shown = radius + 1;
-
 		                    else
 		                    	nivel.mapa[i + 1][j].shown = 1;
 	                	}
@@ -132,7 +212,6 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	                    if(j - 1 >= 0){
 	                    	if(nivel.mapa[i][j - 1].wall == 0)
 	                        	nivel.mapa[i][j - 1].shown = radius + 1;
-
 		                    else
 		                    	nivel.mapa[i][j - 1].shown = 1;
 		                }
@@ -140,7 +219,6 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	                    if(j + 1 < nivel.tamJ){
 	                    	if(nivel.mapa[i][j + 1].wall == 0)
 	                        	nivel.mapa[i][j + 1].shown = radius + 1;
-
 		                    else
 		                    	nivel.mapa[i][j + 1].shown = 1;
 	                	}
@@ -159,7 +237,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	attron(COLOR_PAIR(1));
 	move(beginMapLine + 2, 0);
 
-	/* Imprime o mapa e os stats do jogador a cada movimento */
+	/* Prints current game situation */
 	for(int i = 0; (i < nivel.tamI); i++){
 		for(int j = 0; (j < nivel.tamJ * 2); j += 2){
 
@@ -213,7 +291,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 }
 
 
-/* Verfica se existe e carrega partida salva */
+/* Checks if there is a saved game */
 int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 
 	char read;
@@ -221,8 +299,6 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 
 	arq = fopen("savedGame.bin", "rb");
 
-	/* Caso o arquivo de salvar o jogo exista, permite que o jogo seja carregado *
-	 * caso contrario retorna 0 e cria um novo mapa */
 	if(arq != NULL){
 		attron(COLOR_PAIR(3));
 		printf("Voce deseja continuar o jogo salvo? (y/n)\n");
@@ -231,11 +307,8 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 		if(read == 'y'){
 			fread(nivel, sizeof(Nivel), 1, arq);
 			fread(player, sizeof(Player), 1, arq);
-
 			fread(enemies, nivel->inimigos * sizeof(Enemy), 1, arq);
-
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
-
 			fclose(arq);
 			remove("savedGame.bin");
 			system("clear");

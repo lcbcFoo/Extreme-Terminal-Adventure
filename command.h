@@ -1,52 +1,35 @@
-/* Author: ETA Team *
- * Last Modification: 03/11/2016 by Foo*/
+/* Author: ETA Team */
 
-/* Biblioteca que executa comandos do jogo */
+/* Header to the functions which executes game commands */
 
 #ifndef COMAND_H_UNCLUDED
-#define COMAND_H_UNCLUDED 
+#define COMAND_H_UNCLUDED
 
 
-/* Inclui as bibliotecas que: *
- * inicializa o jogo, *
- * realiza as funcoes de combate *
- * executa comandos */
-
-/* Define stats do jogador */
-#define BASE_HP 20
-#define BASE_ATTACK 7
-#define BASE_DEF 3
-#define BASE_NEXT_LEVEL 10
-
-
-/* Define quantidade de itens e tamanho da bag */
-#define TAM_BAG 5
-
-/* Mostra os comandos permitidos para movimentar o personagem */
+/* Show basic commands */
 void comandList();
 
-/* Salva o jogo */
+/* Saves the game */
 int saveGame(Nivel nivel, Player *player, Enemy *enemies, Bag * bag);
-
-/* Menu de comandos de controle sobre o jogo */
+/* Game menu */
 int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag);
 
-/* Funcao que usa pocoes */
+/* Uses potion */
 void usaPot(Bag *bag, Player *player);
 
-/* Funcao que printa o que tem dentro da mochila e permite que itens sejam usados */
+/* Prints bag */
 void printBag(Bag *bag, Player *player, Nivel* nivel);
 
-/* Funcao que pega o item de uma posicao do mapa */
-void pegaItem(Player *player, Item item, Map *position, Bag *bag);
+/* Takes item from map */
+void takeItem(Player *player, Item item, Map *position, Bag *bag);
 
-/* Desce na dungeon */
-void nextNivel(Nivel* nivel, Player *player, Enemy** enemy);
+/* Generates next level */
+void nextNivel(Nivel *nivel, Player *player, Enemy** enemy);
 
-/* Mostra os stats do jogador */
+/* Show player stats */
 void showStats(Player *player);
 
-/* Executa comandos de controle de personagem ou acessa o menu */
-int executeComand(char comand, Player *player, Nivel *nivel, Enemy *enemies, Bag *bag, Item *itens);
+/* Executes commands when in map */
+int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Bag *bag, Item *itens);
 
 #endif /* COMAND_H_UNCLUDED */
