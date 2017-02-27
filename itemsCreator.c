@@ -1,5 +1,4 @@
-/* Author: ETA Team *
- * Last Modification: 02/28/2015 by Foo*/
+/* Author: ETA Team */
 
  /* Tipos:
   * 1 - weapon
