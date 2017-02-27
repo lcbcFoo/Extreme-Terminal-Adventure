@@ -312,7 +312,7 @@ void combate(Player *player, Enemy *enemy, Map *position){
 
 			if(enemy->indice == 0){
 				attron(COLOR_PAIR(2));
-				printw("O Guardiao do Nivel %d foi eliminado. Voce agora possui a chave para o proximo nivel!\n", player->atual);
+				printw("O Guardiao do Nivel %d foi eliminado. Voce agora possui a chave para o proximo nivel!\n", player->atual + 1);
 				attron(COLOR_PAIR(1));
 				player->chave = 1;
 			}

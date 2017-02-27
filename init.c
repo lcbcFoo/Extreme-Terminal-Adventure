@@ -284,6 +284,61 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		}
 		move(beginMapLine + i + 3, 0);
 	}
+
+	/*init_pair(1,COLOR_WHITE,COLOR_BLACK);
+	init_pair(2,COLOR_RED,COLOR_BLACK);
+	init_pair(3,COLOR_GREEN,COLOR_BLACK);
+	init_pair(4,COLOR_BLUE,COLOR_BLACK);*/
+
+	/* Describe symbols in map */
+	move(beginMapLine + nivel.tamI + 4, 0);
+
+
+	attron(COLOR_PAIR(1));
+	printw("Simbolos no mapa:");
+	move(beginMapLine + nivel.tamI + 6, 0);
+	printw("X - Parede");
+	move(beginMapLine + nivel.tamI + 7, 0);
+
+	attron(COLOR_PAIR(4));
+	printw("P ");
+	attron(COLOR_PAIR(1));
+	printw("- Player");
+	move(beginMapLine + nivel.tamI + 8, 0);
+
+	attron(COLOR_PAIR(4));
+	printw("I ");
+	attron(COLOR_PAIR(1));
+	printw("- Item");
+	move(beginMapLine + nivel.tamI + 9, 0);
+
+	attron(COLOR_PAIR(3));
+	printw("< ");
+	attron(COLOR_PAIR(1));
+	printw("- Escada por onde voce desceu para esse nivel");
+	move(beginMapLine + nivel.tamI + 10, 0);
+
+	attron(COLOR_PAIR(3));
+	printw("> ");
+	attron(COLOR_PAIR(1));
+	printw("- Escada para o proximo nivel");
+	move(beginMapLine + nivel.tamI + 11, 0);
+
+	attron(COLOR_PAIR(2));
+	printw("B ");
+	attron(COLOR_PAIR(1));
+	printw("- Boss do nivel");
+	move(beginMapLine + nivel.tamI + 12, 0);
+
+	attron(COLOR_PAIR(2));
+	printw("E ");
+	attron(COLOR_PAIR(1));
+	printw("- Inimigo comum");
+	move(beginMapLine + nivel.tamI + 13, 0);
+
+	attron(COLOR_PAIR(1));
+	printw("Pressione - para abrir o menu e ver todos os comandos");
+	move(beginMapLine + nivel.tamI + 14, 0);
 }
 
 

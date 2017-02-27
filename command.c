@@ -73,11 +73,13 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 	attron(COLOR_PAIR(3));
 
 	/* Lists possible commands */
-	printw("\n\n==== Menu ====\n\nOpcoes de comando:\n");
-	printw("s - salvar o jogo\n");
-	printw("r - retornar ao jogo\n");
-	printw("q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
-	printw("l - lista de comandos de jogo\n");
+	mvprintw(10,0,"==== Menu ====");
+	attron(COLOR_PAIR(1));
+	mvprintw(11,0,"Opcoes de comando:\n");
+	mvprintw(12,0,"s - salvar o jogo\n");
+	mvprintw(13,0,"r - retornar ao jogo\n");
+	mvprintw(14,0,"q - deixar o jogo (tenha certeza que voce salvou o jogo antes!)\n");
+	mvprintw(15,0,"l - lista de comandos de jogo\n");
 
 	do{
 		get = getch();
@@ -86,11 +88,11 @@ int menu(Nivel nivel, Player *player, Enemy *enemies, Bag *bag){
 		if(get == 's'){
 			if(saveGame(nivel, player, enemies, bag)){
 				clear();
-				printw("\n\nJogo salvo!\n\n");
+				mvprintw(5,0,"Jogo salvo!");
 			}
 
 			else
-				printw("O jogo nao pode ser salvo, tente novamente\n\n");
+				mvprintw(5,0,"O jogo nao pode ser salvo, tente novamente\n\n");
 
 			attron(COLOR_PAIR(1));
 			return menu(nivel, player, enemies, bag);
@@ -141,14 +143,15 @@ void usaPot(Bag *bag, Player *player){
 void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 	int i, flag = 1;
+	int used = 0;
 	char get;
 	Item aux;
+	int getPosition = 45;
 
-	clear();
 	attron(COLOR_PAIR(3));
 
 	/* Prints equiped items */
-	mvprintw(0,0,"Voce esta equipado com: \n\n\n");
+	mvprintw(10,0,"Voce esta equipado com: \n\n\n");
 	attron(COLOR_PAIR(4));
 	printw("%s\n    Dano + %d\n\n", (*player).weapon.nome, (*player).weapon.valor);
 	printw("%s\n    Armadura + %d", (*player).gear.nome, (*player).gear.valor);
@@ -156,11 +159,11 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 
 	/* Print bag items */
-	mvprintw(11,0,"Itens na mochila:\n\n");
+	mvprintw(20,0,"Itens na mochila:\n\n");
 
 	for(i = 0; i < TAM_BAG; i++){
 		if(bag[i].used){
-			flag = 0;
+			used++;
 			printw("%d - %s (%d)\n", i + 1, bag[i].item.nome, bag[i].quantidade);
 
 			if(bag[i].item.tipo == 1)
@@ -174,8 +177,11 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 		}
 	}
 
-	if(flag)
-		printw("Inventario vazio!!\n\n");
+	if(!used){
+		attron(COLOR_PAIR(2));
+		printw("Inventario vazio!\n\n");
+		attron(COLOR_PAIR(3));
+	}
 
 	printw("Comandos possiveis: \n\nDigite o indice do item que deseja usar\nr - retorna ao mapa\nd - Dropa algum item da mochila\n\n");
 
@@ -183,16 +189,19 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 
 	/* Gets a command */
 	do{
+		move(getPosition, 0);
 		get = getch();
 
 		if(get == 'r'){
 			clear();
 			attron(COLOR_PAIR(1));
-			return;
+			flag = 0;
 		}
 
 		else if(get == 'd'){
-			printw("\nQual o indice do item que voce deseja dropar?\n");
+			mvprintw(5,0,"\n");
+			mvprintw(0,0,"Qual o indice do item que voce deseja dropar?\n");
+			move(getPosition, 0);
 
 			char index;
 
@@ -204,10 +213,10 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y - 1][player->x].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y - 1][player->x].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					clear();
 					attron(COLOR_PAIR(4));
-					printw("O item foi dropado!\n");
+					mvprintw(5,0,"O item foi dropado!\n");
 					attron(COLOR_PAIR(1));
+					printBag(bag, player, nivel);
 					return;
 				}
 
@@ -216,10 +225,10 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y + 1][player->x].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y + 1][player->x].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					clear();
 					attron(COLOR_PAIR(4));
-					printw("O item foi dropado!\n");
+					mvprintw(5,0,"O item foi dropado!\n");
 					attron(COLOR_PAIR(1));
+					printBag(bag, player, nivel);
 					return;
 				}
 
@@ -228,10 +237,10 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y][player->x - 1].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y][player->x - 1].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					clear();
 					attron(COLOR_PAIR(4));
-					printw("O item foi dropado!\n");
+					mvprintw(5,0,"O item foi dropado!\n");
 					attron(COLOR_PAIR(1));
+					printBag(bag, player, nivel);
 					return;
 				}
 
@@ -240,39 +249,43 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 					nivel->mapa[player->y][player->x + 1].quantItems = bag[index - '1'].quantidade;
 					nivel->mapa[player->y][player->x + 1].itemIndice = bag[index - '1'].item.indice;
 					bag[index - '1'].used = 0;
-					clear();
 					attron(COLOR_PAIR(4));
-					printw("O item foi dropado!\n");
+					mvprintw(5,0,"O item foi dropado!\n");
 					attron(COLOR_PAIR(1));
+					printBag(bag, player, nivel);
 					return;
 				}
 
 				else{
 					attron(COLOR_PAIR(2));
-					printw("\nNao foi possivel dropar o item nessa posicao do mapa!\n");
+					mvprintw(5,0,"Nao foi possivel dropar o item nessa posicao do mapa!\n");
 					attron(COLOR_PAIR(1));
+					printBag(bag, player, nivel);
+					return;
 				}
 			}
 
 			else{
 				attron(COLOR_PAIR(2));
-				printw("\nNao ha nenhum item nessa posicao da mochila!\n\n");
+				mvprintw(5,0,"Nao ha nenhum item nessa posicao da mochila!\n\n");
 				attron(COLOR_PAIR(1));
-				printw("Escolha um novo comando:\n");
+				printw("Escolha um novo comando\n");
+				printBag(bag, player, nivel);
+				return;
 			}
 		}
 
 		else if((get - '1' >= 0) && (get - '1' < TAM_BAG) && (bag[get - '1'].used)){
-			flag = 0;
 
 			/* Uses pot */
 			if(bag[get - '1'].item.tipo == 3){
 				usaPot(&bag[get - '1'], player);
-				clear();
 				attron(COLOR_PAIR(4));
-				printw("Voce utilizou uma %s e recuperou %d de vida!\n", bag[get-'1'].item.nome,
+				mvprintw(5,0,"Voce utilizou uma %s e recuperou %d de vida!\n", bag[get-'1'].item.nome,
 																			bag[get-'1'].item.valor);
 				attron(COLOR_PAIR(1));
+				printBag(bag, player, nivel);
+				return;
 			}
 
 			/* Changes weapon */
@@ -282,10 +295,11 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 				bag[get - '1'].item = (*player).weapon;
 				(*player).weapon = aux;
 				(*player).attack += (*player).weapon.valor;
-				clear();
 				attron(COLOR_PAIR(4));
-				printw("Voce agora esta usando %s\n", (*player).weapon.nome);
+				mvprintw(5,0,"Voce agora esta usando %s\n", (*player).weapon.nome);
 				attron(COLOR_PAIR(1));
+				printBag(bag, player, nivel);
+				return;
 			}
 
 			/* Changes armor */
@@ -295,15 +309,42 @@ void printBag(Bag *bag, Player *player, Nivel* nivel){
 				bag[get -'1'].item = (*player).gear;
 				(*player).gear = aux;
 				(*player).defense += (*player).gear.valor;
-				clear();
 				attron(COLOR_PAIR(4));
-				printw("Voce agora esta usando %s\n", (*player).gear.nome);
+				mvprintw(5,0,"Voce agora esta usando %s\n", (*player).gear.nome);
 				attron(COLOR_PAIR(1));
+				printBag(bag, player, nivel);
+				return;
 			}
-
 		}
 
 	}while(flag);
+
+	used = 0;
+
+	for(int i = 0; i < TAM_BAG; i++){
+		if(bag[i].used == 1){
+			used = 1;
+			break;
+		}
+	}
+
+	if(used){
+		for(int i = 0; i < TAM_BAG - 1; i++){
+			if(bag[i].used == 0){
+				flag = 0;
+
+				for(int j = i; j < TAM_BAG - 1; j++)
+					if(bag[j + 1].used){
+						bag[j] = bag[j + 1];
+						bag[j + 1].used = 0;
+						flag = 1;
+					}
+
+				if(flag)
+					i--;
+			}
+		}
+	}
 }
 
 /* Takes item from map */
@@ -430,8 +471,10 @@ int executeComand(char command, Player *player, Nivel *nivel, Enemy *enemies, Ba
 	else if(command == 'c')
 		showStats(player);
 
-	else if(command == 'b')
+	else if(command == 'b'){
+		clear();
 		printBag(bag, player, nivel);
+	}
 
 	/* Combat/move commands*/
 	else if(((*player).x > 0) && (command == 'a')) {
