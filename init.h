@@ -7,7 +7,7 @@
 #define INIT_H_INCLUDED
 
 
-/* Defines player stats, bag size and number of itens in database */
+/* Defines player stats, bag size and number of items in database */
 #define BASE_HP 20
 #define BASE_ATTACK 7
 #define BASE_DEF 3
@@ -18,7 +18,8 @@
 #define BASE_DEF 3
 #define BASE_NEXT_LEVEL 10
 #define TAM_BAG 5
-#define QUANT_ITENS 6
+
+int QUANT_ITEMS;
 
 
 /* Items struct */
@@ -71,7 +72,7 @@ typedef struct {
 void startGame();
 
 /* Initializes player */
-void playerInit(Player *player, Item *itens);
+void playerInit(Player *player, Item *items);
 
 /* Initializes empty bag */
 void bagInit(Bag *bag);

@@ -55,7 +55,7 @@ void dropCheck(Enemy *enemy, Map *position){
 
 		if(aux <= (*enemy).dropRate * 100){
 			do{
-				aux = rand() % QUANT_ITENS;
+				aux = rand() % QUANT_ITEMS;
 				(*position).used = 1;
 				(*position).itemIndice = aux;
 				(*position).quantItems = 1;

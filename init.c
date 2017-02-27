@@ -25,13 +25,12 @@
 
 /* Initializes everything and executes the game */
 void startGame(){
-	int existentItems = 0;
 	char comand;
 	Nivel nivel;
 	Player player;
 	Enemy *enemies;
 	Bag *bag;
-	Item *itens, read;
+	Item *items, read;
 	FILE *database;
 
 	/* Initialize colors support from curses.h */
@@ -57,13 +56,10 @@ void startGame(){
 		return;
 	}
 
-	while(fread(&read, sizeof(Item), 1, database))
-		existentItems++;
+	fread(&QUANT_ITEMS, sizeof(int), 1, database);
 
-	itens = malloc(existentItems * sizeof(Item));
-
-	rewind(database);
-	fread(itens, sizeof(Item), existentItems, database);
+	items = malloc(QUANT_ITEMS * sizeof(Item));
+	fread(items, sizeof(Item), QUANT_ITEMS, database);
 	fclose(database);
 
 	enemies = malloc(sizeof(Enemy));
@@ -72,7 +68,7 @@ void startGame(){
 	if(gameLoad(&player, &nivel, enemies, bag) == 0){
 
 		/* Initialize player and bag */
-		playerInit(&player, itens);
+		playerInit(&player, items);
 		nivel = genNivel(0, &player, enemies);
 		bagInit(bag);
 		comandList();
@@ -82,7 +78,7 @@ void startGame(){
 	}
 
 	/* Give some pots away */
-	bag[0].item = itens[0];
+	bag[0].item = items[0];
 	bag[0].quantidade = 3;
 	bag[0].used = 1;
 
@@ -91,16 +87,16 @@ void startGame(){
 		print(nivel, player, enemies);
 		comand = getch();
 		clear();
-	}while(executeComand(comand, &player, &nivel, enemies, bag, itens));
+	}while(executeComand(comand, &player, &nivel, enemies, bag, items));
 
 	free(enemies);
 	free(bag);
-	free(itens);
+	free(items);
 	endwin();
 }
 
 /* Initialize player */
-void playerInit(Player *player, Item *itens){
+void playerInit(Player *player, Item *items){
 
 	/* Inicializa os stas do jogador com os stats base */
 	(*player).hp = BASE_HP;
@@ -109,9 +105,9 @@ void playerInit(Player *player, Item *itens){
 	(*player).chave = 0;
 	(*player).NextLevel = BASE_NEXT_LEVEL;
 	(*player).MaxHP = BASE_HP;
-	(*player).weapon = itens[2];
+	(*player).weapon = items[2];
 	(*player).attack = BASE_ATTACK + (*player).weapon.valor;
-	(*player).gear = itens[3];
+	(*player).gear = items[3];
 	(*player).atual = 0;
 	(*player).defense = BASE_DEF + (*player).gear.valor;
 	(*player).con = 0;
