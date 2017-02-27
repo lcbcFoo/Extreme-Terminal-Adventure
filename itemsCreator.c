@@ -1,7 +1,10 @@
 /* Author: ETA Team *
  * Last Modification: 02/28/2015 by Foo*/
 
-/* Pot menor, pot maior, espada de madeira, trapo velho, espada cega */
+ /* Tipos:
+  * 1 - weapon
+  * 2 - armor
+  * 3 - pot */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,12 +65,12 @@ int main (){
 			scanf("%d", &items[i].valor);
 
 			items[i].indice = i;
-		}	
+		}
 
 		else{
 			printf("Item ja contido na database, insira outro\n");
 			i--;
-		}	
+		}
 	}
 
 	printf("\n\n\n");
@@ -82,9 +85,12 @@ int main (){
 	if(recebe != 'y')
 		return 0;
 
+	rewind(database);
+	int total = existentItems + newItems;
+	fwrite(&total, sizeof(int), 1, database);
 	fseek(database, 0, SEEK_END);
 
-	for(i = existentItems; i < existentItems + newItems; i++)
+	for(i = existentItems; i < total; i++)
 		if(!fwrite(&items[i], sizeof(Item), 1, database)){
 			printf("erro no item %d!\n", i + 1);
 			return 0;
