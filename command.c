@@ -418,10 +418,13 @@ void showStats(Player *player){
 
 	attron(COLOR_PAIR(3));
 	clear();
-	mvprintw(0,0,"Existem 3 tipos de atributos: constituicao, destreza e forca. Voce get 5 pontos ao evoluir um nivel para distribuir entre esses atributos.\n");
+	mvprintw(0,0,"Existem 3 tipos de atributos: constituicao, destreza e forca. Voce ganha 5 pontos para distribuir entre esses atributos ao evoluir seu personagem.\n");
 	mvprintw(1,0,"Colocar pontos em constituicao te garante mais vida, em destreza te garante maior chance de se esquivar de ataques e de dar acertos criticos, ");
 	mvprintw(2,0,"e em forca aumenta o seu poder de ataque e defesa.");
-	mvprintw(5,0,"Seus atributos:\n\nConstituicao: %d\nDestreza: %d\nForca: %d", (*player).con, (*player).dext, (*player).str);
+	attron(COLOR_PAIR(4));
+	mvprintw(5,0,"Seus atributos:");
+	printw("\n\nConstituicao: %d\nDestreza:     %d\nForca:        %d", (*player).con, (*player).dext, (*player).str);
+	attron(COLOR_PAIR(3));
 	mvprintw(11,0,"Voce possui %d pontos a serem distribuidos", (*player).pontos);
 	mvprintw(14,0,"Comandos possiveis:\n1 - Adiciona 1 ponto em constituicao (caso voce possua pontos a serem distribuidos);\n2 - Adiciona 1 ponto em destreza (caso voce possua pontos a serem distribuidos)");
 	mvprintw(17,0,"3 - Adiciona 1 ponto em forca (GASTA 5 PONTOS!) (caso voce possua pontos a serem distribuidos);\nr - retorna ao jogo\n\n");
