@@ -394,9 +394,8 @@ void takeItem(Player *player, Item item, Map *position, Bag *bag){
 }
 
 void nextNivel(Nivel *nivel, Player *player, Enemy** enemy){
-
 	if(player->chave){
-		(*nivel) = genNivel(nivel->nivel + 1, player, (*enemy));
+		(*nivel) = genNivel(nivel->nivel + 1, player, enemy);
 		clear();
 		attron(COLOR_PAIR(3));
 		mvprintw(0, 0, "Voce desceu para o nivel %d da dungeon\n", nivel->nivel + 1);

@@ -62,14 +62,12 @@ void startGame(){
 	fread(items, sizeof(Item), QUANT_ITEMS, database);
 	fclose(database);
 
-	enemies = malloc(sizeof(Enemy));
-
 	/* Loads existent game or starts a new one */
-	if(gameLoad(&player, &nivel, enemies, bag) == 0){
+	if(gameLoad(&player, &nivel, &enemies, bag) == 0){
 
 		/* Initialize player and bag */
 		playerInit(&player, items);
-		nivel = genNivel(0, &player, enemies);
+		nivel = genNivel(0, &player, &enemies);
 		bagInit(bag);
 		comandList();
 		mvprintw(11,0,"Voce pode rever os comandos disponiveis acessando o MENU.\n\n\nDigite alguma letra para comecar: ");
@@ -185,7 +183,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 	nivel.mapa[controller.y][controller.x].shown = 1;
 
 	/* Verifies the player vision area */
-	for(radius = 1; radius < 7; radius++){
+	for(radius = 1; radius < 6; radius++){
 
 		for(int i = controller.y - radius; (i < controller.y + radius); i++){
 			for(int j = controller.x - radius; (j < controller.x + radius); j++){
@@ -285,11 +283,6 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 		move(beginMapLine + i + 3, 0);
 	}
 
-	/*init_pair(1,COLOR_WHITE,COLOR_BLACK);
-	init_pair(2,COLOR_RED,COLOR_BLACK);
-	init_pair(3,COLOR_GREEN,COLOR_BLACK);
-	init_pair(4,COLOR_BLUE,COLOR_BLACK);*/
-
 	/* Describe symbols in map */
 	move(beginMapLine + nivel.tamI + 4, 0);
 
@@ -343,7 +336,7 @@ void print(Nivel nivel, Player controller, Enemy *enemies){
 
 
 /* Checks if there is a saved game */
-int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
+int gameLoad(Player* player, Nivel* nivel, Enemy** enemies, Bag *bag){
 
 	char read;
 	FILE *arq;
@@ -358,7 +351,8 @@ int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag){
 		if(read == 'y'){
 			fread(nivel, sizeof(Nivel), 1, arq);
 			fread(player, sizeof(Player), 1, arq);
-			fread(enemies, nivel->inimigos * sizeof(Enemy), 1, arq);
+			(*enemies) = malloc(nivel->inimigos * sizeof(Enemy));
+			fread((*enemies), nivel->inimigos * sizeof(Enemy), 1, arq);
 			fread(bag, sizeof(Bag), TAM_BAG, arq);
 			fclose(arq);
 			remove("savedGame.bin");

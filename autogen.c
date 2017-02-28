@@ -11,12 +11,6 @@
 #include "init.h"
 #include "autogen.h"
 
-#define BOSS_HP 50
-#define BOSS_ATK 9
-#define BOSS_DEFENSE 5
-#define BOSS_DROP_RATE 0.9
-#define BOSS_XP 10
-
 
 /* Checks if distance between player and boss is OK */
 int distancia(int x1, int y1, int x2, int y2, int area){
@@ -30,7 +24,7 @@ int distancia(int x1, int y1, int x2, int y2, int area){
 }
 
 /* Create new enemy */
-Enemy createEnemy(int boss, int y, int x, int level){
+Enemy createEnemy(int boss, int y, int x, int level, int indice){
 
 	Enemy enemy;
 
@@ -53,25 +47,52 @@ Enemy createEnemy(int boss, int y, int x, int level){
 
 	}
 
+	else{
+		char name[50] = "Lacaio";
+
+		do{
+			enemy.hp = rand() % ((1 + level) * (BOSS_HP / 2));
+		}while(enemy.hp < (1 + level) * (BOSS_HP / 6));
+
+		do{
+			enemy.attack = rand() % ((BOSS_ATK * (1 + level)) / 3);
+		}while(enemy.attack < (BOSS_ATK * (1 + level)) / 9);
+
+		do{
+			enemy.defense = rand() % (BOSS_DEFENSE * (1 + level)) / 1.5;
+		}while(enemy.defense < (BOSS_DEFENSE * (1 + level)) / 4.5);
+
+		enemy.givenXP = BOSS_XP * (1 + level) / 2;
+
+		do{
+			enemy.dropRate = (rand() % 10 * BOSS_DROP_RATE) / 10;
+		}while(enemy.dropRate < BOSS_DROP_RATE / 3);
+		enemy.seen = 0;
+		enemy.y = y;
+		enemy.x = x;
+		enemy.indice = indice;
+		strcpy(enemy.nome, name);
+
+		for(int i = 0; i < 200; i++)
+			enemy.dropItems[i] = 1;
+	}
+
 	return enemy;
 }
 
 /* Gera um novo nivel */
-Nivel genNivel(int level, Player* player, Enemy* enemies){
+Nivel genNivel(int level, Player* player, Enemy** enemies){
 
 	Nivel nivel;
-
-	clear();
-	move(0,0);
 
 	/* Escolhe um tamanho aleatorio para o mapa */
 	do{
 		nivel.tamI = rand() % 26;
-	}while(nivel.tamI < 21);
+	}while(nivel.tamI < 19);
 
 	do{
-		nivel.tamJ = rand() % 51;
-	}while(nivel.tamJ < 46);
+		nivel.tamJ = rand() % 45;
+	}while(nivel.tamJ < 40);
 
 
 	int tamI = nivel.tamI;
@@ -83,7 +104,6 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 	}
 
 	nivel.nivel = level;
-	nivel.inimigos = 0;
 
 	/* Gera o mapa aleatoriamente (apenas muros e espacos vazios) */
 	genRoom(&nivel);
@@ -136,27 +156,28 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 		}
 	}
 
+	/* Create random enemies */
+	genEnemies(&nivel, enemies);
+
 	/* Places boss */
 	int flag = 0;
 
-	if(flag == 0){
-		if(stairsI - 1 > 0){
-			nivel.mapa[stairsI - 1][stairsJ].enemyIndice = 0;
-			nivel.mapa[stairsI - 1][stairsJ].used = 1;
-			nivel.inimigos++;
-			enemies[0] = createEnemy(1, stairsI - 1, stairsJ, nivel.nivel);
-		}
-
-		else
-			flag = 1;
+	if(stairsI - 1 > 0){
+		nivel.mapa[stairsI - 1][stairsJ].enemyIndice = 0;
+		nivel.mapa[stairsI - 1][stairsJ].used = 1;
+		nivel.inimigos++;
+		(*enemies)[0] = createEnemy(1, stairsI - 1, stairsJ, nivel.nivel, 0);
 	}
+
+	else
+		flag = 1;
 
 	if(flag == 1){
 		if(stairsI + 1 < tamI - 1){
 			nivel.mapa[stairsI + 1][stairsJ].enemyIndice = 0;
 			nivel.mapa[stairsI + 1][stairsJ].used = 1;
 			nivel.inimigos++;
-			enemies[0] = createEnemy(1, stairsI + 1, stairsJ, nivel.nivel);
+			(*enemies)[0] = createEnemy(1, stairsI + 1, stairsJ, nivel.nivel, 0);
 		}
 
 		else
@@ -168,7 +189,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 			nivel.mapa[stairsI][stairsJ - 1].enemyIndice = 0;
 			nivel.mapa[stairsI][stairsJ - 1].used = 1;
 			nivel.inimigos++;
-			enemies[0] = createEnemy(1, stairsI, stairsJ - 1, nivel.nivel);
+			(*enemies)[0] = createEnemy(1, stairsI, stairsJ - 1, nivel.nivel, 0);
 		}
 
 		else
@@ -180,7 +201,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 			nivel.mapa[stairsI][stairsJ + 1].enemyIndice = 0;
 			nivel.mapa[stairsI][stairsJ + 1].used = 1;
 			nivel.inimigos++;
-			enemies[0] = createEnemy(1, stairsI, stairsJ + 1, nivel.nivel);
+			(*enemies)[0] = createEnemy(1, stairsI, stairsJ + 1, nivel.nivel, 0);
 		}
 	}
 
@@ -208,7 +229,7 @@ Nivel genNivel(int level, Player* player, Enemy* enemies){
 		}
 	}
 
-	enemyPositions(nivel, enemies);
+	enemyPositions(nivel, (*enemies));
 	return nivel;
 }
 
@@ -226,6 +247,35 @@ void getRoomsStats(Nivel* nivel, int *rooms, int* maxSize){
 	}while((*maxSize) < maxRooms / 2);
 
 	(*rooms) = sqrt(((tamI * tamJ) / ((*maxSize) + 1)));
+}
+
+/* Create random enemies */
+void genEnemies(Nivel* nivel, Enemy** enemies){
+
+	/* Determines number of enemies */
+	nivel->inimigos = 2 * (nivel->nivel + 1) / 5;
+
+	if(nivel->inimigos == 0)
+		nivel->inimigos = 1;
+
+	else if(nivel->inimigos > 5)
+		nivel->inimigos = 5;
+
+	/* Creates and place them */
+	(*enemies) = realloc((*enemies), (nivel->inimigos + 1) * sizeof(Enemy));
+
+	for(int i = 1; i < nivel->inimigos + 1; i++){
+		int x, y;
+
+		do{
+			y = rand() % nivel->tamI;
+			x = rand() % nivel->tamJ;
+		}while(nivel->mapa[y][x].used == 1);
+
+		(*enemies)[i] = createEnemy(0, y, x, nivel->nivel, i);
+		nivel->mapa[y][x].enemyIndice = i;
+		nivel->mapa[y][x].used = 1;
+	}
 }
 
 /* Opens closed areas */

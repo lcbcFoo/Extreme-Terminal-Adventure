@@ -72,18 +72,18 @@ typedef struct {
 void startGame();
 
 /* Initializes player */
-void playerInit(Player *player, Item *items);
+void playerInit(Player* player, Item* items);
 
 /* Initializes empty bag */
-void bagInit(Bag *bag);
+void bagInit(Bag* bag);
 
 /* Checks enemies current positions */
-void enemyPositions(Nivel nivel, Enemy *enemies);
+void enemyPositions(Nivel nivel, Enemy* enemies);
 
+void print(Nivel nivel, Player controller, Enemy* enemies);
 /* Print current game situation */
-void print(Nivel nivel, Player controller, Enemy *enemies);
 
 /* Checks if there is a saved game */
-int gameLoad(Player *player, Nivel *nivel, Enemy *enemies, Bag *bag);
+int gameLoad(Player* player, Nivel* nivel, Enemy** enemies, Bag* bag);
 
 #endif /* INIT_H_INCLUDED */

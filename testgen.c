@@ -27,7 +27,7 @@ int** matriceInit(int* tamI, int* tamJ){
 void getRoomsStats(int** matrice, int tamI, int tamJ, int *maxSize, int* rooms){
 
 	int maxRooms = (tamI * tamJ) / (tamI + tamJ);
-	
+
 	srand((unsigned)time(NULL));
 	do{
 		(*rooms) = rand() % maxRooms;
@@ -53,7 +53,8 @@ void fixRoom(int** matrice, int tamI, int tamJ){
 
 	if((matrice[i - 1][j] == 1) && (i > 1)){
 		matrice[i - 1][j] = 0;
-		return testRoom(matrice, tamI, tamJ);
+		testRoom(matrice, tamI, tamJ);
+		return;
 	}
 
 	while((i < tamI - 2) && (matrice[i + 1][j] != 1))
@@ -69,7 +70,7 @@ void fixRoom(int** matrice, int tamI, int tamJ){
 		matrice[i][j + 1] = 0;
 	}
 
-	return testRoom(matrice, tamI, tamJ);
+	testRoom(matrice, tamI, tamJ);
 }
 
 void testRoom(int** matrice, int tamI, int tamJ){
@@ -91,7 +92,7 @@ void testRoom(int** matrice, int tamI, int tamJ){
 			if(matrice[i][j] != 1)
 				matrice[i][j] = 2;
 		}
-	}	
+	}
 
 	int noMove = 0;
 	int count = 3;
@@ -137,7 +138,7 @@ void testRoom(int** matrice, int tamI, int tamJ){
 		}
 
 		count++;
-	}	
+	}
 
 	int freeSpace = 0;
 
@@ -205,9 +206,9 @@ void genRoom(int** matrice, int tamI, int tamJ){
 				door1 = 1;
 				matrice[up][j - 1] = 2;
 			}
-			
+
 			matrice[up][j] = 1;
-			
+
 			if((j > 1) && (matrice[down][j] == 1)){
 				door2 = 1;
 				matrice[down][j - 1] = 2;
@@ -217,7 +218,7 @@ void genRoom(int** matrice, int tamI, int tamJ){
 		}
 
 		if(door1 == 0){
-			int j; 
+			int j;
 
 			do{
 				j = rand() % right;
@@ -321,36 +322,6 @@ int main(){
 		free(matrice[i]);
 
 	free(matrice);
-/*
-	scanf("%d %d", &tamI, &tamJ);
 
-	matrice = malloc(tamI * sizeof(int*));
-
-	for(int i = 0; i < tamI; i++)
-		matrice[i] = malloc (tamJ * sizeof(int));
-
-	for(int i = 0; i < tamI; i++){
-		for(int j = 0; j < tamJ; j++){
-			scanf("%d", &matrice[i][j]);
-		}
-	}
-	
-	printf("\n\n\n");	
-
-	testRoom(matrice, tamI, tamJ);
-
-	for(int i = 0; i < tamI; i++){
-		for(int j = 0; j < tamJ; j++){
-
-			if(matrice[i][j] == 1)
-				printf("X ");
-
-			else
-				printf("- ");
-		}
-
-		printf("\n");
-	}
-	*/
 	return 0;
 }
