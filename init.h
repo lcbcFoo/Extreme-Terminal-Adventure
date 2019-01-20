@@ -32,40 +32,40 @@ typedef struct {
     char nome[51];
 } Item;
 
- /* Player struct */
+/* Player struct */
 typedef struct {
 
-	int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos, chave, atual;
-	Item weapon, gear;
+    int hp, level, attack, defense, XP, x, y, NextLevel, MaxHP, con, dext, str, pontos, chave, atual;
+    Item weapon, gear;
 
 } Player;
 
 /* Enemy struct */
 typedef struct {
 
-	int hp, attack, defense, givenXP, x, y, dropItems[200], seen, indice;
-	double dropRate;
-	char nome[51];
+    int hp, attack, defense, givenXP, x, y, dropItems[200], seen, indice;
+    double dropRate;
+    char nome[51];
 
 } Enemy;
 
 typedef struct {
 
-	int wall, player, used, enemyIndice, itemIndice, quantItems, stairs, shown;
+    int wall, player, used, enemyIndice, itemIndice, quantItems, stairs, shown;
 
 } Map;
 
 typedef struct{
 
-	int nivel, inimigos, tamI, tamJ;
-	Map mapa[50][70];
+    int nivel, inimigos, tamI, tamJ;
+    Map mapa[50][70];
 } Nivel;
 
 /* Bag struct */
 typedef struct {
 
-	Item item;
-	int quantidade, used;
+    Item item;
+    int quantidade, used;
 } Bag;
 
 /* Initializes everything and executes the game */

@@ -197,7 +197,7 @@ typedef	char	bool;
 #define __STANDOUT	0x00000100	/* Added characters are standout. */
 #define __UNDERSCORE	0x00000200	/* Added characters are underscored. */
 #define __REVERSE	0x00000400	/* Added characters are reverse
-					   video. */
+                                           video. */
 #define __BLINK		0x00000800	/* Added characters are blinking. */
 #define __DIM		0x00001000	/* Added characters are dim. */
 #define __BOLD		0x00002000	/* Added characters are bold. */
@@ -331,7 +331,7 @@ extern int	 ESCDELAY;		/* Delay between keys in esc seq's. */
 #define bkgd(ch)			wbkgd(stdscr, ch)
 #define bkgdset(ch)			wbkgdset(stdscr, ch)
 #define	border(l, r, t, b, tl, tr, bl, br) \
-	wborder(stdscr, l, r, t, b, tl, tr, bl, br)
+    wborder(stdscr, l, r, t, b, tl, tr, bl, br)
 #define	clear()				wclear(stdscr)
 #define	clrtobot()			wclrtobot(stdscr)
 #define	clrtoeol()			wclrtoeol(stdscr)
@@ -381,37 +381,37 @@ extern int	 ESCDELAY;		/* Delay between keys in esc seq's. */
 #define	mvinsch(y, x, c)		mvwinsch(stdscr, y, x, c)
 #define	mvinstr(y, x, s)		mvwinstr(stdscr, y, x, s)
 #define	mvwaddbytes(w, y, x, s, n) \
-	(wmove(w, y, x) == ERR ? ERR : __waddbytes(w, s, n, 0))
+    (wmove(w, y, x) == ERR ? ERR : __waddbytes(w, s, n, 0))
 #define	mvwaddch(w, y, x, ch) \
-	(wmove(w, y, x) == ERR ? ERR : waddch(w, ch))
+    (wmove(w, y, x) == ERR ? ERR : waddch(w, ch))
 #define	mvwaddchnstr(w, y, x, s, n) \
-	(wmove(w, y, x) == ERR ? ERR : waddchnstr(w, s, n))
+    (wmove(w, y, x) == ERR ? ERR : waddchnstr(w, s, n))
 #define	mvwaddchstr(w, y, x, s) \
-	(wmove(w, y, x) == ERR ? ERR : waddchnstr(w, s, -1))
+    (wmove(w, y, x) == ERR ? ERR : waddchnstr(w, s, -1))
 #define	mvwaddnstr(w, y, x, s, n) \
-	(wmove(w, y, x) == ERR ? ERR : waddnstr(w, s, n))
+    (wmove(w, y, x) == ERR ? ERR : waddnstr(w, s, n))
 #define	mvwaddstr(w, y, x, s) \
-	(wmove(w, y, x) == ERR ? ERR : waddnstr(w, s, -1))
+    (wmove(w, y, x) == ERR ? ERR : waddnstr(w, s, -1))
 #define	mvwdelch(w, y, x) \
-	(wmove(w, y, x) == ERR ? ERR : wdelch(w))
+    (wmove(w, y, x) == ERR ? ERR : wdelch(w))
 #define	mvwgetch(w, y, x) \
-	(wmove(w, y, x) == ERR ? ERR : wgetch(w))
+    (wmove(w, y, x) == ERR ? ERR : wgetch(w))
 #define	mvwgetnstr(w, y, x, s, n) \
-	(wmove(w, y, x) == ERR ? ERR : wgetnstr(w, s, n))
+    (wmove(w, y, x) == ERR ? ERR : wgetnstr(w, s, n))
 #define	mvwgetstr(w, y, x, s) \
-	(wmove(w, y, x) == ERR ? ERR : wgetstr(w, s))
+    (wmove(w, y, x) == ERR ? ERR : wgetstr(w, s))
 #define	mvwinch(w, y, x) \
-	(wmove(w, y, x) == ERR ? ERR : winch(w))
+    (wmove(w, y, x) == ERR ? ERR : winch(w))
 #define	mvwinchnstr(w, y, x, c, n) \
-	(wmove(w, y, x) == ERR ? ERR : winchnstr(w, c, n))
+    (wmove(w, y, x) == ERR ? ERR : winchnstr(w, c, n))
 #define	mvwinchstr(w, y, x, s) \
-	(wmove(w, y, x) == ERR ? ERR : winchstr(w, c))
+    (wmove(w, y, x) == ERR ? ERR : winchstr(w, c))
 #define	mvwinnstr(w, y, x, s, n) \
-	(wmove(w, y, x) == ERR ? ERR : winnstr(w, s, n))
+    (wmove(w, y, x) == ERR ? ERR : winnstr(w, s, n))
 #define	mvwinsch(w, y, x, c) \
-	(wmove(w, y, x) == ERR ? ERR : winsch(w, c))
+    (wmove(w, y, x) == ERR ? ERR : winsch(w, c))
 #define	mvwinstr(w, y, x, s) \
-	(wmove(w, y, x) == ERR ? ERR : winstr(w, s))
+    (wmove(w, y, x) == ERR ? ERR : winstr(w, s))
 
 /* Miscellaneous. */
 #define	noqiflush()		intrflush(stdscr, FALSE)
@@ -436,7 +436,7 @@ int	 attrset(int);
 int	 bkgd(chtype);
 void	 bkgdset(chtype);
 int	 border(chtype, chtype, chtype, chtype,
-	   chtype, chtype, chtype, chtype);
+        chtype, chtype, chtype, chtype);
 int	 clear(void);
 int	 clrtobot(void);
 int	 clrtoeol(void);
@@ -571,85 +571,85 @@ int	 mvcur(int, int, int, int);
 int      mvderwin(WINDOW *, int, int);
 int	 mvhline(int, int, chtype, int);
 int	 mvprintw(int, int, const char *, ...)
-		__attribute__((__format__(__printf__, 3, 4)));
+    __attribute__((__format__(__printf__, 3, 4)));
 int	 mvscanw(int, int, const char *, ...)
-		__attribute__((__format__(__scanf__, 3, 4)));
-int	 mvvline(int, int, chtype, int);
-int	 mvwhline(WINDOW *, int, int, chtype, int);
-int	 mvwvline(WINDOW *, int, int, chtype, int);
-int	 mvwin(WINDOW *, int, int);
-int	 mvwinchnstr(WINDOW *, int, int, chtype *, int);
-int	 mvwinchstr(WINDOW *, int, int, chtype *);
-int	 mvwinnstr(WINDOW *, int, int, char *, int);
-int	 mvwinstr(WINDOW *, int, int, char *);
+    __attribute__((__format__(__scanf__, 3, 4)));
+    int	 mvvline(int, int, chtype, int);
+    int	 mvwhline(WINDOW *, int, int, chtype, int);
+    int	 mvwvline(WINDOW *, int, int, chtype, int);
+    int	 mvwin(WINDOW *, int, int);
+    int	 mvwinchnstr(WINDOW *, int, int, chtype *, int);
+    int	 mvwinchstr(WINDOW *, int, int, chtype *);
+    int	 mvwinnstr(WINDOW *, int, int, char *, int);
+    int	 mvwinstr(WINDOW *, int, int, char *);
 int	 mvwprintw(WINDOW *, int, int, const char *, ...)
-		__attribute__((__format__(__printf__, 4, 5)));
+    __attribute__((__format__(__printf__, 4, 5)));
 int	 mvwscanw(WINDOW *, int, int, const char *, ...)
-		__attribute__((__format__(__scanf__, 4, 5)));
-int	 napms(int);
-WINDOW	*newpad(int, int);
-SCREEN  *newterm(char *, FILE *, FILE *);
-WINDOW	*newwin(int, int, int, int);
-int	 nl(void);
-attr_t	 no_color_video(void);
-int	 nocbreak(void);
-int	 nodelay(WINDOW *, bool);
-int	 noecho(void);
-int	 nonl(void);
-void	 noqiflush(void);
-int	 noraw(void);
-int	 notimeout(WINDOW *, bool);
-int	 overlay(const WINDOW *, WINDOW *);
-int	 overwrite(const WINDOW *, WINDOW *);
-int	 pair_content(short, short *, short *);
-int	 pechochar(WINDOW *, const chtype);
-int	 pnoutrefresh(WINDOW *, int, int, int, int, int, int);
-int	 prefresh(WINDOW *, int, int, int, int, int, int);
+    __attribute__((__format__(__scanf__, 4, 5)));
+    int	 napms(int);
+    WINDOW	*newpad(int, int);
+    SCREEN  *newterm(char *, FILE *, FILE *);
+    WINDOW	*newwin(int, int, int, int);
+    int	 nl(void);
+    attr_t	 no_color_video(void);
+    int	 nocbreak(void);
+    int	 nodelay(WINDOW *, bool);
+    int	 noecho(void);
+    int	 nonl(void);
+    void	 noqiflush(void);
+    int	 noraw(void);
+    int	 notimeout(WINDOW *, bool);
+    int	 overlay(const WINDOW *, WINDOW *);
+    int	 overwrite(const WINDOW *, WINDOW *);
+    int	 pair_content(short, short *, short *);
+    int	 pechochar(WINDOW *, const chtype);
+    int	 pnoutrefresh(WINDOW *, int, int, int, int, int, int);
+    int	 prefresh(WINDOW *, int, int, int, int, int, int);
 int	 printw(const char *, ...)
-		__attribute__((__format__(__printf__, 1, 2)));
-void	 qiflush(void);
-int	 raw(void);
-int	 redrawwin(WINDOW *);
-int	 reset_prog_mode(void);
-int	 reset_shell_mode(void);
-int	 resetty(void);
-int      resizeterm(int, int);
-int	 savetty(void);
+    __attribute__((__format__(__printf__, 1, 2)));
+    void	 qiflush(void);
+    int	 raw(void);
+    int	 redrawwin(WINDOW *);
+    int	 reset_prog_mode(void);
+    int	 reset_shell_mode(void);
+    int	 resetty(void);
+    int      resizeterm(int, int);
+    int	 savetty(void);
 int	 scanw(const char *, ...)
-		__attribute__((__format__(__scanf__, 1, 2)));
-int	 scroll(WINDOW *);
-int	 scrollok(WINDOW *, bool);
-int	 setterm(char *);
-SCREEN  *set_term(SCREEN *);
-int	 start_color(void);
-WINDOW	*subpad(WINDOW *, int, int, int, int);
-WINDOW	*subwin(WINDOW *, int, int, int, int);
-int	 touchline(WINDOW *, int, int);
-int	 touchoverlap(WINDOW *, WINDOW *);
-int	 touchwin(WINDOW *);
-int	 ungetch(int);
-int	 untouchwin(WINDOW *);
-int	 use_default_colors(void);
-int	 vline(chtype, int);
+    __attribute__((__format__(__scanf__, 1, 2)));
+    int	 scroll(WINDOW *);
+    int	 scrollok(WINDOW *, bool);
+    int	 setterm(char *);
+    SCREEN  *set_term(SCREEN *);
+    int	 start_color(void);
+    WINDOW	*subpad(WINDOW *, int, int, int, int);
+    WINDOW	*subwin(WINDOW *, int, int, int, int);
+    int	 touchline(WINDOW *, int, int);
+    int	 touchoverlap(WINDOW *, WINDOW *);
+    int	 touchwin(WINDOW *);
+    int	 ungetch(int);
+    int	 untouchwin(WINDOW *);
+    int	 use_default_colors(void);
+    int	 vline(chtype, int);
 int	 vwprintw(WINDOW *, const char *, _BSD_VA_LIST_)
-		__attribute__((__format__(__printf__, 2, 0)));
+    __attribute__((__format__(__printf__, 2, 0)));
 int	 vwscanw(WINDOW *, const char *, _BSD_VA_LIST_)
-		__attribute__((__format__(__scanf__, 2, 0)));
-int	 waddch(WINDOW *, chtype);
-int	 waddchnstr(WINDOW *, const chtype *, int);
-int	 waddchstr(WINDOW *, const chtype *);
-int	 waddnstr(WINDOW *, const char *, int);
-int	 wattr_get(WINDOW *, attr_t *, short *, void *);
-int	 wattr_off(WINDOW *, attr_t, void *);
-int	 wattr_on(WINDOW *, attr_t, void *);
-int	 wattr_set(WINDOW *, attr_t, short, void *);
-int	 wattroff(WINDOW *, int);
-int	 wattron(WINDOW *, int);
-int	 wattrset(WINDOW *, int);
-int	 wbkgd(WINDOW *, chtype);
-void	 wbkgdset(WINDOW *, chtype);
-int	 wborder(WINDOW *, chtype, chtype, chtype, chtype, chtype, chtype,
-		chtype, chtype);
+    __attribute__((__format__(__scanf__, 2, 0)));
+    int	 waddch(WINDOW *, chtype);
+    int	 waddchnstr(WINDOW *, const chtype *, int);
+    int	 waddchstr(WINDOW *, const chtype *);
+    int	 waddnstr(WINDOW *, const char *, int);
+    int	 wattr_get(WINDOW *, attr_t *, short *, void *);
+    int	 wattr_off(WINDOW *, attr_t, void *);
+    int	 wattr_on(WINDOW *, attr_t, void *);
+    int	 wattr_set(WINDOW *, attr_t, short, void *);
+    int	 wattroff(WINDOW *, int);
+    int	 wattron(WINDOW *, int);
+    int	 wattrset(WINDOW *, int);
+    int	 wbkgd(WINDOW *, chtype);
+    void	 wbkgdset(WINDOW *, chtype);
+    int	 wborder(WINDOW *, chtype, chtype, chtype, chtype, chtype, chtype,
+            chtype, chtype);
 int	 wclear(WINDOW *);
 int	 wclrtobot(WINDOW *);
 int	 wclrtoeol(WINDOW *);
@@ -673,25 +673,25 @@ int	 winstr(WINDOW *, char *);
 int	 wmove(WINDOW *, int, int);
 int	 wnoutrefresh(WINDOW *);
 int	 wprintw(WINDOW *, const char *, ...)
-		__attribute__((__format__(__printf__, 2, 3)));
-int	 wredrawln(WINDOW *, int, int);
-int	 wrefresh(WINDOW *);
-int      wresize(WINDOW *, int, int);
+    __attribute__((__format__(__printf__, 2, 3)));
+    int	 wredrawln(WINDOW *, int, int);
+    int	 wrefresh(WINDOW *);
+    int      wresize(WINDOW *, int, int);
 int	 wscanw(WINDOW *, const char *, ...)
-		__attribute__((__format__(__scanf__, 2, 3)));
-int	 wscrl(WINDOW *, int);
-int	 wsetscrreg(WINDOW *, int, int);
-int	 wstandend(WINDOW *);
-int	 wstandout(WINDOW *);
-void	 wtimeout(WINDOW *, int);
-int	 wtouchln(WINDOW *, int, int, int);
-int	 wunderend(WINDOW *);
-int	 wunderscore(WINDOW *);
-int	 wvline(WINDOW *, chtype, int);
+    __attribute__((__format__(__scanf__, 2, 3)));
+    int	 wscrl(WINDOW *, int);
+    int	 wsetscrreg(WINDOW *, int, int);
+    int	 wstandend(WINDOW *);
+    int	 wstandout(WINDOW *);
+    void	 wtimeout(WINDOW *, int);
+    int	 wtouchln(WINDOW *, int, int, int);
+    int	 wunderend(WINDOW *);
+    int	 wunderscore(WINDOW *);
+    int	 wvline(WINDOW *, chtype, int);
 
-/* Private functions that are needed for user programs prototypes. */
-int	 __cputchar(int);
-int	 __waddbytes(WINDOW *, const char *, int, attr_t);
-__END_DECLS
+    /* Private functions that are needed for user programs prototypes. */
+    int	 __cputchar(int);
+    int	 __waddbytes(WINDOW *, const char *, int, attr_t);
+    __END_DECLS
 
 #endif /* !_CURSES_H_ */

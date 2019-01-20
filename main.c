@@ -4,6 +4,6 @@
 #include "init.h"
 
 int main(){
-	startGame();
-	return 0;
+    startGame();
+    return 0;
 }
