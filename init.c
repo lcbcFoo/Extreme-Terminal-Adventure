@@ -26,7 +26,7 @@
 /* Initializes everything and executes the game */
 void startGame(){
     char comand;
-    Nivel nivel;
+    Nivel* nivel;
     Player player;
     Enemy *enemies;
     Bag *bag;
@@ -63,7 +63,7 @@ void startGame(){
     fclose(database);
 
     /* Loads existent game or starts a new one */
-    if(gameLoad(&player, &nivel, &enemies, bag) == 0){
+    if(gameLoad(&player, nivel, &enemies, bag) == 0){
 
         /* Initialize player and bag */
         playerInit(&player, items);
@@ -82,10 +82,10 @@ void startGame(){
 
     /* Starts game */
     do{
-        print(nivel, player, enemies);
+        print((*nivel), player, enemies);
         comand = getch();
         clear();
-    }while(executeComand(comand, &player, &nivel, enemies, bag, items));
+    }while(executeComand(comand, &player, nivel, enemies, bag, items));
 
     free(enemies);
     free(bag);
@@ -123,15 +123,15 @@ void bagInit(Bag *bag){
 
 }
 
-void enemyPositions(Nivel nivel, Enemy *enemies){
+void enemyPositions(Nivel* nivel, Enemy *enemies){
 
     int i, j;
 
-    for(i = 0; i < nivel.tamI; i++)
-        for(j = 0; j < nivel.tamJ; j++)
-            if(nivel.mapa[i][j].enemyIndice > 0){
-                enemies[nivel.mapa[i][j].enemyIndice].y = i;
-                enemies[nivel.mapa[i][j].enemyIndice].x = j;
+    for(i = 0; i < nivel->tamI; i++)
+        for(j = 0; j < nivel->tamJ; j++)
+            if(nivel->mapa[i][j].enemyIndice > 0){
+                enemies[nivel->mapa[i][j].enemyIndice].y = i;
+                enemies[nivel->mapa[i][j].enemyIndice].x = j;
             }
 
 }

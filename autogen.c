@@ -81,55 +81,55 @@ Enemy createEnemy(int boss, int y, int x, int level, int indice){
 }
 
 /* Gera um novo nivel */
-Nivel genNivel(int level, Player* player, Enemy** enemies){
+Nivel* genNivel(int level, Player* player, Enemy** enemies){
 
-    Nivel nivel;
+    Nivel *nivel = malloc(sizeof(Nivel));
 
     /* Escolhe um tamanho aleatorio para o mapa */
     do{
-        nivel.tamI = rand() % 26;
-    }while(nivel.tamI < 19);
+        nivel->tamI = rand() % 26;
+    }while(nivel->tamI < 19);
 
     do{
-        nivel.tamJ = rand() % 45;
-    }while(nivel.tamJ < 40);
+        nivel->tamJ = rand() % 45;
+    }while(nivel->tamJ < 40);
 
 
-    int tamI = nivel.tamI;
-    int tamJ = nivel.tamJ;
+    int tamI = nivel->tamI;
+    int tamJ = nivel->tamJ;
 
     for(int i = 0; i < tamI; i++){
         for(int j = 0; j < tamJ; j++)
-            nivel.mapa[i][j].shown = 0;
+            nivel->mapa[i][j].shown = 0;
     }
 
-    nivel.nivel = level;
+    nivel->nivel = level;
 
     /* Gera o mapa aleatoriamente (apenas muros e espacos vazios) */
-    genRoom(&nivel);
+    genRoom(nivel);
 
     /* Inicializa as posicoes do mapa */
     for(int i = 0; i < tamI; i++){
         for(int j = 0; j < tamJ; j++){
 
-            if(nivel.mapa[i][j].shown == 1){
-                nivel.mapa[i][j].used = 1;
-                nivel.mapa[i][j].enemyIndice = -1;
-                nivel.mapa[i][j].itemIndice = -1;
-                nivel.mapa[i][j].player = 0;
-                nivel.mapa[i][j].wall = 1;
-                nivel.mapa[i][j].stairs = 0;
-                nivel.mapa[i][j].quantItems = 0;
+            if( nivel->mapa[i][j].shown == 1){
+                nivel->mapa[i][j].used = 1;
+                nivel->mapa[i][j].enemyIndice = -1;
+                nivel->mapa[i][j].itemIndice = -1;
+                nivel->mapa[i][j].player = 0;
+                nivel->mapa[i][j].wall = 1;
+                nivel->mapa[i][j].stairs = 0;
+                nivel->mapa[i][j].quantItems = 0;
             }
 
             else{
-                nivel.mapa[i][j].used = 0;
-                nivel.mapa[i][j].enemyIndice = -1;
-                nivel.mapa[i][j].itemIndice = -1;
-                nivel.mapa[i][j].player = 0;
-                nivel.mapa[i][j].wall = 0;
-                nivel.mapa[i][j].stairs = 0;
-                nivel.mapa[i][j].quantItems = 0;
+                nivel->mapa[i][j].used = 0;
+                nivel->mapa[i][j].enemyIndice = -1;
+                nivel->mapa[i][j].itemIndice = -1;
+                nivel->mapa[i][j].player = 0;
+                nivel->mapa[i][j].wall = 0;
+                nivel->mapa[i][j].stairs = 0;
+                nivel->mapa[i][j].quantItems = 0;
             }
         }
     }
@@ -140,33 +140,33 @@ Nivel genNivel(int level, Player* player, Enemy** enemies){
     do{
         stairsI = rand() % tamI;
         stairsJ = rand() % tamJ;
-    }while(nivel.mapa[stairsI][stairsJ].used == 1);
+    }while(nivel->mapa[stairsI][stairsJ].used == 1);
 
-    nivel.mapa[stairsI][stairsJ].used = 1;
-    nivel.mapa[stairsI][stairsJ].stairs = 1;
+    nivel->mapa[stairsI][stairsJ].used = 1;
+    nivel->mapa[stairsI][stairsJ].stairs = 1;
 
     for(int i = stairsI - 1; i <= stairsI + 1; i++){
         for(int j = stairsJ - 1; j <= stairsJ + 1; j++){
-            if(nivel.mapa[i][j].wall == 1){
+            if(nivel->mapa[i][j].wall == 1){
                 if((i > 0) && (i < tamI - 1) && (j > 0) && (j < tamJ - 1)){
-                    nivel.mapa[i][j].used = 0;
-                    nivel.mapa[i][j].wall = 0;
+                    nivel->mapa[i][j].used = 0;
+                    nivel->mapa[i][j].wall = 0;
                 }
             }
         }
     }
 
     /* Create random enemies */
-    genEnemies(&nivel, enemies);
+    genEnemies(nivel, enemies);
 
     /* Places boss */
     int flag = 0;
 
     if(stairsI - 1 > 0){
-        nivel.mapa[stairsI - 1][stairsJ].enemyIndice = 0;
-        nivel.mapa[stairsI - 1][stairsJ].used = 1;
-        nivel.inimigos++;
-        (*enemies)[0] = createEnemy(1, stairsI - 1, stairsJ, nivel.nivel, 0);
+        nivel->mapa[stairsI - 1][stairsJ].enemyIndice = 0;
+        nivel->mapa[stairsI - 1][stairsJ].used = 1;
+        nivel->inimigos++;
+        (*enemies)[0] = createEnemy(1, stairsI - 1, stairsJ, nivel->nivel, 0);
     }
 
     else
@@ -174,10 +174,10 @@ Nivel genNivel(int level, Player* player, Enemy** enemies){
 
     if(flag == 1){
         if(stairsI + 1 < tamI - 1){
-            nivel.mapa[stairsI + 1][stairsJ].enemyIndice = 0;
-            nivel.mapa[stairsI + 1][stairsJ].used = 1;
-            nivel.inimigos++;
-            (*enemies)[0] = createEnemy(1, stairsI + 1, stairsJ, nivel.nivel, 0);
+            nivel->mapa[stairsI + 1][stairsJ].enemyIndice = 0;
+            nivel->mapa[stairsI + 1][stairsJ].used = 1;
+            nivel->inimigos++;
+            (*enemies)[0] = createEnemy(1, stairsI + 1, stairsJ, nivel->nivel, 0);
         }
 
         else
@@ -186,10 +186,10 @@ Nivel genNivel(int level, Player* player, Enemy** enemies){
 
     if(flag == 2){
         if(stairsJ - 1 > 0){
-            nivel.mapa[stairsI][stairsJ - 1].enemyIndice = 0;
-            nivel.mapa[stairsI][stairsJ - 1].used = 1;
-            nivel.inimigos++;
-            (*enemies)[0] = createEnemy(1, stairsI, stairsJ - 1, nivel.nivel, 0);
+            nivel->mapa[stairsI][stairsJ - 1].enemyIndice = 0;
+            nivel->mapa[stairsI][stairsJ - 1].used = 1;
+            nivel->inimigos++;
+            (*enemies)[0] = createEnemy(1, stairsI, stairsJ - 1, nivel->nivel, 0);
         }
 
         else
@@ -198,10 +198,10 @@ Nivel genNivel(int level, Player* player, Enemy** enemies){
 
     if(flag == 3){
         if(stairsJ + 1 < tamJ - 1){
-            nivel.mapa[stairsI][stairsJ + 1].enemyIndice = 0;
-            nivel.mapa[stairsI][stairsJ + 1].used = 1;
-            nivel.inimigos++;
-            (*enemies)[0] = createEnemy(1, stairsI, stairsJ + 1, nivel.nivel, 0);
+            nivel->mapa[stairsI][stairsJ + 1].enemyIndice = 0;
+            nivel->mapa[stairsI][stairsJ + 1].used = 1;
+            nivel->inimigos++;
+            (*enemies)[0] = createEnemy(1, stairsI, stairsJ + 1, nivel->nivel, 0);
         }
     }
 
@@ -210,20 +210,20 @@ Nivel genNivel(int level, Player* player, Enemy** enemies){
         (*player).y = rand() % tamI;
         (*player).x = rand() % tamJ;
 
-    }while((nivel.mapa[player->y][player->x].used == 1) ||
+    }while((nivel->mapa[player->y][player->x].used == 1) ||
             (!distancia(player->y, player->x, stairsI, stairsJ, tamI * tamJ)));
 
 
-    nivel.mapa[player->y][player->x].used = 1;
-    nivel.mapa[player->y][player->x].player = 1;
-    nivel.mapa[player->y][player->x].stairs = -1;
+    nivel->mapa[player->y][player->x].used = 1;
+    nivel->mapa[player->y][player->x].player = 1;
+    nivel->mapa[player->y][player->x].stairs = -1;
 
     for(int i = player->y - 1; i <= player->y + 1; i++){
         for(int j = player->x - 1; j <= player->x + 1; j++){
-            if(nivel.mapa[i][j].wall == 1){
+            if(nivel->mapa[i][j].wall == 1){
                 if((i > 0) && (i < tamI - 1) && (j > 0) && (j < tamJ - 1)){
-                    nivel.mapa[i][j].used = 0;
-                    nivel.mapa[i][j].wall = 0;
+                    nivel->mapa[i][j].used = 0;
+                    nivel->mapa[i][j].wall = 0;
                 }
             }
         }

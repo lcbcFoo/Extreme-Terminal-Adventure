@@ -78,7 +78,7 @@ void playerInit(Player* player, Item* items);
 void bagInit(Bag* bag);
 
 /* Checks enemies current positions */
-void enemyPositions(Nivel nivel, Enemy* enemies);
+void enemyPositions(Nivel* nivel, Enemy* enemies);
 
 void print(Nivel nivel, Player controller, Enemy* enemies);
 /* Print current game situation */

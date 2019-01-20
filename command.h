@@ -5,6 +5,7 @@
 #ifndef COMAND_H_UNCLUDED
 #define COMAND_H_UNCLUDED
 
+#include "init.h"
 
 /* Show basic commands */
 void comandList();
