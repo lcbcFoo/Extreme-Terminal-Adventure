@@ -28,7 +28,7 @@ void startGame(){
     char comand;
     Nivel* nivel;
     Player player;
-    Enemy *enemies;
+    Enemy *enemies = NULL;
     Bag *bag;
     Item *items, read;
     FILE *database;
